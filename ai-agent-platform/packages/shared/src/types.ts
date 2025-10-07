@@ -90,6 +90,12 @@ export interface RouterDecision extends LLMDecision {
     tokensUsed?: number;
     error?: string;
   }>;
+  responseText?: string;
+  tokenUsage?: {
+    promptTokens?: number;
+    completionTokens?: number;
+    totalTokens?: number;
+  };
 }
 
 export interface OptimizerCacheKey {
@@ -108,6 +114,8 @@ export interface EnvConfig {
   SUPABASE_URL: string;
   SUPABASE_ANON_KEY: string;
   JWT_SECRET: string;
+  SUPABASE_ARTIFACTS_BUCKET: string;
+  SUPABASE_SIGNED_URL_TTL: number;
   OPENROUTER_API_KEY?: string;
   OPENAI_API_KEY?: string;
   OLLAMA_BASE_URL: string;
@@ -115,10 +123,14 @@ export interface EnvConfig {
   OI_MODE: 'cloud' | 'local';
   PLAYWRIGHT_CHROMIUM_PATH?: string;
   LOCAL_OI_PROXY_URL: string;
+  OPEN_INTERPRETER_API_URL?: string;
+  OPEN_INTERPRETER_API_KEY?: string;
   FIRECRAWL_API_KEY?: string;
   FIRECRAWL_BASE_URL: string;
   RUBE_BASE_URL?: string;
   RUBE_API_KEY?: string;
+  RUBE_OAUTH_CLIENT_ID?: string;
+  RUBE_OAUTH_CLIENT_SECRET?: string;
   VAPI_API_KEY?: string;
   VOICEFLOW_API_KEY?: string;
   ROUTER_FREE_FIRST: boolean;

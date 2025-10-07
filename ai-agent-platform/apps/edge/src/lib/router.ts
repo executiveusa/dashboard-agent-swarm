@@ -1,10 +1,21 @@
-import { TaskInput, type RouterDecision, type LLMProvider, type ToolName } from '@ai-agent-platform/shared';
+import {
+  TaskInput,
+  type RouterDecision,
+  type LLMProvider,
+  type ToolName,
+  type AuditEvent,
+} from '@ai-agent-platform/shared';
 import { getEnv } from './env.js';
 import { optimizer } from './optimizer.js';
 
 export interface RouteOptions {
   requiredTools?: ToolName[];
   maxLatencyMs?: number;
+  audit?: {
+    record: (event: AuditEvent) => Promise<void>;
+    newEvent?: (type: string, message: string, payload?: Record<string, unknown>) => AuditEvent;
+  };
+  taskId?: string;
 }
 
 export interface RouteAttemptResult {
@@ -12,6 +23,12 @@ export interface RouteAttemptResult {
   tokensUsed?: number;
   latencyMs: number;
   error?: string;
+  responseText?: string;
+  tokenUsage?: {
+    promptTokens?: number;
+    completionTokens?: number;
+    totalTokens?: number;
+  };
 }
 
 export type RouteExecutor = (
@@ -102,18 +119,29 @@ export const routeLLM = async (
     });
 
     if (result.success) {
-      return {
+      const decision: RouterDecision = {
         provider: cfg.provider,
         model: cfg.model,
         reason: buildReason(task, cfg, options),
         costEstimate: cfg.costEstimate,
         attempted,
+        responseText: result.responseText,
+        tokenUsage: result.tokenUsage,
       };
+      await recordRoutingAudit(options.audit, 'router_decision', task, decision);
+      return decision;
     }
 
     lastError = result.error ?? 'unknown_failure';
   }
 
+  await recordRoutingAudit(options.audit, 'router_failure', task, {
+    provider: providerOrder[providerOrder.length - 1] ?? 'ollama',
+    model: '',
+    reason: 'all_providers_failed',
+    costEstimate: 0,
+    attempted,
+  });
   throw new Error(`All language model providers failed. Last error: ${lastError ?? 'n/a'}`);
 };
 
@@ -139,5 +167,29 @@ const isProviderAvailable = (provider: LLMProvider, env: ReturnType<typeof getEn
       return Boolean(env.OPENAI_API_KEY);
     default:
       return false;
+  }
+};
+
+const recordRoutingAudit = async (
+  audit: RouteOptions['audit'],
+  type: 'router_decision' | 'router_failure',
+  task: TaskInput,
+  decision: RouterDecision
+): Promise<void> => {
+  if (!audit?.newEvent) {
+    return;
+  }
+  const event = audit.newEvent(type, type === 'router_decision' ? 'LLM route selected' : 'LLM routing failed', {
+    taskId: task.id,
+    provider: decision.provider,
+    model: decision.model,
+    reason: decision.reason,
+    attempted: decision.attempted,
+    responsePreview: decision.responseText?.slice(0, 200),
+  });
+  try {
+    await audit.record(event);
+  } catch (error) {
+    console.warn('Failed to persist routing audit event', { error: (error as Error).message });
   }
 };
