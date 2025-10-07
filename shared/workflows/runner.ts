@@ -41,7 +41,16 @@ export async function loadWorkflow(name: string): Promise<WorkflowConfig> {
 
 export function resolveWorkflowPath(name: string): string {
   const baseDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)));
-  return path.join(baseDir, `${name}.yaml`);
+  const distPath = path.join(baseDir, `${name}.yaml`);
+  if (require('fs').existsSync(distPath)) return distPath;
+  // Fallback to source during dev
+  return path.resolve(
+    baseDir,
+    '../../../..',
+    'shared',
+    'workflows',
+    `${name}.yaml`
+  );
 }
 
 export interface WorkflowExecutionContext {
