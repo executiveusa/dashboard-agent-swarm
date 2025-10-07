@@ -35,8 +35,10 @@ CREATE INDEX workflow_steps_status_idx ON workflow_steps (status);
 ALTER TABLE workflow_runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE workflow_steps ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow all operations on workflow_runs" ON workflow_runs FOR ALL USING (true);
-CREATE POLICY "Allow all operations on workflow_steps" ON workflow_steps FOR ALL USING (true);
+CREATE POLICY "Authenticated users can SELECT workflow_runs" ON workflow_runs
+  FOR SELECT USING (auth.uid() IS NOT NULL);
+CREATE POLICY "Authenticated users can SELECT workflow_steps" ON workflow_steps
+  FOR SELECT USING (auth.uid() IS NOT NULL);
 
 ALTER PUBLICATION supabase_realtime ADD TABLE workflow_runs;
 ALTER PUBLICATION supabase_realtime ADD TABLE workflow_steps;
