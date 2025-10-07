@@ -105,9 +105,10 @@ export interface OptimizerEntry {
 }
 
 export interface EnvConfig {
-  SUPABASE_URL: string;
-  SUPABASE_ANON_KEY: string;
-  JWT_SECRET: string;
+  DATA_API_URL: string;
+  DATA_API_TOKEN?: string;
+  IDENTITY_JWT_SECRET: string;
+  IDENTITY_ISSUER_URL?: string;
   OPENROUTER_API_KEY?: string;
   OPENAI_API_KEY?: string;
   OLLAMA_BASE_URL: string;

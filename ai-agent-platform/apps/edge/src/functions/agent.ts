@@ -5,6 +5,7 @@ import { getEnv } from '../lib/env.js';
 import { createAuditLogger } from '../lib/audit.js';
 import { createRateLimiter } from '../lib/rateLimit.js';
 import type { AgentContext, TaskInput } from '@ai-agent-platform/shared';
+import { createTaskLifecycle } from '../lib/taskLifecycle.js';
 
 const requestSchema = z.object({
   userId: z.string().optional(),
@@ -41,6 +42,13 @@ export const handler = async (req: Request): Promise<Response> => {
   const requestId = randomUUID();
   const sessionId = body.userId ?? randomUUID();
   const audit = createAuditLogger({ sessionId });
+  const lifecycle = createTaskLifecycle({
+    id: requestId,
+    taskType: body.input.archetype,
+    sessionId,
+    userId: body.userId,
+    metadata: body.input.metadata ?? {},
+  });
 
   const context: AgentContext = {
     userId: body.userId,
@@ -66,6 +74,8 @@ export const handler = async (req: Request): Promise<Response> => {
     attachments: input.attachments,
   });
 
+  await lifecycle.start({ archetype: body.input.archetype });
+
   if (body.stream) {
     const stream = new ReadableStream<Uint8Array>({
       start: async (controller) => {
@@ -75,10 +85,17 @@ export const handler = async (req: Request): Promise<Response> => {
             fanOut: body.input.fanOut?.map((item, idx) => buildTask({ ...body.input, ...item }, idx + 1)),
             parallel: body.input.parallel,
           });
+          await lifecycle.complete('completed', {
+            output: result.output,
+            steps: result.steps,
+          });
           controller.enqueue(formatSse({ event: 'result', data: result }));
           controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
           controller.close();
         } catch (error) {
+          await lifecycle.complete('failed', {
+            error: (error as Error).message,
+          });
           controller.enqueue(
             formatSse({ event: 'error', data: { message: (error as Error).message, requestId } })
           );
@@ -101,10 +118,17 @@ export const handler = async (req: Request): Promise<Response> => {
       fanOut: body.input.fanOut?.map((item, idx) => buildTask({ ...body.input, ...item }, idx + 1)),
       parallel: body.input.parallel,
     });
+    await lifecycle.complete('completed', {
+      output: result.output,
+      steps: result.steps,
+    });
     return new Response(JSON.stringify({ requestId, result }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    await lifecycle.complete('failed', {
+      error: (error as Error).message,
+    });
     return new Response(JSON.stringify({ error: (error as Error).message, requestId }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

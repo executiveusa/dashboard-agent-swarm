@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { runTask } from '../../lib/eigent.js';
 import { getEnv } from '../../lib/env.js';
 import { createAuditLogger } from '../../lib/audit.js';
+import { createTaskLifecycle } from '../../lib/taskLifecycle.js';
 import type { AgentContext, TaskInput } from '@ai-agent-platform/shared';
 
 const voiceflowSchema = z.object({
@@ -46,7 +47,26 @@ export const handler = async (req: Request): Promise<Response> => {
     metadata: { source: 'voiceflow' },
   };
 
-  const result = await runTask(task, context);
-  return new Response(JSON.stringify({ result }), { headers: { 'Content-Type': 'application/json' } });
+  const lifecycle = createTaskLifecycle({
+    id: requestId,
+    taskType: task.archetype,
+    sessionId,
+    userId: body.request.payload.userId,
+    metadata: task.metadata,
+  });
+
+  await lifecycle.start({ source: 'voiceflow' });
+
+  try {
+    const result = await runTask(task, context);
+    await lifecycle.complete('completed', { output: result.output, steps: result.steps });
+    return new Response(JSON.stringify({ result }), { headers: { 'Content-Type': 'application/json' } });
+  } catch (error) {
+    await lifecycle.complete('failed', { error: (error as Error).message });
+    return new Response(
+      JSON.stringify({ error: (error as Error).message }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
 };
 

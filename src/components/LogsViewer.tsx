@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
+import { useRealtimeCollection } from "@/integrations/data-service/client";
 import { AlertCircle, CheckCircle2, Info, XCircle, Search } from "lucide-react";
 
 interface Log {
@@ -15,42 +15,24 @@ interface Log {
 }
 
 export function LogsViewer() {
-  const [logs, setLogs] = useState<Log[]>([]);
   const [search, setSearch] = useState("");
+  const { data: logs } = useRealtimeCollection<Log>({
+    resource: "logs",
+    channel: "logs",
+    limit: 100,
+    snapshotPath: "logs",
+    realtimePath: "realtime/logs",
+    getKey: (log) => log?.id,
+  });
 
-  useEffect(() => {
-    const fetchLogs = async () => {
-      const { data } = await supabase
-        .from("logs")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(100);
-      
-      if (data) setLogs(data);
-    };
-
-    fetchLogs();
-
-    const channel = supabase
-      .channel("logs-changes")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "logs" },
-        (payload) => {
-          setLogs((prev) => [payload.new as Log, ...prev].slice(0, 100));
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const filteredLogs = logs.filter(
-    (log) =>
-      log.action.toLowerCase().includes(search.toLowerCase()) ||
-      JSON.stringify(log.details).toLowerCase().includes(search.toLowerCase())
+  const filteredLogs = useMemo(
+    () =>
+      logs.filter(
+        (log) =>
+          log.action.toLowerCase().includes(search.toLowerCase()) ||
+          JSON.stringify(log.details).toLowerCase().includes(search.toLowerCase())
+      ),
+    [logs, search]
   );
 
   const getRiskIcon = (risk: string | null) => {
