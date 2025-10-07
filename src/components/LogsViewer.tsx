@@ -36,6 +36,58 @@ export function LogsViewer() {
       isMounted = false;
       clearInterval(interval);
       unsubscribe();
+  subscribeToLogStream,
+} from "@/integrations/data-service/client";
+import type { LogRecord, LogStreamEvent } from "@/integrations/data-service/types";
+import { AlertCircle, CheckCircle2, Info, XCircle, Search } from "lucide-react";
+
+interface Log {
+  id: string;
+  created_at: string;
+  action: string;
+  risk_level: string | null;
+  details: Record<string, unknown> | null;
+}
+
+export function LogsViewer() {
+  const [logs, setLogs] = useState<LogRecord[]>([]);
+  const [isStreaming, setIsStreaming] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+
+    const bootstrap = async () => {
+      try {
+        const initial = await fetchRecentLogs();
+        setLogs(initial);
+      } catch (error) {
+        console.error("Failed to load logs", error);
+      }
+
+      unsubscribe = subscribeToLogStream(
+        (event: LogStreamEvent) => {
+          if (event.type === "ready") {
+            setIsStreaming(true);
+            return;
+          }
+
+          if (!event.log) {
+            return;
+          }
+
+          setLogs((prev) => [event.log!, ...prev].slice(0, 100));
+        },
+        () => setIsStreaming(false)
+      );
+    };
+
+    bootstrap();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
   }, []);
 
@@ -80,7 +132,12 @@ export function LogsViewer() {
   return (
     <Card className="p-6 bg-card/50 backdrop-blur-sm">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-4">System Logs</h2>
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-2xl font-bold">System Logs</h2>
+          {!isStreaming && (
+            <span className="text-xs font-mono text-warning">reconnecting…</span>
+          )}
+        </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input

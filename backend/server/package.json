@@ -1,0 +1,31 @@
+{
+  "name": "multiagent-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --clean",
+    "lint": "eslint \"src/**/*.{ts,tsx}\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pino": "^9.5.0",
+    "pg": "^8.13.1",
+    "zod": "^3.25.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.16.5",
+    "eslint": "^9.32.0",
+    "tsx": "^4.19.2",
+    "pino-pretty": "^11.2.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.8.3"
+  }
+}

@@ -56,6 +56,11 @@ export interface AgentContext {
   audit?: {
     record: (event: AuditEvent) => Promise<void>;
     newEvent?: (type: string, message: string, payload?: Record<string, unknown>) => AuditEvent;
+    recordStructured?: (event: StructuredAuditEvent) => Promise<void>;
+    time?: <T>(event: Omit<StructuredAuditEvent, 'action' | 'durationMs' | 'metadata'> & {
+      actionName?: string;
+      metadata?: Record<string, unknown>;
+    }, run: () => Promise<T>) => Promise<T>;
   };
 }
 
@@ -90,6 +95,12 @@ export interface RouterDecision extends LLMDecision {
     tokensUsed?: number;
     error?: string;
   }>;
+  responseText?: string;
+  tokenUsage?: {
+    promptTokens?: number;
+    completionTokens?: number;
+    totalTokens?: number;
+  };
 }
 
 export interface OptimizerCacheKey {
@@ -110,6 +121,8 @@ export interface EnvConfig {
   LOVABLE_PROJECT_ID: string;
   LOVABLE_MEMORY_URL?: string;
   JWT_SECRET: string;
+  SUPABASE_ARTIFACTS_BUCKET: string;
+  SUPABASE_SIGNED_URL_TTL: number;
   OPENROUTER_API_KEY?: string;
   OPENAI_API_KEY?: string;
   OLLAMA_BASE_URL: string;
@@ -117,10 +130,14 @@ export interface EnvConfig {
   OI_MODE: 'cloud' | 'local';
   PLAYWRIGHT_CHROMIUM_PATH?: string;
   LOCAL_OI_PROXY_URL: string;
+  OPEN_INTERPRETER_API_URL?: string;
+  OPEN_INTERPRETER_API_KEY?: string;
   FIRECRAWL_API_KEY?: string;
   FIRECRAWL_BASE_URL: string;
   RUBE_BASE_URL?: string;
   RUBE_API_KEY?: string;
+  RUBE_OAUTH_CLIENT_ID?: string;
+  RUBE_OAUTH_CLIENT_SECRET?: string;
   VAPI_API_KEY?: string;
   VOICEFLOW_API_KEY?: string;
   ROUTER_FREE_FIRST: boolean;
@@ -134,6 +151,21 @@ export interface AuditEvent {
   message: string;
   payload?: Record<string, unknown>;
   createdAt: string;
+}
+
+export type AuditEventCategory = 'agent' | 'tool' | 'workflow';
+
+export interface StructuredAuditEvent {
+  id?: string;
+  requestId?: string;
+  sessionId?: string;
+  category: AuditEventCategory;
+  name: string;
+  action: 'start' | 'finish' | 'error';
+  durationMs?: number;
+  costUsd?: number;
+  metadata?: Record<string, unknown>;
+  timestamp?: string;
 }
 
 export interface WorkflowRunContext {

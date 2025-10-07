@@ -10,9 +10,9 @@ export type CodeToolInput = z.infer<typeof codeSchema>;
 
 export const codeTool = {
   name: 'CodeTool',
-  async execute(input: CodeToolInput) {
+  async execute(input: CodeToolInput, options: { sessionId?: string } = {}) {
     const payload = codeSchema.parse(input);
-    return openInterpreter.runCode(payload.runtime, payload.source);
+    return openInterpreter.runCode(payload.runtime, payload.source, { sessionId: options.sessionId });
   },
 };
 

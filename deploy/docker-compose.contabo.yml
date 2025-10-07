@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  dashboard:
+    image: ghcr.io/lovableai/dashboard:latest
+    build:
+      context: ..
+      target: runner
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - VITE_EDGE_BASE_URL=${EDGE_BASE_URL:-https://edge.example.com}
+      - VITE_SUPABASE_URL=${SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    depends_on:
+      - frontend
+
+  frontend:
+    image: ghcr.io/lovableai/frontend:latest
+    build:
+      context: ../ai-agent-platform/apps/frontend
+      target: runner
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_EDGE_URL=${EDGE_BASE_URL:-https://edge.example.com}
+      - NEXT_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    depends_on:
+      - edge
+
+  edge:
+    image: ghcr.io/lovableai/edge:latest
+    build:
+      context: ../ai-agent-platform/apps/edge
+      target: runner
+    restart: unless-stopped
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - OI_MODE=${OI_MODE:-cloud}
+      - LOCAL_OI_PROXY_URL=http://local-runner:3333
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - LM_STUDIO_BASE_URL=${LM_STUDIO_BASE_URL:-http://lm-studio:1234/v1}
+      - FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY:-}
+      - FIRECRAWL_BASE_URL=${FIRECRAWL_BASE_URL:-https://api.firecrawl.dev}
+      - MCP_SOCKET=/var/run/mcp/edge.sock
+    ports:
+      - "8787:8787"
+    volumes:
+      - /opt/lovable/mcp:/var/run/mcp
+    depends_on:
+      - local-runner
+
+  local-runner:
+    image: ghcr.io/lovableai/local-runner:latest
+    build:
+      context: ../ai-agent-platform/apps/local-runner
+      target: runner
+    restart: unless-stopped
+    environment:
+      - LOCAL_OI_BROWSER_HEADLESS=1
+      - LOCAL_OI_MAX_SESSIONS=8
+      - LOCAL_OI_SESSION_LIFETIME_MS=900000
+    ports:
+      - "3333:3333"
+    volumes:
+      - /opt/lovable/sandboxes:/sandboxes
+      - /opt/lovable/mcp:/var/run/mcp
