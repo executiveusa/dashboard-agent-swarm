@@ -5,6 +5,7 @@
     "rootDir": "src",
     "composite": true,
     "declaration": true,
+    "types": ["node", "electron"],
     "module": "NodeNext"
   },
   "include": ["src/**/*"],
