@@ -95,12 +95,11 @@ const handler: EdgeHandler = withEdgeLogging(async (request, context) => {
     }
 
     const router = new AgentRouter(environment);
-    const workflowDefinition = await loadWorkflow(payload.workflow ?? environment.defaultWorkflow ?? 'default');
 
     const response = await router.route({
       goal: payload.goal,
       context: payload.context,
-      workflow: workflowDefinition.id
+      workflow: payload.workflow ?? environment.defaultWorkflow ?? 'default'
     });
 
     const logs: SupabaseLogPayload[] = response.results.map((result) => ({
