@@ -45,10 +45,19 @@ export const workflowSlugSchema = z
 export const loadWorkflowFromSlug = async (slug: string): Promise<{ slug: string; definition: WorkflowDefinition }>
  => {
   const safeSlug = workflowSlugSchema.parse(slug).replace(/\.ya?ml$/i, '');
-  const candidate = path.join(WORKFLOWS_DIR, `${safeSlug}.yaml`);
-  const content = await readFile(candidate, 'utf8');
+  const base = WORKFLOWS_DIR.endsWith(path.sep) ? WORKFLOWS_DIR : WORKFLOWS_DIR + path.sep;
+  const yamlPath = path.resolve(WORKFLOWS_DIR, `${safeSlug}.yaml`);
+  const ymlPath = path.resolve(WORKFLOWS_DIR, `${safeSlug}.yml`);
+  if (!yamlPath.startsWith(base) || safeSlug.startsWith('/')) {
+    throw new Error('Invalid workflow slug');
+  }
+  let content: string;
+  try {
+    content = await readFile(yamlPath, 'utf8');
+  } catch {
+    content = await readFile(ymlPath, 'utf8');
+  }
   return { slug: safeSlug, definition: parseWorkflow(content) };
-};
 
 export const listWorkflowDefinitions = async (): Promise<Array<{ slug: string; definition: WorkflowDefinition }>> => {
   const entries = await readdir(WORKFLOWS_DIR);
