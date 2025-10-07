@@ -182,7 +182,7 @@ function renderArtifacts(artifacts: unknown) {
         return (
           <li key={`${name}-${index}`}>
             {url ? (
-              <a href={url} target="_blank" rel="noreferrer" className="hover:underline">
+              <a href={url} target="_blank" rel="noopener noreferrer" className="hover:underline">
                 {name}
               </a>
             ) : (
