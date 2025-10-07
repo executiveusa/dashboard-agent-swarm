@@ -18,9 +18,9 @@ export interface BrowserToolInput {
 
 export const browserTool = {
   name: 'BrowserTool',
-  async execute(input: BrowserToolInput) {
+  async execute(input: BrowserToolInput, options: { sessionId?: string } = {}) {
     const plan = browserPlanSchema.parse(input);
-    return openInterpreter.executeBrowserPlan(plan.actions);
+    return openInterpreter.executeBrowserPlan(plan.actions, { sessionId: options.sessionId });
   },
 };
 

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { createAuditLogger } from '../../lib/audit.js';
 
@@ -13,12 +14,25 @@ export const handler = async (req: Request): Promise<Response> => {
   }
 
   const event = eventSchema.parse(await req.json());
-  const audit = createAuditLogger({ sessionId: event.sessionId });
-  await audit.record(
-    audit.newEvent('oi_event', `Open Interpreter ${event.status}`, {
-      detail: event.detail,
-    })
-  );
+  const audit = createAuditLogger({ sessionId: event.sessionId, requestId: randomUUID() });
+  const log = audit.newEvent('oi_event', `Open Interpreter ${event.status}`, {
+    detail: event.detail,
+  });
+  await audit.record(log);
+
+  if (audit.recordStructured) {
+    await audit.recordStructured({
+      category: 'workflow',
+      name: 'OpenInterpreter',
+      action: event.status === 'error' ? 'error' : 'finish',
+      sessionId: event.sessionId,
+      metadata: {
+        status: event.status,
+        detail: event.detail,
+      },
+    });
+  }
+
   return new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json' } });
 };
 

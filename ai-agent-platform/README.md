@@ -65,6 +65,14 @@ Copy `.env.example` to `.env` and populate the values. Lovable deployments read 
      cost numeric,
      created_at timestamptz default now()
    );
+
+   create table if not exists rube_tokens (
+     session_id text primary key,
+     access_token text not null,
+     refresh_token text,
+     expires_at timestamptz,
+     updated_at timestamptz default now()
+   );
    ```
 
 4. **Storage Buckets**: Configure buckets referenced in workflows (e.g., `incoming-data`).

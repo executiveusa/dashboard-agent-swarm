@@ -3,6 +3,13 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+// Proxy Flowise UI/API at /agents during dev
+const proxyFlowise = {
+  target: 'http://localhost:3000',
+  changeOrigin: true,
+  secure: false
+};
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -13,6 +20,10 @@ export default defineConfig(({ mode }) => ({
         path.resolve(__dirname, "ai-agent-platform/packages/shared/src"),
       ],
     },
+    proxy: {
+      '/agents': proxyFlowise,
+      '/api/v1': proxyFlowise
+    }
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
