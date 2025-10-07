@@ -21,12 +21,14 @@ const workflowSchema = z.object({
     )
     .optional(),
   steps: z.array(
-    z.object({
-      id: z.string(),
-      role: z.enum(['admin', 'user', 'system']), // TODO: Replace with actual allowed roles
-      summary: z.string().optional(),
-      input: z.record(z.unknown()).optional()
-    })
+   steps: z.array(
+     z.object({
+       id: z.string(),
+       role: z.enum(['planner', 'researcher', 'builder', 'reviewer'] as const),
+       summary: z.string().optional(),
+       input: z.record(z.unknown()).optional()
+     })
+   )
   )
 });
 
