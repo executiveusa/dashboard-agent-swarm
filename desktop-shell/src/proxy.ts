@@ -133,13 +133,14 @@ export class DesktopAgentProxy {
       | undefined;
     const failure = events.find((event) => event.type === 'status' && event.status === 'failed');
     const summary = latestResult?.output ?? (failure ? failure.message ?? 'Task failed' : 'Task completed');
+    const transcriptId = transcriptPath.split(/[\\/]/).pop() ?? transcriptPath;
     try {
       await this.supabase.from('logs').insert({
         action: 'desktop_summary',
         details: {
           requestId,
           summary,
-          transcriptPath,
+          transcriptId,
         },
         risk_level: failure ? 'medium' : 'low',
       });
