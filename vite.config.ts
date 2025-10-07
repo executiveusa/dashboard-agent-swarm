@@ -10,7 +10,6 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     fs: {
       allow: [
-        "..",
         path.resolve(__dirname, "ai-agent-platform/packages/shared/src"),
       ],
     },
