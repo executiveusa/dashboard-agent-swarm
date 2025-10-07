@@ -82,7 +82,10 @@ export const useOfflineQueue = <TPayload,>(
         try {
           await processor({ ...command, attempts: command.attempts + 1 });
         } catch (error) {
-          console.warn('Queue command failed', error);
+          console.warn(
+            `Queue command failed (id: ${command.id}, attempts: ${command.attempts + 1}, payload: ${JSON.stringify(command.payload)})`,
+            error
+          );
           nextQueue.push({ ...command, attempts: command.attempts + 1 });
         }
       }
