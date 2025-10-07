@@ -61,18 +61,50 @@ export function WorkflowHistoryPanel() {
     setLoading(false);
   }, []);
 
+// At the top of the file
+import debounce from 'lodash.debounce';
+
+export function WorkflowHistoryPanel() {
+  const [runs, setRuns] = useState<WorkflowRun[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | undefined>();
+  const [retrying, setRetrying] = useState<string | undefined>();
+
+  const loadRuns = useCallback(async () => {
+    // ... existing implementation
+  }, []);
+
+  // Debounce to prevent multiple rapid calls
+  const debouncedLoadRuns = useCallback(
+    debounce(() => {
+      loadRuns();
+    }, 300),
+    [loadRuns]
+  );
+
   useEffect(() => {
     loadRuns();
     const channel = supabaseBrowser
       .channel('workflow-history-panel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'workflow_runs' }, loadRuns)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'workflow_steps' }, loadRuns)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'workflow_runs' },
+        debouncedLoadRuns
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'workflow_steps' },
+        debouncedLoadRuns
+      )
       .subscribe();
 
     return () => {
       supabaseBrowser.removeChannel(channel);
     };
-  }, [loadRuns]);
+  }, [loadRuns, debouncedLoadRuns]);
+
+  // ... rest of component
+}
 
   const retryRun = useCallback(
     async (run: WorkflowRun) => {
