@@ -1,6 +1,11 @@
 import yaml from 'js-yaml';
 import pLimit from 'p-limit';
-import { workflowSchema, type WorkflowDefinition, type WorkflowStepResult } from '@ai-agent-platform/shared';
+import {
+  workflowSchema,
+  type WorkflowDefinition,
+  type WorkflowStepResult,
+  type StructuredAuditEvent,
+} from '@ai-agent-platform/shared';
 
 export interface WorkflowRuntime {
   runAgentTask: (step: { id: string; agent: string; instructions: string; inputs?: Record<string, unknown> }) => Promise<unknown>;
@@ -13,6 +18,15 @@ export interface WorkflowRuntime {
 export interface ExecuteWorkflowOptions {
   inputs?: Record<string, unknown>;
   concurrency?: number;
+  audit?: {
+    recordStructured?: (event: StructuredAuditEvent) => Promise<void>;
+    time?: <T>(
+      event: Omit<StructuredAuditEvent, 'action' | 'durationMs' | 'timestamp'> & { metadata?: Record<string, unknown> },
+      run: () => Promise<T>,
+    ) => Promise<T>;
+  };
+  requestId?: string;
+  sessionId?: string;
 }
 
 export interface WorkflowExecutionResult {
@@ -42,7 +56,7 @@ export const executeWorkflow = async (
 
     const fanOutItems = step.fanOut ?? [step.inputs ?? {}];
     const tasks = fanOutItems.map((item) =>
-      limiter(() => runStep(step, runtime, mergeInputs(options.inputs, item, outputs)))
+      limiter(() => runStep(step, runtime, mergeInputs(options.inputs, item, outputs), options))
     );
 
     const collectAll = step.collect?.strategy !== 'first-success';
@@ -54,7 +68,17 @@ export const executeWorkflow = async (
     outputs[step.id] = last.output;
     steps.push(...flattened);
 
-    if (!success) {
+    if (!success && options.audit?.recordStructured) {
+      await options.audit.recordStructured({
+        category: 'workflow',
+        name: step.id,
+        action: 'error',
+        requestId: options.requestId,
+        sessionId: options.sessionId,
+        metadata: {
+          lastError: flattened.find((r) => !r.success)?.error,
+        },
+      });
       break;
     }
   }
@@ -65,7 +89,8 @@ export const executeWorkflow = async (
 const runStep = async (
   step: WorkflowDefinition['steps'][number],
   runtime: WorkflowRuntime,
-  resolvedInputs: Record<string, unknown>
+  resolvedInputs: Record<string, unknown>,
+  options: ExecuteWorkflowOptions
 ): Promise<WorkflowStepResult> => {
   const attempts = step.retries?.attempts ?? 1;
   const backoff = step.retries?.backoffMs ?? 1000;
@@ -73,7 +98,35 @@ const runStep = async (
 
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
-      const output = await executeByType(step, runtime, resolvedInputs);
+      const run = () => executeByType(step, runtime, resolvedInputs);
+      const output = options.audit?.time
+        ? await options.audit.time(
+            {
+              category: 'workflow',
+              name: step.id,
+              requestId: options.requestId,
+              sessionId: options.sessionId,
+              metadata: {
+                type: step.type,
+                attempt,
+              },
+            },
+            run,
+          )
+        : await run();
+      if (options.audit?.recordStructured) {
+        await options.audit.recordStructured({
+          category: 'workflow',
+          name: step.id,
+          action: 'finish',
+          requestId: options.requestId,
+          sessionId: options.sessionId,
+          metadata: {
+            type: step.type,
+            attempt,
+          },
+        });
+      }
       return { stepId: step.id, success: true, output, attempts: attempt };
     } catch (error) {
       lastError = error as Error;
@@ -81,6 +134,19 @@ const runStep = async (
         await delay(backoff * attempt);
       }
     }
+  }
+
+  if (options.audit?.recordStructured) {
+    await options.audit.recordStructured({
+      category: 'workflow',
+      name: step.id,
+      action: 'error',
+      requestId: options.requestId,
+      sessionId: options.sessionId,
+      metadata: {
+        error: lastError?.message,
+      },
+    });
   }
 
   return {
@@ -151,4 +217,3 @@ const getProperty = (object: Record<string, unknown>, path: string): unknown => 
     return undefined;
   }, object);
 };
-

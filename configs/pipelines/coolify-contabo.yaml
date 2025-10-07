@@ -1,0 +1,24 @@
+version: v1
+name: lovable-contabo-deploy
+triggers:
+  - type: git
+    repo: lovable/dashboard-agent-swarm
+    branch: main
+steps:
+  - name: Build containers
+    run: |
+      docker build -t lovable-dashboard-agent-platform ./ai-agent-platform
+      docker build -t lovable-dashboard-ui .
+  - name: Push to registry
+    run: |
+      docker login ${REGISTRY_ENDPOINT} -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD}
+      docker tag lovable-dashboard-agent-platform ${REGISTRY_ENDPOINT}/lovable/dashboard-agent-platform:${GIT_SHA}
+      docker tag lovable-dashboard-ui ${REGISTRY_ENDPOINT}/lovable/dashboard-ui:${GIT_SHA}
+      docker push ${REGISTRY_ENDPOINT}/lovable/dashboard-agent-platform:${GIT_SHA}
+      docker push ${REGISTRY_ENDPOINT}/lovable/dashboard-ui:${GIT_SHA}
+  - name: Deploy to Contabo via Coolify
+    run: |
+      coolify pipelines deploy --stack ${STACK_NAME:-lovable-cloud} \
+        --environment ${ENVIRONMENT} \
+        --config configs/environments/${ENVIRONMENT}.yaml \
+        --services lovable-dashboard-agent-platform,lovable-dashboard-ui

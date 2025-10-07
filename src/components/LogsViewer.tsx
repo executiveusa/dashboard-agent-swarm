@@ -10,6 +10,14 @@ import {
 import type { LogRecord, LogStreamEvent } from "@/integrations/data-service/types";
 import { AlertCircle, CheckCircle2, Info, XCircle, Search } from "lucide-react";
 
+interface Log {
+  id: string;
+  created_at: string;
+  action: string;
+  risk_level: string | null;
+  details: Record<string, unknown> | null;
+}
+
 export function LogsViewer() {
   const [logs, setLogs] = useState<LogRecord[]>([]);
   const [isStreaming, setIsStreaming] = useState(true);
@@ -55,7 +63,7 @@ export function LogsViewer() {
   const filteredLogs = logs.filter(
     (log) =>
       log.action.toLowerCase().includes(search.toLowerCase()) ||
-      JSON.stringify(log.details).toLowerCase().includes(search.toLowerCase())
+      JSON.stringify(log.details ?? {}).toLowerCase().includes(search.toLowerCase())
   );
 
   const getRiskIcon = (risk: string | null) => {

@@ -14,6 +14,7 @@ import {
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: Activity },
+  { title: "Analytics", url: "/analytics", icon: Activity },
   { title: "Tasks", url: "/tasks", icon: Terminal },
   { title: "Logs", url: "/logs", icon: FileText },
   { title: "Files", url: "/files", icon: FolderTree },
