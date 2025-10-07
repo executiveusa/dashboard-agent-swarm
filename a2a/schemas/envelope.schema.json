@@ -1,0 +1,57 @@
+{
+  "$id": "https://dashboard-agent-swarm/a2a/envelope.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "A2A Envelope",
+  "type": "object",
+  "required": ["id", "ts", "from", "to", "type", "body"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Globally unique identifier for the message."
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp when the message was emitted."
+    },
+    "trace": {
+      "type": "string",
+      "description": "Optional trace identifier for correlating multi-hop flows."
+    },
+    "from": {
+      "type": "string",
+      "description": "Name or identifier of the sending agent/runtime."
+    },
+    "to": {
+      "type": "string",
+      "description": "Target agent identifier or broadcast token."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "task.create",
+        "task.update",
+        "task.result",
+        "ask",
+        "tell",
+        "tool.call",
+        "tool.result",
+        "error"
+      ],
+      "description": "Envelope semantic type."
+    },
+    "corr": {
+      "type": "string",
+      "description": "Correlation identifier for request/response matching."
+    },
+    "body": {
+      "type": "object",
+      "description": "Message payload. Concrete structure depends on the envelope type."
+    },
+    "policy": {
+      "type": "object",
+      "description": "Optional policy metadata (rate limits, privacy constraints, etc.)."
+    }
+  },
+  "additionalProperties": false
+}

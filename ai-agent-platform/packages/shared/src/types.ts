@@ -56,6 +56,11 @@ export interface AgentContext {
   audit?: {
     record: (event: AuditEvent) => Promise<void>;
     newEvent?: (type: string, message: string, payload?: Record<string, unknown>) => AuditEvent;
+    recordStructured?: (event: StructuredAuditEvent) => Promise<void>;
+    time?: <T>(event: Omit<StructuredAuditEvent, 'action' | 'durationMs' | 'metadata'> & {
+      actionName?: string;
+      metadata?: Record<string, unknown>;
+    }, run: () => Promise<T>) => Promise<T>;
   };
 }
 
@@ -144,6 +149,21 @@ export interface AuditEvent {
   message: string;
   payload?: Record<string, unknown>;
   createdAt: string;
+}
+
+export type AuditEventCategory = 'agent' | 'tool' | 'workflow';
+
+export interface StructuredAuditEvent {
+  id?: string;
+  requestId?: string;
+  sessionId?: string;
+  category: AuditEventCategory;
+  name: string;
+  action: 'start' | 'finish' | 'error';
+  durationMs?: number;
+  costUsd?: number;
+  metadata?: Record<string, unknown>;
+  timestamp?: string;
 }
 
 export interface WorkflowRunContext {
