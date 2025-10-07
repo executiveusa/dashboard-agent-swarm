@@ -35,7 +35,7 @@ export interface RunWorkflowResult {
   status: 'succeeded' | 'failed';
 }
 
-const WORKFLOWS_DIR = fileURLToPath(new URL('../../../../packages/shared/workflows', import.meta.url));
+const WORKFLOWS_DIR = fileURLToPath(new URL('../../../../../packages/shared/workflows', import.meta.url));
 
 export const workflowSlugSchema = z
   .string()
