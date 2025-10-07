@@ -5,12 +5,12 @@ import {
   type RunTaskOptions,
   type TaskInput,
 } from '@ai-agent-platform/shared';
-import { browserTool } from './tools/browserTool.js';
+import { browserTool, type BrowserToolInput } from './tools/browserTool.js';
 import { codeTool } from './tools/codeTool.js';
 import { filesTool } from './tools/filesTool.js';
 import { httpTool } from './tools/httpTool.js';
-import { firecrawlTool } from './tools/firecrawlTool.js';
-import { rubeTool } from './tools/rubeTool.js';
+import { firecrawlTool, type FirecrawlInput } from './tools/firecrawlTool.js';
+import { rubeTool, type RubeExecInput } from './tools/rubeTool.js';
 import { speechTool } from './tools/speechTool.js';
 import { routeLLM } from './router.js';
 
@@ -19,6 +19,36 @@ interface AgentDefinition {
   capabilities: string[];
   handler: (task: TaskInput, context: AgentContext) => Promise<AgentResult>;
 }
+
+const asBrowserActions = (value: unknown): BrowserToolInput['actions'] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.filter((item): item is BrowserToolInput['actions'][number] => {
+    return (
+      typeof item === 'object' &&
+      item !== null &&
+      'verb' in item &&
+      typeof (item as { verb?: unknown }).verb === 'string'
+    );
+  }) as BrowserToolInput['actions'];
+};
+
+const isFirecrawlInput = (value: unknown): value is FirecrawlInput => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'instruction' in (value as Record<string, unknown>) &&
+    typeof (value as { instruction?: unknown }).instruction === 'string'
+  );
+};
+
+const asRubeParams = (value: unknown): Record<string, unknown> => {
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return {};
+};
 
 const agentRegistry: Record<AgentName, AgentDefinition> = {
   ResearchAgent: {
@@ -31,15 +61,60 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
       if (routeEvent && context.audit) {
         await context.audit.record(routeEvent);
       }
-      const actions = Array.isArray(task.metadata?.browserActions)
-        ? (task.metadata?.browserActions as { verb: any; args?: any[] }[])
-        : [];
-      const browser = actions.length ? await browserTool.execute({ actions }) : undefined;
-      const crawl = task.metadata?.firecrawl
-        ? await firecrawlTool.execute(task.metadata.firecrawl as any)
+      if (context.audit?.recordStructured) {
+        await context.audit.recordStructured({
+          category: 'agent',
+          name: 'Router',
+          action: 'finish',
+          requestId: context.requestId,
+          sessionId: context.sessionId,
+          metadata: { decision },
+        });
+      }
+      const actions = asBrowserActions(task.metadata?.browserActions);
+      const browser =
+        actions.length && context.audit?.time
+          ? await context.audit.time(
+              {
+                category: 'tool',
+                name: 'BrowserTool',
+                requestId: context.requestId,
+                sessionId: context.sessionId,
+                metadata: { actions },
+              },
+              () => browserTool.execute({ actions }),
+            )
+          : actions.length
+            ? await browserTool.execute({ actions })
+            : undefined;
+      const firecrawlInput = isFirecrawlInput(task.metadata?.firecrawl) ? task.metadata?.firecrawl : undefined;
+      const crawl = firecrawlInput
+        ? context.audit?.time
+          ? await context.audit.time(
+              {
+                category: 'tool',
+                name: 'FirecrawlTool',
+                requestId: context.requestId,
+                sessionId: context.sessionId,
+                metadata: firecrawlInput,
+              },
+              () => firecrawlTool.execute(firecrawlInput),
+            )
+          : await firecrawlTool.execute(firecrawlInput)
         : undefined;
       const httpResponse = task.metadata?.probeUrl
-        ? await httpTool.execute({ url: String(task.metadata.probeUrl) })
+        ? context.audit?.time
+          ? await context.audit.time(
+              {
+                category: 'tool',
+                name: 'HTTPTool',
+                requestId: context.requestId,
+                sessionId: context.sessionId,
+                metadata: { url: String(task.metadata.probeUrl) },
+              },
+              () => httpTool.execute({ url: String(task.metadata.probeUrl) }),
+            )
+          : await httpTool.execute({ url: String(task.metadata.probeUrl) })
         : undefined;
       return {
         agent: 'ResearchAgent',
@@ -53,7 +128,28 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
     capabilities: ['CodeTool', 'FilesTool', 'Router'],
     handler: async (task) => {
       const decision = await routeLLM(task, simulateLLMExecution);
-      const code = await codeTool.execute({ runtime: 'python', source: task.instructions });
+      if (context.audit?.recordStructured) {
+        await context.audit.recordStructured({
+          category: 'agent',
+          name: 'Router',
+          action: 'finish',
+          requestId: context.requestId,
+          sessionId: context.sessionId,
+          metadata: { decision },
+        });
+      }
+      const code = context.audit?.time
+        ? await context.audit.time(
+            {
+              category: 'tool',
+              name: 'CodeTool',
+              requestId: context.requestId,
+              sessionId: context.sessionId,
+              metadata: { runtime: 'python', taskId: task.id },
+            },
+            () => codeTool.execute({ runtime: 'python', source: task.instructions }),
+          )
+        : await codeTool.execute({ runtime: 'python', source: task.instructions });
       if (task.metadata?.writePath && typeof task.metadata.writePath === 'string') {
         await filesTool.write(task.metadata.writePath, code.stdout);
       }
@@ -73,7 +169,19 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
       if (!service) {
         throw new Error('AutomatorAgent requires metadata.service');
       }
-      const result = await rubeTool.exec({ service: service as any, params: task.metadata?.params as any });
+      const params = asRubeParams(task.metadata?.params);
+      const result = context.audit?.time
+        ? await context.audit.time(
+            {
+              category: 'tool',
+              name: 'RubeTool',
+              requestId: context.requestId,
+              sessionId: context.sessionId,
+              metadata: { service, params },
+            },
+            () => rubeTool.exec({ service: service as RubeExecInput['service'], params }),
+          )
+        : await rubeTool.exec({ service: service as RubeExecInput['service'], params });
       return { agent: 'AutomatorAgent', output: 'Automation executed', steps: [result] };
     },
   },
@@ -81,7 +189,18 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
     name: 'DataCleanerAgent',
     capabilities: ['CodeTool', 'FilesTool'],
     handler: async (task) => {
-      const code = await codeTool.execute({ runtime: 'python', source: task.instructions });
+      const code = context.audit?.time
+        ? await context.audit.time(
+            {
+              category: 'tool',
+              name: 'CodeTool',
+              requestId: context.requestId,
+              sessionId: context.sessionId,
+              metadata: { runtime: 'python', taskId: task.id },
+            },
+            () => codeTool.execute({ runtime: 'python', source: task.instructions }),
+          )
+        : await codeTool.execute({ runtime: 'python', source: task.instructions });
       if (task.metadata?.outputPath && typeof task.metadata.outputPath === 'string') {
         await filesTool.write(task.metadata.outputPath, code.stdout);
       }
@@ -98,7 +217,28 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
     capabilities: ['SpeechTool', 'Router'],
     handler: async (task) => {
       const decision = await routeLLM(task, simulateLLMExecution);
-      const audio = await speechTool.synthesize({ text: task.instructions });
+      if (context.audit?.recordStructured) {
+        await context.audit.recordStructured({
+          category: 'agent',
+          name: 'Router',
+          action: 'finish',
+          requestId: context.requestId,
+          sessionId: context.sessionId,
+          metadata: { decision },
+        });
+      }
+      const audio = context.audit?.time
+        ? await context.audit.time(
+            {
+              category: 'tool',
+              name: 'SpeechTool',
+              requestId: context.requestId,
+              sessionId: context.sessionId,
+              metadata: { instructions: task.instructions },
+            },
+            () => speechTool.synthesize({ text: task.instructions }),
+          )
+        : await speechTool.synthesize({ text: task.instructions });
       return {
         agent: 'VoiceAgent',
         output: `Voice response generated via ${decision.model}`,
@@ -155,6 +295,23 @@ export const runTask = async (
   if (dispatchEvent && context.audit) {
     await context.audit.record(dispatchEvent);
   }
+
+  if (context.audit?.time) {
+    return context.audit.time(
+      {
+        category: 'agent',
+        name: agentName,
+        requestId: context.requestId,
+        sessionId: context.sessionId,
+        metadata: {
+          taskId: input.id,
+          archetype: input.archetype,
+        },
+      },
+      () => agent.handler(input, context),
+    );
+  }
+
   return agent.handler(input, context);
 };
 

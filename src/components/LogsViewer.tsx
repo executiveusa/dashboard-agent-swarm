@@ -11,7 +11,7 @@ interface Log {
   created_at: string;
   action: string;
   risk_level: string | null;
-  details: any;
+  details: Record<string, unknown> | null;
 }
 
 export function LogsViewer() {
@@ -50,7 +50,7 @@ export function LogsViewer() {
   const filteredLogs = logs.filter(
     (log) =>
       log.action.toLowerCase().includes(search.toLowerCase()) ||
-      JSON.stringify(log.details).toLowerCase().includes(search.toLowerCase())
+      JSON.stringify(log.details ?? {}).toLowerCase().includes(search.toLowerCase())
   );
 
   const getRiskIcon = (risk: string | null) => {
