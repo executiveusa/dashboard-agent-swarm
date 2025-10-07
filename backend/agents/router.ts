@@ -130,10 +130,6 @@ export class AgentRouter {
     return ranked[0];
   }
 
-  private countWorkers(role: WorkerTask['role']): number {
-    return this.workers.filter((worker) => worker.role === role).length;
-  }
-
   private async rankWorkers(
     role: WorkerTask['role'],
     goal: string,
