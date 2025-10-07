@@ -61,18 +61,21 @@ async function persistTask(
 ) {
   const client = createClient(supabaseUrl, supabaseKey);
 
-  await client.from('tasks').upsert(
-    {
-      request_id: requestId,
-      goal,
-      workflow,
-      status: 'completed'
-    },
-    { onConflict: 'request_id' }
-  );
+  {
+    const { error: taskError } = await client.from('tasks').upsert(
+      {
+        request_id: requestId,
+        goal,
+        workflow,
+        status: 'completed'
+      },
+      { onConflict: 'request_id' }
+    );
+    if (taskError) throw taskError;
+  }
 
   if (results.length > 0) {
-    await client.from('logs').insert(results.map((log) => ({
+    const { error: logsError } = await client.from('logs').insert(results.map((log) => ({
       request_id: log.request_id,
       step_id: log.step_id,
       role: log.role,
@@ -81,6 +84,7 @@ async function persistTask(
       metadata: log.metadata ?? {},
       created_at: new Date().toISOString()
     })));
+    if (logsError) throw logsError;
   }
 }
 
