@@ -40,6 +40,41 @@ export interface TaskInput {
   }>;
 }
 
+export type AgentStreamEvent =
+  | {
+      type: 'status';
+      status: 'queued' | 'running' | 'completed' | 'failed';
+      message?: string;
+      progress?: number;
+      timestamp: string;
+    }
+  | {
+      type: 'tool';
+      tool: ToolName | string;
+      status: 'start' | 'complete' | 'error';
+      message?: string;
+      payload?: Record<string, unknown>;
+      timestamp: string;
+    }
+  | {
+      type: 'chunk';
+      content: string;
+      timestamp: string;
+    }
+  | {
+      type: 'result';
+      agent: AgentName;
+      output: string;
+      steps?: Array<Record<string, unknown>>;
+      metadata?: Record<string, unknown>;
+      timestamp: string;
+    }
+  | {
+      type: 'error';
+      error: string;
+      timestamp: string;
+    };
+
 export interface AgentContext {
   userId?: string;
   sessionId?: string;
@@ -57,6 +92,9 @@ export interface AgentContext {
     record: (event: AuditEvent) => Promise<void>;
     newEvent?: (type: string, message: string, payload?: Record<string, unknown>) => AuditEvent;
   };
+  events?: {
+    emit: (event: AgentStreamEvent) => void;
+  };
 }
 
 export interface AgentResult {
@@ -70,6 +108,7 @@ export interface AgentResult {
 export interface RunTaskOptions {
   parallel?: boolean;
   fanOut?: TaskInput[];
+  onEvent?: (event: AgentStreamEvent) => void;
 }
 
 export interface LLMDecision {

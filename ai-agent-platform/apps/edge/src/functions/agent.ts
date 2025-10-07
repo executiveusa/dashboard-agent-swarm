@@ -4,7 +4,7 @@ import { runTask } from '../lib/eigent.js';
 import { getEnv } from '../lib/env.js';
 import { createAuditLogger } from '../lib/audit.js';
 import { createRateLimiter } from '../lib/rateLimit.js';
-import type { AgentContext, TaskInput } from '@ai-agent-platform/shared';
+import type { AgentContext, AgentStreamEvent, TaskInput } from '@ai-agent-platform/shared';
 
 const requestSchema = z.object({
   userId: z.string().optional(),
@@ -70,18 +70,41 @@ export const handler = async (req: Request): Promise<Response> => {
     const stream = new ReadableStream<Uint8Array>({
       start: async (controller) => {
         controller.enqueue(formatSse({ event: 'open', data: { requestId } }));
+        const emit = (event: AgentStreamEvent) => {
+          try {
+            controller.enqueue(
+              formatSse({ event: event.type, data: { ...event, requestId } })
+            );
+          } catch (error) {
+            console.error('Failed to enqueue SSE event', error);
+          }
+        };
+        emit({
+          type: 'status',
+          status: 'queued',
+          message: 'Request accepted',
+          progress: 0,
+          timestamp: new Date().toISOString(),
+        });
         try {
-          const result = await runTask(buildTask(body.input), context, {
+          await runTask(buildTask(body.input), context, {
             fanOut: body.input.fanOut?.map((item, idx) => buildTask({ ...body.input, ...item }, idx + 1)),
             parallel: body.input.parallel,
+            onEvent: emit,
           });
-          controller.enqueue(formatSse({ event: 'result', data: result }));
           controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
           controller.close();
         } catch (error) {
-          controller.enqueue(
-            formatSse({ event: 'error', data: { message: (error as Error).message, requestId } })
-          );
+          const message = (error as Error).message;
+          emit({
+            type: 'status',
+            status: 'failed',
+            message,
+            progress: 0,
+            timestamp: new Date().toISOString(),
+          });
+          emit({ type: 'error', error: message, timestamp: new Date().toISOString() });
+          controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
           controller.close();
         }
       },
