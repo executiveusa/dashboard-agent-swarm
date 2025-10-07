@@ -11,6 +11,7 @@ import Logs from "./pages/Logs";
 import Files from "./pages/Files";
 import Settings from "./pages/Settings";
 import Analytics from "./pages/Analytics";
+import AgentsConsole from "./pages/AgentsConsole";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
                   <Route path="/" element={<Index />} />
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/agents" element={<AgentsConsole />} />
                   <Route path="/logs" element={<Logs />} />
                   <Route path="/files" element={<Files />} />
                   <Route path="/settings" element={<Settings />} />
