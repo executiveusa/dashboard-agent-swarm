@@ -5,7 +5,6 @@ const AgentsConsole = () => {
         title="Flowise Agents"
         src="/agents/"
         className="h-full w-full border-0"
-        allow="clipboard-write"
       />
     </div>
   );
