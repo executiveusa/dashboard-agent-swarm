@@ -3,6 +3,10 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
+const flowiseProxy = {
+  target: "http://localhost:3000",
+  changeOrigin: true,
+  rewrite: (path: string) => path.replace(/^\/agents\//, "/"),
 // Proxy Flowise UI/API at /agents during dev
 const proxyFlowise = {
   target: 'http://localhost:3000',
@@ -16,6 +20,8 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
+      "/agents/": flowiseProxy,
+    },
       '/agents': proxyFlowise,
       '/api/v1': proxyFlowise
     }

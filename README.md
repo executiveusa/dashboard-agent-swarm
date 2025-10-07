@@ -47,6 +47,24 @@ npm i
 npm run dev
 ```
 
+## Agents dashboard (Flowise)
+
+This project ships with a pre-configured [Flowise](https://github.com/FlowiseAI/Flowise) deployment for building and operating AI agents.
+
+### Local development
+
+```bash
+cp .env.example .env
+docker compose up -d           # Starts Flowise on http://localhost:3000
+npm run dev                    # Vite dev server; Flowise iframe at http://localhost:8080/agents
+```
+
+### Production notes
+
+- Reverse proxy the `/agents/` path prefix (including `/agents/api`) to the Flowise service running on port `3000`.
+- Persist Flowise state by keeping the `data/flowise` volume mounted.
+- Provide any provider keys (OpenAI, Anthropic, etc.) through the `.env` file before starting the service.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
