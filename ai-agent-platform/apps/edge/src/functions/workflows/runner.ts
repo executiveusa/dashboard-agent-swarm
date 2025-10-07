@@ -40,8 +40,8 @@ const WORKFLOWS_DIR = fileURLToPath(new URL('../../../../../packages/shared/work
 export const workflowSlugSchema = z
   .string()
   .min(1)
-  .regex(/^[a-z0-9-_/]+$/i, 'Workflow slug must be a file-friendly name');
-
+  // no leading slash; segments of [a-z0-9-_] separated by single '/'
+  .regex(/^(?!\/)(?:[a-z0-9-_]+(?:\/[a-z0-9-_]+)*)$/i, 'Workflow slug must be a file-friendly name');
 export const loadWorkflowFromSlug = async (slug: string): Promise<{ slug: string; definition: WorkflowDefinition }>
  => {
   const safeSlug = workflowSlugSchema.parse(slug).replace(/\.ya?ml$/i, '');
