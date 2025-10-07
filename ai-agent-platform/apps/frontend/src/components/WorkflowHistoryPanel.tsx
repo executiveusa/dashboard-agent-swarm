@@ -25,6 +25,13 @@ type WorkflowStep = {
   artifacts: unknown;
 };
 
+/**
+ * Render a panel showing recent workflow runs, their statuses, artifacts, and steps, with refresh and retry controls.
+ *
+ * The panel loads the latest runs, keeps them updated via realtime subscriptions, displays errors, and exposes a retry action for runs that have an associated workflow slug.
+ *
+ * @returns A React element containing the workflow history panel.
+ */
 export function WorkflowHistoryPanel() {
   const [runs, setRuns] = useState<WorkflowRun[]>([]);
   const [loading, setLoading] = useState(true);
@@ -168,6 +175,14 @@ export function WorkflowHistoryPanel() {
   );
 }
 
+/**
+ * Render a list of artifact links or names from a collection of artifact-like objects.
+ *
+ * Accepts an array (or any value) where each item may have `url` and `name` string fields; items without `url` render as plain text and missing names default to "Artifact N".
+ *
+ * @param artifacts - A value expected to be an array of objects with optional `url` and `name`; non-array or falsy values produce no output.
+ * @returns A JSX unordered list of artifacts where items with `url` are links and others are plain text, or `null` if there are no artifacts to render.
+ */
 function renderArtifacts(artifacts: unknown) {
   if (!artifacts) return null;
   const list = Array.isArray(artifacts) ? artifacts : [];

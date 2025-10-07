@@ -4,6 +4,15 @@ import { ChatConsole } from '../../../components/Chat';
 import { VoiceToggle } from '../../../components/VoiceToggle';
 import { WorkflowHistoryPanel } from '../../../components/WorkflowHistoryPanel';
 
+/**
+ * Load a small catalog of workflow entries from the shared workflows package YAML files.
+ *
+ * Reads predefined YAML files and extracts each workflow's `name` and `description`.
+ *
+ * @returns An array of objects where each object has:
+ *  - `name`: the workflow name string extracted from the file
+ *  - `description`: the workflow description string, or `'---'` if no description line is present
+ */
 async function loadWorkflows() {
   const base = join(process.cwd(), '../../packages/shared/workflows');
   const files = ['sample-cleanup.yaml', 'sample-firecrawl.yaml'];
@@ -20,6 +29,11 @@ async function loadWorkflows() {
   return entries;
 }
 
+/**
+ * Render the Agent Console page containing the chat interface, controls, and side panels.
+ *
+ * @returns The page's root JSX element containing the chat console and voice toggle on the left, and a right column with the workflow history panel, a workflow catalog populated from YAML files, and agent log tips.
+ */
 export default async function ConsolePage() {
   const workflows = await loadWorkflows();
   return (
@@ -55,4 +69,3 @@ export default async function ConsolePage() {
     </main>
   );
 }
-

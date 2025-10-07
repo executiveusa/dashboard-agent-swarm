@@ -25,6 +25,15 @@ const statusVariant: Record<string, "default" | "secondary" | "destructive" | "o
   pending: "outline",
 };
 
+/**
+ * Render a panel showing recent workflow runs, their steps, artifacts, and controls.
+ *
+ * Fetches the latest workflow runs from Supabase, subscribes to realtime updates for runs and steps,
+ * displays run and step statuses, errors, and artifacts, and exposes a Retry action for runs
+ * that have an associated workflow slug.
+ *
+ * @returns A React element that renders the workflow history UI
+ */
 export function WorkflowHistoryPanel() {
   const [state, setState] = useState<HistoryState>({ loading: true, runs: [] });
 
@@ -204,7 +213,7 @@ const renderArtifacts = (artifacts: unknown, compact = false) => {
           return (
             <li key={`${name}-${index}`}>
               {url ? (
-                <a className="text-primary hover:underline" href={url} target="_blank" rel="noopener noreferrer">
+                <a className="text-primary hover:underline" href={url} target="_blank" rel="noreferrer">
                   {name}
                 </a>
               ) : (
