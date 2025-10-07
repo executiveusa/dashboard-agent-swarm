@@ -1,8 +1,9 @@
 import { EnvConfig } from '@ai-agent-platform/shared';
 
 const REQUIRED_ENV_KEYS: Array<keyof EnvConfig> = [
-  'SUPABASE_URL',
-  'SUPABASE_ANON_KEY',
+  'LOVABLE_API_URL',
+  'LOVABLE_API_KEY',
+  'LOVABLE_PROJECT_ID',
   'JWT_SECRET',
   'OLLAMA_BASE_URL',
   'LM_STUDIO_BASE_URL',
@@ -28,8 +29,10 @@ export const getEnv = (): EnvConfig => {
   }
 
   const env: EnvConfig = {
-    SUPABASE_URL: process.env.SUPABASE_URL ?? '',
-    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ?? '',
+    LOVABLE_API_URL: process.env.LOVABLE_API_URL ?? 'https://api.lovable.cloud',
+    LOVABLE_API_KEY: process.env.LOVABLE_API_KEY ?? '',
+    LOVABLE_PROJECT_ID: process.env.LOVABLE_PROJECT_ID ?? '',
+    LOVABLE_MEMORY_URL: process.env.LOVABLE_MEMORY_URL,
     JWT_SECRET: process.env.JWT_SECRET ?? '',
     OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,

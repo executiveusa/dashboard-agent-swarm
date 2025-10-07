@@ -105,8 +105,10 @@ export interface OptimizerEntry {
 }
 
 export interface EnvConfig {
-  SUPABASE_URL: string;
-  SUPABASE_ANON_KEY: string;
+  LOVABLE_API_URL: string;
+  LOVABLE_API_KEY: string;
+  LOVABLE_PROJECT_ID: string;
+  LOVABLE_MEMORY_URL?: string;
   JWT_SECRET: string;
   OPENROUTER_API_KEY?: string;
   OPENAI_API_KEY?: string;

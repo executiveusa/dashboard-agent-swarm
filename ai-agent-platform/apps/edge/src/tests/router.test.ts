@@ -3,8 +3,9 @@ import { routeLLM } from '../lib/router.js';
 import type { TaskInput } from '@ai-agent-platform/shared';
 
 beforeAll(() => {
-  process.env.SUPABASE_URL = 'https://example.supabase.co';
-  process.env.SUPABASE_ANON_KEY = 'anon';
+  process.env.LOVABLE_API_URL = 'https://api.lovable.test';
+  process.env.LOVABLE_API_KEY = 'key';
+  process.env.LOVABLE_PROJECT_ID = 'project';
   process.env.JWT_SECRET = 'secret';
   process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
   process.env.LM_STUDIO_BASE_URL = 'http://localhost:1234/v1';

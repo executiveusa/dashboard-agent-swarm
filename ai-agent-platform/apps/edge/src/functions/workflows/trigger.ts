@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import { getSupabaseClient } from '../../lib/db.js';
 import { parseWorkflow, executeWorkflow, type WorkflowRuntime } from '../../lib/workflows.js';
 import { createAuditLogger } from '../../lib/audit.js';
 import { getEnv } from '../../lib/env.js';
@@ -10,6 +9,7 @@ import { codeTool } from '../../lib/tools/codeTool.js';
 import { browserTool } from '../../lib/tools/browserTool.js';
 import { firecrawlTool } from '../../lib/tools/firecrawlTool.js';
 import type { AgentContext, TaskInput } from '@ai-agent-platform/shared';
+import { lovableApi } from '../../lib/lovable.js';
 
 const requestSchema = z.object({
   workflowName: z.string().optional(),
@@ -83,16 +83,8 @@ const resolveWorkflowDefinition = async (name?: string, inline?: string) => {
   if (!name) {
     throw new Error('workflowName or definition required');
   }
-  const client = getSupabaseClient();
-  const { data, error } = await client
-    .from('workflows')
-    .select('definition')
-    .eq('name', name)
-    .maybeSingle();
-  if (error || !data?.definition) {
-    throw new Error(`Workflow ${name} not found`);
-  }
-  return parseWorkflow(data.definition);
+  const definition = await lovableApi.fetchWorkflowDefinition(name);
+  return parseWorkflow(definition);
 };
 
 const inferArchetype = (agent: string) => {

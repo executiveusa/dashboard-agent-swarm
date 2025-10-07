@@ -30,46 +30,12 @@ Copy `.env.example` to `.env` and populate the values. Lovable deployments read 
 
 2. **Environment Variables**: Provide all variables from `.env.example` in Lovable. Ensure `OI_MODE`, model endpoints, and API keys are set.
 
-3. **Database Schema** (Supabase):
-   ```sql
-   create table if not exists conversations (
-     id uuid primary key default gen_random_uuid(),
-     user_id text,
-     request jsonb,
-     response jsonb,
-     created_at timestamptz default now()
-   );
+3. **Lovable Cloud Services**:
+   - Provision a Lovable Cloud project and collect the `LOVABLE_PROJECT_ID`, `LOVABLE_API_KEY`, and base URLs for the control plane (`LOVABLE_API_URL`) and memory fabric (`LOVABLE_MEMORY_URL`).
+   - Audit trails, task telemetry, and workflow definitions are synchronized through the Lovable Cloud API—no Supabase schema is required.
+   - Optionally, pin a dedicated memory cluster in Lovable Cloud or point to a self-hosted memory node via the provided Docker compose file (see `docker/compose.lovable.yml`).
 
-   create table if not exists workflow_runs (
-     id uuid primary key default gen_random_uuid(),
-     workflow_name text not null,
-     trigger jsonb,
-     outputs jsonb,
-     created_at timestamptz default now()
-   );
-
-   create table if not exists audit_logs (
-     request_id uuid primary key,
-     session_id text,
-     type text not null,
-     message text not null,
-     payload jsonb,
-     created_at timestamptz default now()
-   );
-
-   create table if not exists model_costs (
-     id uuid primary key default gen_random_uuid(),
-     provider text not null,
-     model text not null,
-     tokens integer,
-     cost numeric,
-     created_at timestamptz default now()
-   );
-   ```
-
-4. **Storage Buckets**: Configure buckets referenced in workflows (e.g., `incoming-data`).
-
-5. **Cron Triggers**: Use Lovable scheduler to call `/workflows/trigger` with `trigger.type = "cron"` payloads.
+4. **Cron Triggers**: Use Lovable scheduler to call `/workflows/trigger` with `trigger.type = "cron"` payloads.
 
 ## Local Development Notes
 

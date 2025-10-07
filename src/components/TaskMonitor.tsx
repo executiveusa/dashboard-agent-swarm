@@ -2,57 +2,41 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  fetchRecentTasks,
+  subscribeToLovableStream,
+  type TaskSummary,
+} from "@/integrations/lovable/client";
 import { CheckCircle2, Circle, Loader2, XCircle } from "lucide-react";
 
-interface Task {
-  id: string;
-  created_at: string;
-  task_type: string;
-  status: string;
-  progress: number;
-  model_used: string | null;
-}
-
 export function TaskMonitor() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<TaskSummary[]>([]);
 
   useEffect(() => {
-    // Fetch initial tasks
-    const fetchTasks = async () => {
-      const { data } = await supabase
-        .from("tasks")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(10);
-      
-      if (data) setTasks(data);
+    let isMounted = true;
+    const load = async () => {
+      try {
+        const recent = await fetchRecentTasks(10);
+        if (!isMounted) return;
+        setTasks(recent);
+      } catch (error) {
+        console.warn("Failed to load Lovable tasks", error);
+      }
     };
 
-    fetchTasks();
-
-    // Subscribe to real-time updates
-    const channel = supabase
-      .channel("tasks-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "tasks" },
-        (payload) => {
-          if (payload.eventType === "INSERT") {
-            setTasks((prev) => [payload.new as Task, ...prev].slice(0, 10));
-          } else if (payload.eventType === "UPDATE") {
-            setTasks((prev) =>
-              prev.map((task) =>
-                task.id === payload.new.id ? (payload.new as Task) : task
-              )
-            );
-          }
-        }
-      )
-      .subscribe();
+    void load();
+    const interval = setInterval(load, 10000);
+    const unsubscribe = subscribeToLovableStream<TaskSummary>("tasks", (task) => {
+      setTasks((prev) => {
+        const next = [task, ...prev.filter((existing) => existing.id !== task.id)];
+        return next.slice(0, 10);
+      });
+    });
 
     return () => {
-      supabase.removeChannel(channel);
+      isMounted = false;
+      clearInterval(interval);
+      unsubscribe();
     };
   }, []);
 
@@ -104,9 +88,9 @@ export function TaskMonitor() {
                 <div className="flex items-center gap-3">
                   {getStatusIcon(task.status)}
                   <div>
-                    <p className="font-semibold">{task.task_type}</p>
+                    <p className="font-semibold">{task.taskType}</p>
                     <p className="text-xs text-muted-foreground font-mono">
-                      {new Date(task.created_at).toLocaleTimeString()}
+                      {new Date(task.createdAt).toLocaleTimeString()}
                     </p>
                   </div>
                 </div>
@@ -122,10 +106,10 @@ export function TaskMonitor() {
                   <Progress value={task.progress} className="h-2" />
                 </div>
               )}
-              
-              {task.model_used && (
+
+              {task.modelUsed && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Model: <span className="font-mono text-accent">{task.model_used}</span>
+                  Model: <span className="font-mono text-accent">{task.modelUsed}</span>
                 </p>
               )}
             </div>

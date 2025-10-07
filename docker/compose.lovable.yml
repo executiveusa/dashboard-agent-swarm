@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  edge-backend:
+    build:
+      context: ..
+      dockerfile: ai-agent-platform/apps/edge/Dockerfile
+    env_file:
+      - ../.env
+    environment:
+      LOVABLE_API_URL: ${LOVABLE_API_URL:-https://api.lovable.cloud}
+      LOVABLE_API_KEY: ${LOVABLE_API_KEY}
+      LOVABLE_PROJECT_ID: ${LOVABLE_PROJECT_ID}
+      LOVABLE_MEMORY_URL: ${LOVABLE_MEMORY_URL:-http://memory:8080}
+    depends_on:
+      - memory
+    ports:
+      - "8787:8787"
+    command: ["node", "dist/index.js"]
+
+  memory:
+    image: ghcr.io/lovablecloud/memory-proxy:latest
+    environment:
+      LOVABLE_API_KEY: ${LOVABLE_API_KEY}
+      LOVABLE_PROJECT_ID: ${LOVABLE_PROJECT_ID}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+networks:
+  default:
+    name: lovable-cloud

@@ -1,13 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { AuditEvent } from '@ai-agent-platform/shared';
-import { getSupabaseClient } from './db.js';
+import { lovableApi } from './lovable.js';
 
 export interface AuditLoggerOptions {
   sessionId?: string;
 }
 
 export const createAuditLogger = (options: AuditLoggerOptions = {}) => {
-  const client = getSupabaseClient();
   return {
     newEvent(type: string, message: string, payload?: Record<string, unknown>): AuditEvent {
       return {
@@ -25,16 +24,12 @@ export const createAuditLogger = (options: AuditLoggerOptions = {}) => {
         payload: redactSecrets(event.payload ?? {}),
       };
       console.info('[audit]', sanitized);
-      const { error } = await client.from('audit_logs').insert({
-        request_id: sanitized.requestId,
-        session_id: sanitized.sessionId,
-        type: sanitized.type,
-        message: sanitized.message,
-        payload: sanitized.payload,
-        created_at: sanitized.createdAt,
-      });
-      if (error) {
-        console.warn('Failed to persist audit log', { error: error.message });
+      try {
+        await lovableApi.recordAudit(sanitized);
+      } catch (error) {
+        console.warn('Failed to persist Lovable audit log', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     },
   };

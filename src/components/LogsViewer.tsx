@@ -3,57 +3,49 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  fetchRecentLogs,
+  subscribeToLovableStream,
+  type AuditLogEntry,
+} from "@/integrations/lovable/client";
 import { AlertCircle, CheckCircle2, Info, XCircle, Search } from "lucide-react";
 
-interface Log {
-  id: string;
-  created_at: string;
-  action: string;
-  risk_level: string | null;
-  details: any;
-}
-
 export function LogsViewer() {
-  const [logs, setLogs] = useState<Log[]>([]);
+  const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const fetchLogs = async () => {
-      const { data } = await supabase
-        .from("logs")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(100);
-      
-      if (data) setLogs(data);
+    let isMounted = true;
+    const load = async () => {
+      try {
+        const recent = await fetchRecentLogs(100);
+        if (!isMounted) return;
+        setLogs(recent);
+      } catch (error) {
+        console.warn("Failed to load Lovable logs", error);
+      }
     };
 
-    fetchLogs();
-
-    const channel = supabase
-      .channel("logs-changes")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "logs" },
-        (payload) => {
-          setLogs((prev) => [payload.new as Log, ...prev].slice(0, 100));
-        }
-      )
-      .subscribe();
+    void load();
+    const interval = setInterval(load, 15000);
+    const unsubscribe = subscribeToLovableStream<AuditLogEntry>("logs", (entry) => {
+      setLogs((prev) => [entry, ...prev].slice(0, 100));
+    });
 
     return () => {
-      supabase.removeChannel(channel);
+      isMounted = false;
+      clearInterval(interval);
+      unsubscribe();
     };
   }, []);
 
   const filteredLogs = logs.filter(
     (log) =>
       log.action.toLowerCase().includes(search.toLowerCase()) ||
-      JSON.stringify(log.details).toLowerCase().includes(search.toLowerCase())
+      JSON.stringify(log.details ?? {}).toLowerCase().includes(search.toLowerCase())
   );
 
-  const getRiskIcon = (risk: string | null) => {
+  const getRiskIcon = (risk: string | null | undefined) => {
     switch (risk) {
       case "critical":
         return <XCircle className="h-4 w-4 text-destructive" />;
@@ -68,7 +60,7 @@ export function LogsViewer() {
     }
   };
 
-  const getRiskBadge = (risk: string | null) => {
+  const getRiskBadge = (risk: string | null | undefined) => {
     if (!risk) return null;
     
     const colors: Record<string, string> = {
@@ -112,17 +104,17 @@ export function LogsViewer() {
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    {getRiskIcon(log.risk_level)}
+                    {getRiskIcon(log.riskLevel)}
                     <span className="font-mono text-sm text-foreground">{log.action}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {getRiskBadge(log.risk_level)}
+                    {getRiskBadge(log.riskLevel)}
                     <span className="text-xs text-muted-foreground font-mono">
-                      {new Date(log.created_at).toLocaleString()}
+                      {new Date(log.createdAt).toLocaleString()}
                     </span>
                   </div>
                 </div>
-                
+
                 {log.details && (
                   <pre className="mt-2 text-xs text-muted-foreground font-mono bg-background/50 p-2 rounded overflow-x-auto">
                     {JSON.stringify(log.details, null, 2)}

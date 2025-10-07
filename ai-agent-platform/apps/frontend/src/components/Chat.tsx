@@ -1,46 +1,37 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { sendAgentMessage, type AgentResult } from '../lib/api';
+import type { AgentResult } from '../lib/api';
 import { Loader2, Send } from 'lucide-react';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-}
+import { useSharedMessages } from '../hooks/useSharedMessageBus';
+import { useAgentMessenger } from '../hooks/useAgentMessenger';
 
 export function ChatConsole() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const messages = useSharedMessages();
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [lastResult, setLastResult] = useState<AgentResult | undefined>();
+  const { send } = useAgentMessenger('general');
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!input.trim()) return;
-      const message: Message = { id: crypto.randomUUID(), role: 'user', content: input };
-      setMessages((prev) => [...prev, message]);
       setInput('');
       setIsLoading(true);
       try {
-        const result = await sendAgentMessage({ archetype: 'general', instructions: message.content });
+        const result = await send(input);
         setLastResult(result);
-        setMessages((prev) => [
-          ...prev,
-          { id: crypto.randomUUID(), role: 'assistant', content: result.output },
-        ]);
       } catch (error) {
-        setMessages((prev) => [
-          ...prev,
-          { id: crypto.randomUUID(), role: 'assistant', content: (error as Error).message },
-        ]);
+        setLastResult({
+          requestId: 'error',
+          output: error instanceof Error ? error.message : 'Agent request failed',
+        });
       } finally {
         setIsLoading(false);
       }
     },
-    [input]
+    [input, send]
   );
 
   return (
@@ -53,7 +44,12 @@ export function ChatConsole() {
             {messages.map((message) => (
               <li key={message.id} className="flex gap-2">
                 <span className="text-xs uppercase text-slate-500">{message.role}</span>
-                <span className="text-sm text-slate-100">{message.content}</span>
+                <span className="text-sm text-slate-100">
+                  {message.content}
+                  {message.voice?.status === 'loading' && (
+                    <Loader2 className="ml-2 inline h-3 w-3 animate-spin text-slate-400" />
+                  )}
+                </span>
               </li>
             ))}
           </ul>
