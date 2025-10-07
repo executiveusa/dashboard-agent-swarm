@@ -454,19 +454,24 @@ export const useAgentMessaging = (
           }
         }
       } catch (fetchError) {
-        const message = fetchError instanceof Error ? fetchError.message : 'Agent request failed';
-        setError(message);
-        if (taskId && client) {
-          await client
-            .from('tasks')
-            .update({ status: 'failed', progress: 0 })
-            .eq('id', taskId);
-          await client.from('logs').insert({
-            task_id: taskId,
-            action: 'agent_error',
-            details: { message },
-            risk_level: 'high',
-          });
+        const isAbort =
+          (fetchError instanceof DOMException && fetchError.name === 'AbortError') ||
+          (fetchError instanceof Error && fetchError.name === 'AbortError');
+        if (!isAbort) {
+          const message = fetchError instanceof Error ? fetchError.message : 'Agent request failed';
+          setError(message);
+          if (taskId && client) {
+            await client
+              .from('tasks')
+              .update({ status: 'failed', progress: 0 })
+              .eq('id', taskId);
+            await client.from('logs').insert({
+              task_id: taskId,
+              action: 'agent_error',
+              details: { message },
+              risk_level: 'high',
+            });
+          }
         }
       } finally {
         setIsStreaming(false);
