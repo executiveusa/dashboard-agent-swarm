@@ -71,3 +71,10 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Workflow scheduling & history
+
+- Supabase Edge function `/workflows/poller` discovers YAML workflows in `packages/shared/workflows`, respects the concurrency limits declared in each file, and enqueues executions through `/workflows/supabase` so that runs and steps are captured in the new `workflow_runs` and `workflow_steps` tables.
+- Provision a Lovable cron job that hits `https://<your-project-ref>.functions.supabase.co/workflows/poller` every minute with a small JSON body (e.g. `{ "dryRun": false }`) to keep scheduled and cron-based definitions current.
+- Provision a Coolify background job (or task) to call the same endpoint inside your private network if you run the Edge bundle there; both jobs simply need the Supabase service key in an `Authorization: Bearer <SERVICE_ROLE>` header.
+- The Vite dashboard Tasks page and the Next.js console now include a "Workflow History" panel so operators can review previous runs, drill into step failures, and click artifact links stored in Supabase Storage. Retry actions call the Supabase function directly for safe replays.

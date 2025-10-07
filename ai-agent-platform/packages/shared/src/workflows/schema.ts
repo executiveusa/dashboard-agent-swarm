@@ -21,6 +21,11 @@ const manualTrigger = z.object({
   type: z.literal('manual'),
 });
 
+const scheduledTrigger = z.object({
+  type: z.literal('scheduled'),
+  every: z.string().min(1),
+});
+
 const baseStep = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -75,14 +80,27 @@ const firecrawlStep = baseStep.extend({
   mode: z.enum(['crawl', 'scrape', 'sitemap']).optional(),
 });
 
+const concurrencyConfig = z
+  .object({
+    runs: z
+      .object({
+        max: z.number().int().min(1).default(1),
+        scope: z.enum(['workflow', 'trigger']).default('workflow'),
+      })
+      .optional(),
+    steps: z.number().int().min(1).optional(),
+  })
+  .optional();
+
 export const workflowSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
-  triggers: z.array(cronTrigger.or(webhookTrigger).or(storageTrigger).or(manualTrigger)),
+  triggers: z.array(cronTrigger.or(webhookTrigger).or(storageTrigger).or(manualTrigger).or(scheduledTrigger)),
   steps: z
     .array(agentTaskStep.or(callServiceStep).or(codeStep).or(browseStep).or(firecrawlStep))
     .min(1),
   outputs: z.record(z.string(), z.string()).optional(),
+  concurrency: concurrencyConfig,
 });
 
 export type WorkflowSchema = typeof workflowSchema;

@@ -1,4 +1,5 @@
 import { TaskMonitor } from "@/components/TaskMonitor";
+import { WorkflowHistoryPanel } from "@/components/WorkflowHistoryPanel";
 
 const Tasks = () => {
   return (
@@ -13,7 +14,10 @@ const Tasks = () => {
           </p>
         </div>
 
-        <TaskMonitor />
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <TaskMonitor />
+          <WorkflowHistoryPanel />
+        </div>
       </div>
     </div>
   );

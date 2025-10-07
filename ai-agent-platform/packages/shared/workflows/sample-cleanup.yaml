@@ -1,5 +1,9 @@
 name: Storage cleanup to Gmail notification
 description: Cleans newly uploaded CSV files and emails a summary via Gmail
+concurrency:
+  runs:
+    max: 1
+  steps: 2
 triggers:
   - type: storage
     bucket: incoming-data

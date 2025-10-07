@@ -50,6 +50,95 @@ export type Database = {
         }
         Relationships: []
       }
+      workflow_runs: {
+        Row: {
+          artifacts: Json | null
+          created_at: string
+          error: string | null
+          finished_at: string | null
+          id: string
+          outputs: Json | null
+          started_at: string | null
+          status: string
+          trigger_payload: Json | null
+          trigger_type: string
+          workflow_name: string
+          workflow_slug: string | null
+        }
+        Insert: {
+          artifacts?: Json | null
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          outputs?: Json | null
+          started_at?: string | null
+          status: string
+          trigger_payload?: Json | null
+          trigger_type: string
+          workflow_name: string
+          workflow_slug?: string | null
+        }
+        Update: {
+          artifacts?: Json | null
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          outputs?: Json | null
+          started_at?: string | null
+          status?: string
+          trigger_payload?: Json | null
+          trigger_type?: string
+          workflow_name?: string
+          workflow_slug?: string | null
+        }
+        Relationships: []
+      }
+      workflow_steps: {
+        Row: {
+          artifacts: Json | null
+          created_at: string
+          error: string | null
+          id: string
+          output: Json | null
+          run_id: string
+          status: string
+          step_id: string
+          attempts: number
+        }
+        Insert: {
+          artifacts?: Json | null
+          attempts?: number
+          created_at?: string
+          error?: string | null
+          id?: string
+          output?: Json | null
+          run_id: string
+          status: string
+          step_id: string
+        }
+        Update: {
+          artifacts?: Json | null
+          attempts?: number
+          created_at?: string
+          error?: string | null
+          id?: string
+          output?: Json | null
+          run_id?: string
+          status?: string
+          step_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_steps_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "workflow_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       logs: {
         Row: {
           action: string

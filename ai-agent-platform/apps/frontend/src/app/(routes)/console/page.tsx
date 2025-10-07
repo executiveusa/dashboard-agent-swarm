@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { ChatConsole } from '../../../components/Chat';
 import { VoiceToggle } from '../../../components/VoiceToggle';
+import { WorkflowHistoryPanel } from '../../../components/WorkflowHistoryPanel';
 
 async function loadWorkflows() {
   const base = join(process.cwd(), '../../packages/shared/workflows');
@@ -31,6 +32,7 @@ export default async function ConsolePage() {
         <ChatConsole />
       </section>
       <aside className="space-y-4">
+        <WorkflowHistoryPanel />
         <div className="rounded-lg border border-slate-800 bg-slate-900 p-4">
           <h2 className="text-lg font-medium text-slate-200">Workflow catalog</h2>
           <p className="text-sm text-slate-400">Enable and monitor declarative workflows.</p>

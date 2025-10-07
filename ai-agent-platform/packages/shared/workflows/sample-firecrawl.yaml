@@ -1,5 +1,8 @@
 name: Firecrawl research then Notion export
 description: Runs Firecrawl on pricing pages and publishes a Notion digest
+concurrency:
+  runs:
+    max: 1
 triggers:
   - type: manual
 steps:
