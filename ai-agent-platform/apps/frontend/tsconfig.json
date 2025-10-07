@@ -1,0 +1,11 @@
+{
+  "extends": "../../configs/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "allowJs": false,
+    "noEmit": true,
+    "incremental": true
+  },
+  "include": ["next-env.d.ts", "src/**/*", "tailwind.config.ts"],
+  "exclude": ["node_modules"]
+}

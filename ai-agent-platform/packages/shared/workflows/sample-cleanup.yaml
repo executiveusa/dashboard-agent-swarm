@@ -1,0 +1,22 @@
+name: Storage cleanup to Gmail notification
+description: Cleans newly uploaded CSV files and emails a summary via Gmail
+triggers:
+  - type: storage
+    bucket: incoming-data
+    match: '*.csv'
+steps:
+  - id: clean
+    name: Clean incoming CSV
+    type: agent_task
+    agent: DataCleanerAgent
+    instructions: |
+      Normalize the uploaded CSV into canonical column names, remove duplicates, and produce a markdown summary.
+      Save cleaned data as a CSV artifact.
+  - id: notify
+    name: Send summary email
+    type: call_service
+    service: gmail.sendEmail
+    params:
+      to: ops@example.com
+      subject: 'Daily data ingestion summary'
+      body: 'See attached cleaned CSV and summary from DataCleanerAgent.'

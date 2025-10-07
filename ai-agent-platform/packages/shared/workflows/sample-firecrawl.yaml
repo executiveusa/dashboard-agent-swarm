@@ -1,0 +1,25 @@
+name: Firecrawl research then Notion export
+description: Runs Firecrawl on pricing pages and publishes a Notion digest
+triggers:
+  - type: manual
+steps:
+  - id: crawl
+    name: Crawl pricing pages
+    type: firecrawl_step
+    instruction: Crawl the provided SaaS pricing page, capture plan names and costs, and return CSV data.
+    url: https://example.com/pricing
+    mode: crawl
+  - id: summarize
+    name: Summarize research
+    type: agent_task
+    agent: ResearchAgent
+    instructions: |
+      Review the Firecrawl output and create a concise summary comparing plan tiers.
+  - id: publish
+    name: Publish to Notion
+    type: call_service
+    service: notion.createPage
+    params:
+      parentId: notion-database-id
+      title: 'Pricing intelligence summary'
+      body: 'See attached CSV artifact and agent summary.'

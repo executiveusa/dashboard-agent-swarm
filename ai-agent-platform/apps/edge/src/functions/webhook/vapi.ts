@@ -1,0 +1,53 @@
+import { randomUUID } from 'node:crypto';
+import { z } from 'zod';
+import { runTask } from '../../lib/eigent.js';
+import { getEnv } from '../../lib/env.js';
+import { createAuditLogger } from '../../lib/audit.js';
+import { createRateLimiter } from '../../lib/rateLimit.js';
+import type { AgentContext, TaskInput } from '@ai-agent-platform/shared';
+
+const vapiSchema = z.object({
+  session: z.string(),
+  text: z.string().min(1),
+  userId: z.string().optional(),
+});
+
+const limiter = createRateLimiter({ tokensPerInterval: 30, intervalMs: 60_000 });
+
+export const handler = async (req: Request): Promise<Response> => {
+  if (req.method !== 'POST') {
+    return new Response('Method not allowed', { status: 405 });
+  }
+
+  const payload = vapiSchema.parse(await req.json());
+  const env = getEnv();
+  const requestId = randomUUID();
+  const audit = createAuditLogger({ sessionId: payload.session });
+
+  const context: AgentContext = {
+    userId: payload.userId,
+    requestId,
+    sessionId: payload.session,
+    env,
+    logger: {
+      info: (message, meta) => console.info(`[vapi:${requestId}] ${message}`, meta),
+      warn: (message, meta) => console.warn(`[vapi:${requestId}] ${message}`, meta),
+      error: (message, meta) => console.error(`[vapi:${requestId}] ${message}`, meta),
+    },
+    rateLimit: {
+      consume: async (tokens) => limiter.consume(payload.session, tokens),
+    },
+    audit,
+  };
+
+  const task: TaskInput = {
+    id: requestId,
+    archetype: 'voice',
+    instructions: payload.text,
+    metadata: { source: 'vapi' },
+  };
+
+  const result = await runTask(task, context);
+  return new Response(JSON.stringify({ result }), { headers: { 'Content-Type': 'application/json' } });
+};
+
