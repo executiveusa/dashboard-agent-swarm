@@ -143,9 +143,17 @@ function createBuilderWorker(): AgentWorker {
       const plannedDiff = task.payload?.diff as string | undefined;
 
       if (plannedDiff) {
-        await context.sandbox.listTools()
-          .find((tool) => tool.name === 'filesystem.write')
-          ?.execute({ payload: { diff: plannedDiff } });
+        const writeTool = context.sandbox.listTools().find((tool) => tool.name === 'filesystem.write');
+        if (!writeTool) {
+          return {
+            id: task.id,
+            role: 'builder',
+            success: false,
+            output: 'filesystem.write tool not registered',
+            artifacts: { diff: plannedDiff }
+          };
+        }
+        await writeTool.execute({ payload: { diff: plannedDiff } });
       }
 
       return {
