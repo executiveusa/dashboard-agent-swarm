@@ -131,7 +131,7 @@ export function WorkflowHistoryPanel() {
                   <div>
                     <h3 className="text-lg font-semibold">{run.workflow_name}</h3>
                     <p className="text-xs text-muted-foreground">
-                      Started {new Date(run.created_at).toLocaleString()} via {run.trigger_type}
+                      Started {new Date(run.started_at ?? run.created_at).toLocaleString()} via {run.trigger_type}
                     </p>
                   </div>
                   <Badge variant={statusVariant[run.status] ?? "outline"} className="font-mono text-xs">
