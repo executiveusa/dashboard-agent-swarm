@@ -94,7 +94,7 @@ const handler: EdgeHandler = withEdgeLogging(async (request, context) => {
     const environment = getRouterEnvironment(context.secrets);
 
     const supabaseUrl = context.secrets['SUPABASE_URL'];
-    const supabaseKey = context.secrets['SUPABASE_SERVICE_ROLE_KEY'] ?? context.secrets['SUPABASE_ANON_KEY'];
+   const supabaseKey = context.secrets['SUPABASE_SERVICE_ROLE_KEY'];
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error('Missing Supabase credentials.');
