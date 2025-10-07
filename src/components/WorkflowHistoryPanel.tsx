@@ -204,7 +204,7 @@ const renderArtifacts = (artifacts: unknown, compact = false) => {
           return (
             <li key={`${name}-${index}`}>
               {url ? (
-                <a className="text-primary hover:underline" href={url} target="_blank" rel="noreferrer">
+                <a className="text-primary hover:underline" href={url} target="_blank" rel="noopener noreferrer">
                   {name}
                 </a>
               ) : (
