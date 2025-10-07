@@ -14,6 +14,11 @@ const tabs = [
 
 type TabId = (typeof tabs)[number]['id'];
 
+/**
+ * Root application component that provides LovableCloud and safe-area context, enforces authentication, and lets the user switch between Dashboard and Console tabs.
+ *
+ * @returns The root React element rendering the authenticated two-tab mobile UI.
+ */
 export default function App() {
   const [tab, setTab] = useState<TabId>('dashboard');
 
