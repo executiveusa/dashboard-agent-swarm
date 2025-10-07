@@ -98,3 +98,15 @@ Sample YAML definitions live in `packages/shared/workflows`:
 - `sample-firecrawl.yaml`: Manual trigger → Firecrawl crawl → ResearchAgent summary → Notion export.
 
 Use `/workflows/trigger` to execute workflows programmatically or from Lovable cron/webhook events.
+
+## Pre-merge Checklist
+
+Before merging updates to the platform, double-check the following:
+
+1. **Install dependencies** with `pnpm install` (or reuse the existing lockfiles in CI) to ensure no missing packages. In environments with restricted network access, make sure your `.npmrc` provides the correct registry token (e.g. `//registry.npmjs.org/:_authToken=<token>`) before running the install to avoid 403 responses.
+2. **Run the workspace build** using `pnpm -w build` to verify every package compiles with the shared TypeScript config.
+3. **Execute the Vitest suites** via `pnpm -w test`; confirm router fallbacks and workflow runners still pass.
+4. **Lint affected packages** using `pnpm -w lint` so shared style rules remain consistent across the monorepo.
+5. **Refresh environment variables** in Lovable Cloud for any new keys added to `.env.example`.
+
+Completing these steps helps guarantee the edge functions, optimizer, and frontend remain production-ready when the branch lands.
