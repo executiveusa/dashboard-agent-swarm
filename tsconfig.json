@@ -4,7 +4,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@ai-agent-platform/shared": ["./ai-agent-platform/packages/shared/src/index.ts"],
+      "@ai-agent-platform/shared/*": ["./ai-agent-platform/packages/shared/src/*"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,

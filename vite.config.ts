@@ -19,6 +19,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    fs: {
+      allow: [
+        path.resolve(__dirname, "ai-agent-platform/packages/shared/src"),
+      ],
+    },
     proxy: {
       "/agents/": flowiseProxy,
     },
@@ -30,6 +35,10 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@ai-agent-platform/shared": path.resolve(
+        __dirname,
+        "./ai-agent-platform/packages/shared/src"
+      ),
     },
   },
 }));
