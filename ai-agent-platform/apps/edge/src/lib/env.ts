@@ -37,7 +37,7 @@ export const getEnv = (): EnvConfig => {
   }
 
   const env: EnvConfig = {
-    LOVABLE_API_URL: process.env.LOVABLE_API_URL ?? 'https://api.lovable.cloud',
+    LOVABLE_API_URL: process.env.LOVABLE_API_URL,
     LOVABLE_API_KEY: process.env.LOVABLE_API_KEY ?? '',
     LOVABLE_PROJECT_ID: process.env.LOVABLE_PROJECT_ID ?? '',
     LOVABLE_MEMORY_URL: process.env.LOVABLE_MEMORY_URL,
