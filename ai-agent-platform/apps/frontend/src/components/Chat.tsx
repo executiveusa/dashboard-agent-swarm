@@ -6,6 +6,14 @@ import { Loader2, Send } from 'lucide-react';
 import { useSharedMessages } from '../hooks/useSharedMessageBus';
 import { useAgentMessenger } from '../hooks/useAgentMessenger';
 
+/**
+ * Renders a chat UI that displays shared messages and lets the user submit queries to an agent.
+ *
+ * The component shows the shared message list, a text input with a submit button, a loading
+ * indicator while an agent request is in progress, and an expandable view of the last agent's steps when available.
+ *
+ * @returns The rendered ChatConsole React element
+ */
 export function ChatConsole() {
   const messages = useSharedMessages();
   const [input, setInput] = useState('');
@@ -81,4 +89,3 @@ export function ChatConsole() {
     </div>
   );
 }
-

@@ -42,6 +42,13 @@ export function TaskMonitor() {
 import type { TaskRecord, TaskStreamEvent } from "@/integrations/data-service/types";
 import { CheckCircle2, Circle, Loader2, XCircle } from "lucide-react";
 
+/**
+ * Renders a live-updating task monitor UI that displays recent tasks, their status, progress, and model.
+ *
+ * The component subscribes to a task stream and shows a reconnecting indicator when streaming is not active. The visible task list is kept to the most recent 10 items and updates for insert, update, and delete events.
+ *
+ * @returns The component's rendered JSX element.
+ */
 export function TaskMonitor() {
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
   const [isStreaming, setIsStreaming] = useState(true);

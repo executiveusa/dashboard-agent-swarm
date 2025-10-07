@@ -26,6 +26,14 @@ const statusMessage = (params: {
   }
 };
 
+/**
+ * Renders a voice control toggle with a status button and optional inline voice/playback indicators.
+ *
+ * The button shows an icon (speaker on/off) and a dynamic status label derived from the voice controller state.
+ * When voice is enabled an adjacent status area appears showing listening state, playback status, and any error message.
+ *
+ * @returns The JSX element for the voice toggle control: a button that toggles voice streaming and, when enabled, an informational area with listening and playback indicators and error text.
+ */
 export function VoiceToggle() {
   const { enabled, toggle, isListening, playbackState, pendingTranscript, isSupported, error } = useVoiceController();
   const Icon = enabled ? Volume2 : VolumeX;
@@ -64,4 +72,3 @@ export function VoiceToggle() {
     </div>
   );
 }
-

@@ -49,6 +49,15 @@ interface Log {
   details: Record<string, unknown> | null;
 }
 
+/**
+ * Render a live-updating system logs viewer with search and risk indicators.
+ *
+ * Fetches recent logs on mount, subscribes to a real-time log stream, and keeps up to 100 most recent entries.
+ * Provides a search input that filters logs by action or details, shows an icon and colored badge for each log's risk level,
+ * displays timestamps, and renders structured `details` as formatted JSON when present. Shows a "reconnecting…" indicator when the stream is down.
+ *
+ * @returns A React element containing the logs viewer UI.
+ */
 export function LogsViewer() {
   const [logs, setLogs] = useState<LogRecord[]>([]);
   const [isStreaming, setIsStreaming] = useState(true);
