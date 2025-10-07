@@ -35,8 +35,10 @@ function getRouterEnvironment(secrets: Record<string, string>) {
     mapped[key] = secrets[key];
   });
 
-  if (!mapped.EIGENT_API_KEY || !mapped.LEMON_API_KEY || !mapped.RUBE_API_URL) {
-    throw new Error('Missing required router environment secrets.');
+  const requiredKeys = ['EIGENT_API_KEY', 'LEMON_API_KEY', 'RUBE_API_URL'];
+  const missingKeys = requiredKeys.filter((key) => !mapped[key]);
+  if (missingKeys.length > 0) {
+    throw new Error(`Missing required router environment secrets: ${missingKeys.join(', ')}`);
   }
 
   return {
