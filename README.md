@@ -1,5 +1,16 @@
 # Welcome to your Lovable project
 
+## Agents Dashboard (Flowise)
+Run the Flowise dashboard locally:
+
+```bash
+cp .env.example .env
+docker compose up -d        # starts Flowise at :3000
+npm run dev                 # Vite app; dashboard at http://localhost:8080/agents
+```
+
+Deploy: reverse proxy `/agents` and `/api/v1` to the Flowise service.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/93ccd06b-8bfa-45f2-b469-eceaf3d8ef32

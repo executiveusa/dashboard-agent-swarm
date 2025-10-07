@@ -7,6 +7,11 @@ const flowiseProxy = {
   target: "http://localhost:3000",
   changeOrigin: true,
   rewrite: (path: string) => path.replace(/^\/agents\//, "/"),
+// Proxy Flowise UI/API at /agents during dev
+const proxyFlowise = {
+  target: 'http://localhost:3000',
+  changeOrigin: true,
+  secure: false
 };
 
 // https://vitejs.dev/config/
@@ -17,6 +22,9 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       "/agents/": flowiseProxy,
     },
+      '/agents': proxyFlowise,
+      '/api/v1': proxyFlowise
+    }
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
