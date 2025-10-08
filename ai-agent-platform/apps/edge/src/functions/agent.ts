@@ -116,30 +116,6 @@ export const handler = async (req: Request): Promise<Response> => {
           controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
           controller.close();
         } catch (error) {
-          const message = (error as Error).message;
-          emit({
-            type: 'status',
-            status: 'failed',
-            message,
-            progress: 0,
-            timestamp: new Date().toISOString(),
-          });
-          emit({ type: 'error', error: message, timestamp: new Date().toISOString() });
-          controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
-          if (audit.recordStructured) {
-            await audit.recordStructured({
-              category: 'agent',
-              name: 'AgentResult',
-              action: 'finish',
-              requestId,
-              sessionId,
-              metadata: { success: true },
-            });
-          }
-          controller.enqueue(formatSse({ event: 'result', data: result }));
-          controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
-          controller.close();
-        } catch (error) {
           await lifecycle.complete('failed', {
             error: (error as Error).message,
           });
