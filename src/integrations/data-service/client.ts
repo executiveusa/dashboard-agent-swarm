@@ -328,7 +328,22 @@ export function useRealtimeCollection<T>(
           return nextState;
         });
       } catch (err) {
-        console.warn("Failed to process realtime payload", err);
+        // Try to extract event type from payload if possible
+        let eventType: string | undefined;
+        let payloadData: string | undefined;
+        try {
+          const payload = event.data ? JSON.parse(event.data) : undefined;
+          eventType = payload?.type;
+          payloadData = event.data;
+        } catch {
+          // Ignore, fallback to undefined
+        }
+        console.warn(
+          `Failed to process realtime payload on channel "${options.channel}"` +
+          (eventType ? ` (event type: "${eventType}")` : "") +
+          `. Payload: ${payloadData}`,
+          err
+        );
       }
     };
 
