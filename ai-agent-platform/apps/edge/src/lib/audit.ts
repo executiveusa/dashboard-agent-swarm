@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { AuditEvent } from '@ai-agent-platform/shared';
+import { getPersistenceClient } from './persistence.js';
 import { AuditEvent, StructuredAuditEvent } from '@ai-agent-platform/shared';
 import { getSupabaseClient } from './db.js';
 
@@ -8,6 +10,7 @@ export interface AuditLoggerOptions {
 }
 
 export const createAuditLogger = (options: AuditLoggerOptions = {}) => {
+  const persistence = getPersistenceClient();
   const client = getSupabaseClient();
   const sessionId = options.sessionId;
   const requestId = options.requestId;
@@ -83,16 +86,10 @@ export const createAuditLogger = (options: AuditLoggerOptions = {}) => {
         payload: redactSecrets(event.payload ?? {}),
       };
       console.info('[audit]', sanitized);
-      const { error } = await client.from('audit_logs').insert({
-        request_id: sanitized.requestId,
-        session_id: sanitized.sessionId,
-        type: sanitized.type,
-        message: sanitized.message,
-        payload: sanitized.payload,
-        created_at: sanitized.createdAt,
-      });
-      if (error) {
-        console.warn('Failed to persist audit log', { error: error.message });
+      try {
+        await persistence.recordAuditLog(sanitized);
+      } catch (error) {
+        console.warn('Failed to persist audit log', { error: (error as Error).message });
       }
     },
     async recordStructured(event: StructuredAuditEvent): Promise<void> {

@@ -1,9 +1,8 @@
 import { EnvConfig } from '@ai-agent-platform/shared';
 
 const REQUIRED_ENV_KEYS: Array<keyof EnvConfig> = [
-  'SUPABASE_URL',
-  'SUPABASE_ANON_KEY',
-  'JWT_SECRET',
+  'DATA_API_URL',
+  'IDENTITY_JWT_SECRET',
   'OLLAMA_BASE_URL',
   'LM_STUDIO_BASE_URL',
   'OI_MODE',
@@ -36,6 +35,13 @@ export const getEnv = (): EnvConfig => {
   }
 
   const env: EnvConfig = {
+    DATA_API_URL:
+      process.env.DATA_API_URL ??
+      process.env.PERSISTENCE_API_URL ??
+      'http://localhost:4000',
+    DATA_API_TOKEN: process.env.DATA_API_TOKEN ?? process.env.PERSISTENCE_API_TOKEN,
+    IDENTITY_JWT_SECRET: process.env.IDENTITY_JWT_SECRET ?? process.env.JWT_SECRET ?? '',
+    IDENTITY_ISSUER_URL: process.env.IDENTITY_ISSUER_URL,
     SUPABASE_URL: process.env.SUPABASE_URL ?? '',
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ?? '',
     JWT_SECRET: process.env.JWT_SECRET ?? '',

@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { useRealtimeCollection } from "@/integrations/data-service/client";
 import {
   fetchRecentTasks,
   subscribeToTaskStream,
@@ -10,6 +11,14 @@ import type { TaskRecord, TaskStreamEvent } from "@/integrations/data-service/ty
 import { CheckCircle2, Circle, Loader2, XCircle } from "lucide-react";
 
 export function TaskMonitor() {
+  const { data: tasks } = useRealtimeCollection<Task>({
+    resource: "tasks",
+    channel: "tasks",
+    limit: 10,
+    snapshotPath: "tasks",
+    realtimePath: "realtime/tasks",
+    getKey: (task) => task?.id,
+  });
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
   const [isStreaming, setIsStreaming] = useState(true);
 
@@ -93,6 +102,14 @@ export function TaskMonitor() {
     );
   };
 
+  const sortedTasks = useMemo(
+    () =>
+      [...tasks].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ),
+    [tasks]
+  );
+
   return (
     <Card className="p-6 bg-card/50 backdrop-blur-sm">
       <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
@@ -102,12 +119,12 @@ export function TaskMonitor() {
           <span className="ml-auto text-xs font-mono text-warning">reconnecting…</span>
         )}
       </h2>
-      
+
       <div className="space-y-4">
-        {tasks.length === 0 ? (
+        {sortedTasks.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">No tasks yet</p>
         ) : (
-          tasks.map((task) => (
+          sortedTasks.map((task) => (
             <div
               key={task.id}
               className="p-4 rounded-lg bg-secondary/50 border border-border hover:border-primary/50 transition-all"
@@ -124,7 +141,7 @@ export function TaskMonitor() {
                 </div>
                 {getStatusBadge(task.status)}
               </div>
-              
+
               {task.status === "running" && (
                 <div className="mt-3">
                   <div className="flex items-center justify-between mb-2 text-sm">
@@ -134,7 +151,7 @@ export function TaskMonitor() {
                   <Progress value={task.progress} className="h-2" />
                 </div>
               )}
-              
+
               {task.model_used && (
                 <p className="mt-2 text-xs text-muted-foreground">
                   Model: <span className="font-mono text-accent">{task.model_used}</span>

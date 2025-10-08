@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRealtimeCollection } from "@/integrations/data-service/client";
 import {
   fetchRecentLogs,
   subscribeToLogStream,
@@ -22,7 +23,23 @@ export function LogsViewer() {
   const [logs, setLogs] = useState<LogRecord[]>([]);
   const [isStreaming, setIsStreaming] = useState(true);
   const [search, setSearch] = useState("");
+  const { data: logs } = useRealtimeCollection<Log>({
+    resource: "logs",
+    channel: "logs",
+    limit: 100,
+    snapshotPath: "logs",
+    realtimePath: "realtime/logs",
+    getKey: (log) => log?.id,
+  });
 
+  const filteredLogs = useMemo(
+    () =>
+      logs.filter(
+        (log) =>
+          log.action.toLowerCase().includes(search.toLowerCase()) ||
+          JSON.stringify(log.details).toLowerCase().includes(search.toLowerCase())
+      ),
+    [logs, search]
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
 

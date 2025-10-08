@@ -3,6 +3,8 @@ import { routeLLM } from '../lib/router.js';
 import type { TaskInput } from '@ai-agent-platform/shared';
 
 beforeAll(() => {
+  process.env.DATA_API_URL = 'http://localhost:4000';
+  process.env.IDENTITY_JWT_SECRET = 'secret';
   process.env.SUPABASE_URL = 'https://example.supabase.co';
   process.env.SUPABASE_ANON_KEY = 'anon';
   process.env.JWT_SECRET = 'secret';

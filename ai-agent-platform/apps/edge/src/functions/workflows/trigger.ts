@@ -1,10 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import { getSupabaseClient } from '../../lib/db.js';
 import { parseWorkflow, executeWorkflow, type WorkflowRuntime } from '../../lib/workflows.js';
 import { createAuditLogger } from '../../lib/audit.js';
 import { getEnv } from '../../lib/env.js';
 import { runTask } from '../../lib/eigent.js';
+import { rubeTool } from '../../lib/tools/rubeTool.js';
+import { codeTool } from '../../lib/tools/codeTool.js';
+import { browserTool } from '../../lib/tools/browserTool.js';
+import { firecrawlTool } from '../../lib/tools/firecrawlTool.js';
+import { getPersistenceClient } from '../../lib/persistence.js';
 import { rubeTool, type RubeExecInput } from '../../lib/tools/rubeTool.js';
 import { codeTool, type CodeToolInput } from '../../lib/tools/codeTool.js';
 import { browserTool, type BrowserToolInput } from '../../lib/tools/browserTool.js';
@@ -122,16 +126,12 @@ const resolveWorkflowDefinition = async (name?: string, inline?: string) => {
   if (!name) {
     throw new Error('workflowName or definition required');
   }
-  const client = getSupabaseClient();
-  const { data, error } = await client
-    .from('workflows')
-    .select('definition')
-    .eq('name', name)
-    .maybeSingle();
-  if (error || !data?.definition) {
+  const persistence = getPersistenceClient();
+  const definition = await persistence.getWorkflowDefinition(name);
+  if (!definition) {
     throw new Error(`Workflow ${name} not found`);
   }
-  return parseWorkflow(data.definition);
+  return parseWorkflow(definition);
 };
 
 const inferArchetype = (agent: string) => {

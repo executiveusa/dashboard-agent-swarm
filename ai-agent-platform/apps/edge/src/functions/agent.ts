@@ -4,6 +4,8 @@ import { runTask } from '../lib/eigent.js';
 import { getEnv } from '../lib/env.js';
 import { createAuditLogger } from '../lib/audit.js';
 import { createRateLimiter } from '../lib/rateLimit.js';
+import type { AgentContext, TaskInput } from '@ai-agent-platform/shared';
+import { createTaskLifecycle } from '../lib/taskLifecycle.js';
 import type { AgentContext, AgentStreamEvent, TaskInput } from '@ai-agent-platform/shared';
 
 const requestSchema = z.object({
@@ -40,6 +42,14 @@ export const handler = async (req: Request): Promise<Response> => {
   const env = getEnv();
   const requestId = randomUUID();
   const sessionId = body.userId ?? randomUUID();
+  const audit = createAuditLogger({ sessionId });
+  const lifecycle = createTaskLifecycle({
+    id: requestId,
+    taskType: body.input.archetype,
+    sessionId,
+    userId: body.userId,
+    metadata: body.input.metadata ?? {},
+  });
   const audit = createAuditLogger({ sessionId, requestId });
 
   const context: AgentContext = {
@@ -66,6 +76,7 @@ export const handler = async (req: Request): Promise<Response> => {
     attachments: input.attachments,
   });
 
+  await lifecycle.start({ archetype: body.input.archetype });
   const requestEvent = audit.newEvent('agent_request', 'Agent invocation received', {
     archetype: body.input.archetype,
     stream: body.stream ?? false,
@@ -98,6 +109,10 @@ export const handler = async (req: Request): Promise<Response> => {
             parallel: body.input.parallel,
             onEvent: emit,
           });
+          await lifecycle.complete('completed', {
+            output: result.output,
+            steps: result.steps,
+          });
           controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
           controller.close();
         } catch (error) {
@@ -125,6 +140,9 @@ export const handler = async (req: Request): Promise<Response> => {
           controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
           controller.close();
         } catch (error) {
+          await lifecycle.complete('failed', {
+            error: (error as Error).message,
+          });
           if (audit.recordStructured) {
             await audit.recordStructured({
               category: 'agent',
@@ -157,6 +175,10 @@ export const handler = async (req: Request): Promise<Response> => {
       fanOut: body.input.fanOut?.map((item, idx) => buildTask({ ...body.input, ...item }, idx + 1)),
       parallel: body.input.parallel,
     });
+    await lifecycle.complete('completed', {
+      output: result.output,
+      steps: result.steps,
+    });
     if (audit.recordStructured) {
       await audit.recordStructured({
         category: 'agent',
@@ -171,6 +193,9 @@ export const handler = async (req: Request): Promise<Response> => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    await lifecycle.complete('failed', {
+      error: (error as Error).message,
+    });
     if (audit.recordStructured) {
       await audit.recordStructured({
         category: 'agent',

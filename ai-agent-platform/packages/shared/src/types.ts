@@ -159,6 +159,10 @@ export interface OptimizerEntry {
  * Contains credentials, API endpoints, and runtime settings for Lovable Cloud deployment.
  */
 export interface EnvConfig {
+  DATA_API_URL: string;
+  DATA_API_TOKEN?: string;
+  IDENTITY_JWT_SECRET: string;
+  IDENTITY_ISSUER_URL?: string;
   /** Supabase project URL used by the Edge runtime and frontend */
   SUPABASE_URL: string;
   /** Supabase anonymous key for client-side authentication */
