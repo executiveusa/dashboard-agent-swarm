@@ -262,7 +262,10 @@ export function useRealtimeCollection<T>(
         throw new Error(`Snapshot request failed with status ${response.status}`);
       }
 
-      const payload = await response.json().catch(() => []);
+      const payload = await response.json().catch((err) => {
+        console.error("Failed to parse snapshot JSON response:", err);
+        return [];
+      });
       return transformSnapshot(payload);
     },
     [limit, options.query, options.resource, options.snapshotPath, options.withCredentials, transformSnapshot]
