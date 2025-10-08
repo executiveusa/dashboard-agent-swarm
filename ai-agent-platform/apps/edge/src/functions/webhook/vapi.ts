@@ -23,7 +23,7 @@ export const handler = async (req: Request): Promise<Response> => {
   const payload = vapiSchema.parse(await req.json());
   const env = getEnv();
   const requestId = randomUUID();
-  const audit = createAuditLogger({ sessionId: payload.session });
+  const audit = createAuditLogger({ sessionId: payload.session, requestId });
 
   const context: AgentContext = {
     userId: payload.userId,
@@ -68,6 +68,37 @@ export const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ error: (error as Error).message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
+  const event = audit.newEvent('vapi_request', 'Vapi webhook received', { session: payload.session });
+  await audit.record(event);
+
+  try {
+    const result = await runTask(task, context);
+    if (audit.recordStructured) {
+      await audit.recordStructured({
+        category: 'agent',
+        name: 'VoiceAgent',
+        action: 'finish',
+        requestId,
+        sessionId: payload.session,
+        metadata: { source: 'vapi' },
+      });
+    }
+    return new Response(JSON.stringify({ result }), { headers: { 'Content-Type': 'application/json' } });
+  } catch (error) {
+    if (audit.recordStructured) {
+      await audit.recordStructured({
+        category: 'agent',
+        name: 'VoiceAgent',
+        action: 'error',
+        requestId,
+        sessionId: payload.session,
+        metadata: { source: 'vapi', error: (error as Error).message },
+      });
+    }
+    return new Response(JSON.stringify({ error: (error as Error).message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 };
 

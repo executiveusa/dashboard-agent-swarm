@@ -25,7 +25,7 @@ export const handler = async (req: Request): Promise<Response> => {
   const requestId = randomUUID();
   const env = getEnv();
   const sessionId = body.request.session.sessionId;
-  const audit = createAuditLogger({ sessionId });
+  const audit = createAuditLogger({ sessionId, requestId });
 
   const context: AgentContext = {
     userId: body.request.payload.userId,
@@ -67,6 +67,39 @@ export const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ error: (error as Error).message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
+  const event = audit.newEvent('voiceflow_request', 'Voiceflow webhook received', {
+    sessionId,
+  });
+  await audit.record(event);
+
+  try {
+    const result = await runTask(task, context);
+    if (audit.recordStructured) {
+      await audit.recordStructured({
+        category: 'agent',
+        name: 'VoiceAgent',
+        action: 'finish',
+        requestId,
+        sessionId,
+        metadata: { source: 'voiceflow' },
+      });
+    }
+    return new Response(JSON.stringify({ result }), { headers: { 'Content-Type': 'application/json' } });
+  } catch (error) {
+    if (audit.recordStructured) {
+      await audit.recordStructured({
+        category: 'agent',
+        name: 'VoiceAgent',
+        action: 'error',
+        requestId,
+        sessionId,
+        metadata: { source: 'voiceflow', error: (error as Error).message },
+      });
+    }
+    return new Response(JSON.stringify({ error: (error as Error).message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 };
 

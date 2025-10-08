@@ -3,16 +3,12 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useRealtimeCollection } from "@/integrations/data-service/client";
+import {
+  fetchRecentTasks,
+  subscribeToTaskStream,
+} from "@/integrations/data-service/client";
+import type { TaskRecord, TaskStreamEvent } from "@/integrations/data-service/types";
 import { CheckCircle2, Circle, Loader2, XCircle } from "lucide-react";
-
-interface Task {
-  id: string;
-  created_at: string;
-  task_type: string;
-  status: string;
-  progress: number;
-  model_used: string | null;
-}
 
 export function TaskMonitor() {
   const { data: tasks } = useRealtimeCollection<Task>({
@@ -23,6 +19,60 @@ export function TaskMonitor() {
     realtimePath: "realtime/tasks",
     getKey: (task) => task?.id,
   });
+  const [tasks, setTasks] = useState<TaskRecord[]>([]);
+  const [isStreaming, setIsStreaming] = useState(true);
+
+  useEffect(() => {
+    let unsub: (() => void) | undefined;
+
+    const bootstrap = async () => {
+      try {
+        const initial = await fetchRecentTasks();
+        setTasks(initial);
+      } catch (error) {
+        console.error("Failed to load tasks", error);
+      }
+
+      unsub = subscribeToTaskStream(
+        (event: TaskStreamEvent) => {
+          if (event.type === "ready") {
+            setIsStreaming(true);
+            return;
+          }
+
+          if (!event.task) {
+            return;
+          }
+
+          setTasks((prev) => {
+            switch (event.type) {
+              case "insert":
+                return [event.task!, ...prev].slice(0, 10);
+              case "update":
+                return prev.map((task) =>
+                  task.id === event.task!.id ? event.task! : task
+                );
+              case "delete":
+                return prev.filter((task) => task.id !== event.task!.id);
+              default:
+                return prev;
+            }
+          });
+        },
+        () => {
+          setIsStreaming(false);
+        }
+      );
+    };
+
+    bootstrap();
+
+    return () => {
+      if (unsub) {
+        unsub();
+      }
+    };
+  }, []);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -65,6 +115,9 @@ export function TaskMonitor() {
       <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
         <Loader2 className="h-6 w-6 text-primary animate-spin" />
         Live Task Monitor
+        {!isStreaming && (
+          <span className="ml-auto text-xs font-mono text-warning">reconnecting…</span>
+        )}
       </h2>
 
       <div className="space-y-4">

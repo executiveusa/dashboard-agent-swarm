@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 import fetch from 'node-fetch';
 import { chromium, type Browser, type Page } from 'playwright-core';
 import { getEnv } from './env.js';
+import { uploadLocalFileToSupabase, uploadBufferToSupabase, type UploadedArtifact } from './storage.js';
 
 export type BrowserVerb = 'open' | 'click' | 'type' | 'waitFor' | 'screenshot' | 'evaluate';
 
@@ -16,14 +17,15 @@ export interface BrowserAction {
 
 export interface BrowserActionResult {
   logs: string[];
-  screenshotPath?: string;
+  screenshotUrl?: string;
   evaluations?: unknown[];
+  artifacts?: UploadedArtifact[];
 }
 
 export interface CodeExecutionResult {
   stdout: string;
   stderr: string;
-  artifacts: Array<{ name: string; path: string }>;
+  artifacts: UploadedArtifact[];
   runtime: number;
 }
 
@@ -64,9 +66,29 @@ class BrowserSession {
 export class OpenInterpreterController {
   private env = getEnv();
 
-  async executeBrowserPlan(plan: BrowserAction[]): Promise<BrowserActionResult> {
+  async executeBrowserPlan(
+    plan: BrowserAction[],
+    options: { sessionId?: string } = {}
+  ): Promise<BrowserActionResult> {
     if (this.env.OI_MODE === 'local') {
-      return this.forwardToLocal('browser', { plan }) as Promise<BrowserActionResult>;
+      return (await this.forwardToLocal('browser', { plan, sessionId: options.sessionId })) as BrowserActionResult;
+    }
+
+    if (this.env.OPEN_INTERPRETER_API_URL) {
+      const result = await this.forwardToCloud('browser', { plan, sessionId: options.sessionId });
+      const artifacts = await this.persistCloudArtifacts(result?.artifacts, options.sessionId);
+      const logs = Array.isArray(result?.logs) ? (result?.logs as string[]) : [];
+      const evaluations = Array.isArray(result?.evaluations) ? result?.evaluations : undefined;
+      const screenshotUrl =
+        typeof result?.screenshotUrl === 'string'
+          ? (result?.screenshotUrl as string)
+          : artifacts[0]?.url;
+      return {
+        logs,
+        evaluations,
+        screenshotUrl,
+        artifacts,
+      };
     }
 
     let browser: Browser | undefined;
@@ -74,6 +96,8 @@ export class OpenInterpreterController {
     const evaluations: unknown[] = [];
     const screenshotDir = await mkdtemp(join(tmpdir(), 'oi-'));
     let screenshotPath: string | undefined;
+    const artifacts: UploadedArtifact[] = [];
+    let screenshotUrl: string | undefined;
 
     try {
       browser = await chromium.launch({
@@ -98,7 +122,19 @@ export class OpenInterpreterController {
         }
       }
 
-      return { logs, screenshotPath, evaluations };
+      if (screenshotPath) {
+        try {
+          const uploaded = await uploadLocalFileToSupabase(screenshotPath, {
+            sessionId: options.sessionId,
+          });
+          artifacts.push(uploaded);
+          screenshotUrl = uploaded.url;
+        } catch (error) {
+          logs.push(`Failed to upload screenshot: ${(error as Error).message}`);
+        }
+      }
+
+      return { logs, screenshotUrl, evaluations, artifacts };
     } catch (error) {
       logs.push(`Browser execution failed: ${(error as Error).message}`);
       throw error;
@@ -107,9 +143,25 @@ export class OpenInterpreterController {
     }
   }
 
-  async runCode(runtime: 'python' | 'node', source: string): Promise<CodeExecutionResult> {
+  async runCode(
+    runtime: 'python' | 'node',
+    source: string,
+    options: { sessionId?: string } = {}
+  ): Promise<CodeExecutionResult> {
+    const started = Date.now();
     if (this.env.OI_MODE === 'local') {
-      return this.forwardToLocal('code', { runtime, source }) as Promise<CodeExecutionResult>;
+      return (await this.forwardToLocal('code', { runtime, source, sessionId: options.sessionId })) as CodeExecutionResult;
+    }
+
+    if (this.env.OPEN_INTERPRETER_API_URL) {
+      const result = await this.forwardToCloud('code', { runtime, source, sessionId: options.sessionId });
+      const artifacts = await this.persistCloudArtifacts(result?.artifacts, options.sessionId);
+      return {
+        stdout: typeof result?.stdout === 'string' ? (result?.stdout as string) : '',
+        stderr: typeof result?.stderr === 'string' ? (result?.stderr as string) : '',
+        artifacts,
+        runtime: typeof result?.runtime === 'number' ? (result?.runtime as number) : Date.now() - started,
+      };
     }
 
     const workdir = await mkdtemp(join(tmpdir(), 'oi-code-'));
@@ -121,11 +173,10 @@ export class OpenInterpreterController {
     const args = runtime === 'python' ? ['-u', filename] : [filename];
 
     const controller = new AbortController();
-    const started = Date.now();
     const timeout = setTimeout(() => controller.abort(), 60_000);
 
     try {
-      const result = await this.spawnProcess(command, args, workdir, controller);
+      const result = await this.spawnProcess(command, args, workdir, controller, options.sessionId);
       return { ...result, runtime: Date.now() - started };
     } finally {
       clearTimeout(timeout);
@@ -137,7 +188,8 @@ export class OpenInterpreterController {
     command: string,
     args: string[],
     cwd: string,
-    controller: AbortController
+    controller: AbortController,
+    sessionId?: string
   ): Promise<Omit<CodeExecutionResult, 'runtime'>> {
     const child = spawn(command, args, {
       cwd,
@@ -163,12 +215,19 @@ export class OpenInterpreterController {
       throw new Error(`Interpreter exited with code ${exitCode}: ${stderr}`);
     }
 
-    const artifacts: Array<{ name: string; path: string }> = [];
+    const artifacts: UploadedArtifact[] = [];
     try {
       const files = await readDirectorySafe(cwd);
       for (const file of files) {
         if (!file.endsWith('.py') && !file.endsWith('.mjs')) {
-          artifacts.push({ name: file, path: join(cwd, file) });
+          try {
+            const uploaded = await uploadLocalFileToSupabase(join(cwd, file), {
+              sessionId,
+            });
+            artifacts.push(uploaded);
+          } catch (error) {
+            stderr += `\nFailed to upload artifact ${file}: ${(error as Error).message}`;
+          }
         }
       }
     } catch (error) {
@@ -190,7 +249,75 @@ export class OpenInterpreterController {
     if (!response.ok) {
       throw new Error(`Local OI proxy responded with ${response.status}`);
     }
-    return (await response.json()) as BrowserActionResult | CodeExecutionResult;
+    const result = (await response.json()) as BrowserActionResult | CodeExecutionResult;
+    if (tool === 'code') {
+      return {
+        ...(result as CodeExecutionResult),
+        artifacts: (result as CodeExecutionResult).artifacts ?? [],
+      };
+    }
+    return result;
+  }
+
+  private async forwardToCloud(
+    tool: 'browser' | 'code',
+    payload: Record<string, unknown>
+  ): Promise<any> {
+    if (!this.env.OPEN_INTERPRETER_API_URL) {
+      throw new Error('OPEN_INTERPRETER_API_URL is not configured');
+    }
+
+    const url = `${this.env.OPEN_INTERPRETER_API_URL.replace(/\/?$/, '')}/tools/${tool}`;
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (this.env.OPEN_INTERPRETER_API_KEY) {
+      headers.Authorization = `Bearer ${this.env.OPEN_INTERPRETER_API_KEY}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ id: randomUUID(), payload }),
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Open Interpreter cloud responded with ${response.status}: ${body}`);
+    }
+
+    return response.json();
+  }
+
+  private async persistCloudArtifacts(artifacts: unknown, sessionId?: string): Promise<UploadedArtifact[]> {
+    if (!Array.isArray(artifacts)) {
+      return [];
+    }
+
+    const uploads: UploadedArtifact[] = [];
+    for (const entry of artifacts) {
+      if (!entry || typeof entry !== 'object') {
+        continue;
+      }
+      const artifact = entry as Record<string, unknown>;
+      const name = typeof artifact.name === 'string' && artifact.name.length > 0 ? artifact.name : `${randomUUID()}`;
+      const contentType = typeof artifact.contentType === 'string' ? artifact.contentType : undefined;
+      if (typeof artifact.url === 'string') {
+        uploads.push({ name, url: artifact.url, contentType });
+        continue;
+      }
+      const base64 = typeof artifact.base64 === 'string' ? artifact.base64 : undefined;
+      if (base64) {
+        try {
+          const buffer = Buffer.from(base64, 'base64');
+          const uploaded = await uploadBufferToSupabase(buffer, { sessionId, filename: name, contentType });
+          uploads.push(uploaded);
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.warn('Failed to persist cloud artifact', { error: (error as Error).message, name });
+        }
+      }
+    }
+
+    return uploads;
   }
 }
 

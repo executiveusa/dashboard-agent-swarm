@@ -6,6 +6,7 @@ import { createAuditLogger } from '../lib/audit.js';
 import { createRateLimiter } from '../lib/rateLimit.js';
 import type { AgentContext, TaskInput } from '@ai-agent-platform/shared';
 import { createTaskLifecycle } from '../lib/taskLifecycle.js';
+import type { AgentContext, AgentStreamEvent, TaskInput } from '@ai-agent-platform/shared';
 
 const requestSchema = z.object({
   userId: z.string().optional(),
@@ -49,6 +50,7 @@ export const handler = async (req: Request): Promise<Response> => {
     userId: body.userId,
     metadata: body.input.metadata ?? {},
   });
+  const audit = createAuditLogger({ sessionId, requestId });
 
   const context: AgentContext = {
     userId: body.userId,
@@ -75,20 +77,65 @@ export const handler = async (req: Request): Promise<Response> => {
   });
 
   await lifecycle.start({ archetype: body.input.archetype });
+  const requestEvent = audit.newEvent('agent_request', 'Agent invocation received', {
+    archetype: body.input.archetype,
+    stream: body.stream ?? false,
+  });
+  await audit.record(requestEvent);
 
   if (body.stream) {
     const stream = new ReadableStream<Uint8Array>({
       start: async (controller) => {
         controller.enqueue(formatSse({ event: 'open', data: { requestId } }));
+        const emit = (event: AgentStreamEvent) => {
+          try {
+            controller.enqueue(
+              formatSse({ event: event.type, data: { ...event, requestId } })
+            );
+          } catch (error) {
+            console.error('Failed to enqueue SSE event', error);
+          }
+        };
+        emit({
+          type: 'status',
+          status: 'queued',
+          message: 'Request accepted',
+          progress: 0,
+          timestamp: new Date().toISOString(),
+        });
         try {
-          const result = await runTask(buildTask(body.input), context, {
+          await runTask(buildTask(body.input), context, {
             fanOut: body.input.fanOut?.map((item, idx) => buildTask({ ...body.input, ...item }, idx + 1)),
             parallel: body.input.parallel,
+            onEvent: emit,
           });
           await lifecycle.complete('completed', {
             output: result.output,
             steps: result.steps,
           });
+          controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
+          controller.close();
+        } catch (error) {
+          const message = (error as Error).message;
+          emit({
+            type: 'status',
+            status: 'failed',
+            message,
+            progress: 0,
+            timestamp: new Date().toISOString(),
+          });
+          emit({ type: 'error', error: message, timestamp: new Date().toISOString() });
+          controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
+          if (audit.recordStructured) {
+            await audit.recordStructured({
+              category: 'agent',
+              name: 'AgentResult',
+              action: 'finish',
+              requestId,
+              sessionId,
+              metadata: { success: true },
+            });
+          }
           controller.enqueue(formatSse({ event: 'result', data: result }));
           controller.enqueue(formatSse({ event: 'close', data: { requestId } }));
           controller.close();
@@ -96,6 +143,16 @@ export const handler = async (req: Request): Promise<Response> => {
           await lifecycle.complete('failed', {
             error: (error as Error).message,
           });
+          if (audit.recordStructured) {
+            await audit.recordStructured({
+              category: 'agent',
+              name: 'AgentResult',
+              action: 'error',
+              requestId,
+              sessionId,
+              metadata: { message: (error as Error).message },
+            });
+          }
           controller.enqueue(
             formatSse({ event: 'error', data: { message: (error as Error).message, requestId } })
           );
@@ -122,6 +179,16 @@ export const handler = async (req: Request): Promise<Response> => {
       output: result.output,
       steps: result.steps,
     });
+    if (audit.recordStructured) {
+      await audit.recordStructured({
+        category: 'agent',
+        name: 'AgentResult',
+        action: 'finish',
+        requestId,
+        sessionId,
+        metadata: { success: true },
+      });
+    }
     return new Response(JSON.stringify({ requestId, result }), {
       headers: { 'Content-Type': 'application/json' },
     });
@@ -129,6 +196,16 @@ export const handler = async (req: Request): Promise<Response> => {
     await lifecycle.complete('failed', {
       error: (error as Error).message,
     });
+    if (audit.recordStructured) {
+      await audit.recordStructured({
+        category: 'agent',
+        name: 'AgentResult',
+        action: 'error',
+        requestId,
+        sessionId,
+        metadata: { message: (error as Error).message },
+      });
+    }
     return new Response(JSON.stringify({ error: (error as Error).message, requestId }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

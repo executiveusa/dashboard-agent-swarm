@@ -9,6 +9,10 @@ import { codeTool } from '../../lib/tools/codeTool.js';
 import { browserTool } from '../../lib/tools/browserTool.js';
 import { firecrawlTool } from '../../lib/tools/firecrawlTool.js';
 import { getPersistenceClient } from '../../lib/persistence.js';
+import { rubeTool, type RubeExecInput } from '../../lib/tools/rubeTool.js';
+import { codeTool, type CodeToolInput } from '../../lib/tools/codeTool.js';
+import { browserTool, type BrowserToolInput } from '../../lib/tools/browserTool.js';
+import { firecrawlTool, type FirecrawlInput } from '../../lib/tools/firecrawlTool.js';
 import type { AgentContext, TaskInput } from '@ai-agent-platform/shared';
 
 const requestSchema = z.object({
@@ -30,7 +34,7 @@ export const handler = async (req: Request): Promise<Response> => {
   const definition = await resolveWorkflowDefinition(payload.workflowName, payload.definition);
   const env = getEnv();
   const requestId = randomUUID();
-  const audit = createAuditLogger({ sessionId: payload.workflowName ?? requestId });
+  const audit = createAuditLogger({ sessionId: payload.workflowName ?? requestId, requestId });
 
   const agentContext: AgentContext = {
     requestId,
@@ -55,25 +59,64 @@ export const handler = async (req: Request): Promise<Response> => {
       const result = await runTask(task, agentContext);
       return result.output;
     },
-    callService: async (service, params) => rubeTool.exec({ service: service as any, params }),
-    runCode: async (runtimeType, source, inputs) => codeTool.execute({ runtime: runtimeType, source: interpolate(source, inputs) }),
-    runBrowser: async (actions) => browserTool.execute({ actions: actions as any }),
-    runFirecrawl: async (input) => firecrawlTool.execute(input as any),
+    callService: async (service, params) =>
+      rubeTool.exec({
+        service: service as RubeExecInput['service'],
+        params: (params ?? {}) as Record<string, unknown>,
+      }),
+    runCode: async (runtimeType, source, inputs) =>
+      codeTool.execute({ runtime: runtimeType as CodeToolInput['runtime'], source: interpolate(source, inputs) }),
+    runBrowser: async (actions) =>
+      browserTool.execute({ actions: actions as BrowserToolInput['actions'] }),
+    runFirecrawl: async (input) => firecrawlTool.execute(input as FirecrawlInput),
   };
 
-  const execution = await executeWorkflow(definition, runtime, {
-    inputs: payload.inputs,
-  });
+  try {
+    const execution = await executeWorkflow(definition, runtime, {
+      inputs: payload.inputs,
+      audit,
+      requestId,
+      sessionId: payload.workflowName ?? requestId,
+    });
 
-  const event = audit.newEvent('workflow_run', `Workflow ${definition.name} executed`, {
-    trigger: payload.trigger,
-    outputs: execution.outputs,
-  });
-  await audit.record(event);
+    const event = audit.newEvent('workflow_run', `Workflow ${definition.name} executed`, {
+      trigger: payload.trigger,
+      outputs: execution.outputs,
+    });
+    await audit.record(event);
+    if (audit.recordStructured) {
+      await audit.recordStructured({
+        category: 'workflow',
+        name: definition.name,
+        action: 'finish',
+        requestId,
+        sessionId: payload.workflowName ?? requestId,
+        metadata: {
+          trigger: payload.trigger,
+          success: true,
+        },
+      });
+    }
 
-  return new Response(JSON.stringify({ requestId, ...execution }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+    return new Response(JSON.stringify({ requestId, ...execution }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    if (audit.recordStructured) {
+      await audit.recordStructured({
+        category: 'workflow',
+        name: definition.name,
+        action: 'error',
+        requestId,
+        sessionId: payload.workflowName ?? requestId,
+        metadata: {
+          trigger: payload.trigger,
+          error: (error as Error).message,
+        },
+      });
+    }
+    throw error;
+  }
 };
 
 const resolveWorkflowDefinition = async (name?: string, inline?: string) => {

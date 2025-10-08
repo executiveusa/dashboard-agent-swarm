@@ -74,7 +74,6 @@ class Optimizer {
         this.cache.set(this.key(task), entry);
       }
     }
-    env; // ensure env read for potential future use
   }
 }
 

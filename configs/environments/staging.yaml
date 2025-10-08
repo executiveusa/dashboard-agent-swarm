@@ -1,0 +1,21 @@
+name: staging
+supabase:
+  dbUrl: ${SUPABASE_STAGING_DB_URL}
+  projectRef: ${SUPABASE_STAGING_PROJECT_REF}
+  schema: public
+  migrationsDir: supabase/migrations
+secrets:
+  SUPABASE_URL: ${SUPABASE_STAGING_URL}
+  SUPABASE_ANON_KEY: ${SUPABASE_STAGING_ANON_KEY}
+  SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_STAGING_SERVICE_ROLE_KEY}
+  JWT_SECRET: ${STAGING_JWT_SECRET}
+  OLLAMA_BASE_URL: https://ollama.staging.lovable.cloud
+  LM_STUDIO_BASE_URL: https://lm-studio.staging.lovable.cloud/v1
+  LOCAL_OI_PROXY_URL: https://oi-proxy.staging.lovable.cloud
+  FIRECRAWL_BASE_URL: https://api.firecrawl.dev
+  ROUTER_FREE_FIRST: "false"
+  OPTIMIZER_CRON: "*/15 * * * *"
+contabo:
+  stack: lovable-cloud
+  region: eu-central
+  coolifyPipeline: ../pipelines/coolify-contabo.yaml
