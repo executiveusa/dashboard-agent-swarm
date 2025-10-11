@@ -1,4 +1,131 @@
 version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lovable}
+      POSTGRES_USER: ${POSTGRES_USER:-lovable}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lovable}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:2.10
+    restart: unless-stopped
+    command: ["-js"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+  ollama:
+    image: ollama/ollama:0.3.12
+    restart: unless-stopped
+    volumes:
+      - ollama_models:/root/.ollama
+    ports:
+      - "11434:11434"
+
+  lmstudio:
+    image: ghcr.io/lmstudio-ai/lmstudio:0.2.22
+    restart: unless-stopped
+    volumes:
+      - lmstudio_models:/root/.cache/lmstudio
+    ports:
+      - "1234:1234"
+
+  local-runner:
+    build:
+      context: .
+      dockerfile: ai-agent-platform/apps/local-runner/Dockerfile
+    restart: unless-stopped
+    environment:
+      LOCAL_OI_PROXY_PORT: 3333
+    expose:
+      - "3333"
+
+  edge:
+    build:
+      context: .
+      dockerfile: ai-agent-platform/apps/edge/Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 8787
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OLLAMA_BASE_URL: http://ollama:11434
+      LM_STUDIO_BASE_URL: http://lmstudio:1234/v1
+      OI_MODE: ${OI_MODE:-cloud}
+      LOCAL_OI_PROXY_URL: http://local-runner:3333
+      FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
+      FIRECRAWL_BASE_URL: ${FIRECRAWL_BASE_URL:-https://api.firecrawl.dev}
+      RUBE_BASE_URL: ${RUBE_BASE_URL:-}
+      RUBE_API_KEY: ${RUBE_API_KEY:-}
+      VAPI_API_KEY: ${VAPI_API_KEY:-}
+      VOICEFLOW_API_KEY: ${VOICEFLOW_API_KEY:-}
+      ROUTER_FREE_FIRST: ${ROUTER_FREE_FIRST:-true}
+      OPTIMIZER_CRON: ${OPTIMIZER_CRON:-"*/30 * * * *"}
+    ports:
+      - "8787:8787"
+    depends_on:
+      - postgres
+      - nats
+      - local-runner
+      - ollama
+      - lmstudio
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      DATABASE_URL: ${DATABASE_URL:-postgresql://lovable:changeme@postgres:5432/lovable}
+      MESSAGE_BUS_URL: ${MESSAGE_BUS_URL:-nats://nats:4222}
+      EDGE_BASE_URL: http://edge:8787
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      OLLAMA_BASE_URL: http://ollama:11434
+      LM_STUDIO_BASE_URL: http://lmstudio:1234/v1
+      FIRECRAWL_BASE_URL: ${FIRECRAWL_BASE_URL:-https://api.firecrawl.dev}
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+      - nats
+      - edge
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ai-agent-platform/apps/frontend/Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      NEXT_PUBLIC_EDGE_URL: ${NEXT_PUBLIC_EDGE_URL:-http://edge:8787}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - edge
+
+volumes:
+  postgres_data:
+  ollama_models:
+  lmstudio_models:
 services:
   flowise:
     image: flowiseai/flowise:latest
