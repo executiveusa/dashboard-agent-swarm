@@ -32,5 +32,6 @@ platform described in the specification.
 ## Next Steps
 
 - Flesh out package manifests for each workspace (e.g., `packages/ui`, `packages/sdk`).
+- Point the dashboards at the self-hosted data service and expand coverage to workflows/history views.
 - Port existing Supabase-dependent dashboards to the new persistence APIs.
 - Begin implementing the A2A router and shared SDK utilities.

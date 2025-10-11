@@ -1,46 +1,25 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { sendAgentMessage, type AgentResult } from '../lib/api';
+import type { UseAgentMessagingResult } from '@ai-agent-platform/shared';
 import { Loader2, Send } from 'lucide-react';
 
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
+interface ChatConsoleProps {
+  messaging: UseAgentMessagingResult;
 }
 
-export function ChatConsole() {
-  const [messages, setMessages] = useState<Message[]>([]);
+export function ChatConsole({ messaging }: ChatConsoleProps) {
+  const { messages, sendMessage, isStreaming, lastResult, error } = messaging;
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [lastResult, setLastResult] = useState<AgentResult | undefined>();
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (!input.trim()) return;
-      const message: Message = { id: crypto.randomUUID(), role: 'user', content: input };
-      setMessages((prev) => [...prev, message]);
+      await sendMessage({ archetype: 'general', instructions: input });
       setInput('');
-      setIsLoading(true);
-      try {
-        const result = await sendAgentMessage({ archetype: 'general', instructions: message.content });
-        setLastResult(result);
-        setMessages((prev) => [
-          ...prev,
-          { id: crypto.randomUUID(), role: 'assistant', content: result.output },
-        ]);
-      } catch (error) {
-        setMessages((prev) => [
-          ...prev,
-          { id: crypto.randomUUID(), role: 'assistant', content: (error as Error).message },
-        ]);
-      } finally {
-        setIsLoading(false);
-      }
     },
-    [input]
+    [input, sendMessage]
   );
 
   return (
@@ -53,7 +32,7 @@ export function ChatConsole() {
             {messages.map((message) => (
               <li key={message.id} className="flex gap-2">
                 <span className="text-xs uppercase text-slate-500">{message.role}</span>
-                <span className="text-sm text-slate-100">{message.content}</span>
+                <span className="text-sm text-slate-100 whitespace-pre-wrap">{message.content}</span>
               </li>
             ))}
           </ul>
@@ -69,11 +48,12 @@ export function ChatConsole() {
         <button
           type="submit"
           className="inline-flex items-center gap-2 rounded-md bg-sky-500 px-3 py-2 text-sm font-medium text-white hover:bg-sky-400 disabled:opacity-50"
-          disabled={isLoading}
+          disabled={isStreaming}
         >
-          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Send
+          {isStreaming ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Send
         </button>
       </form>
+      {error && <p className="text-xs text-red-400">{error}</p>}
       {lastResult?.steps && (
         <details className="rounded-md border border-slate-800 bg-slate-900 p-3">
           <summary className="cursor-pointer text-sm font-medium text-slate-200">Agent steps</summary>
@@ -85,4 +65,3 @@ export function ChatConsole() {
     </div>
   );
 }
-

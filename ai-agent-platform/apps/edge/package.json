@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@ai-agent-platform/shared": "workspace:^",
-    "@supabase/supabase-js": "2.39.6",
     "cron-parser": "4.9.0",
     "js-yaml": "4.1.0",
     "node-fetch": "3.3.2",

@@ -3,9 +3,13 @@ import { routeLLM } from '../lib/router.js';
 import type { TaskInput } from '@ai-agent-platform/shared';
 
 beforeAll(() => {
+  process.env.DATA_API_URL = 'http://localhost:4000';
+  process.env.IDENTITY_JWT_SECRET = 'secret';
   process.env.SUPABASE_URL = 'https://example.supabase.co';
   process.env.SUPABASE_ANON_KEY = 'anon';
   process.env.JWT_SECRET = 'secret';
+  process.env.SUPABASE_ARTIFACTS_BUCKET = 'artifacts';
+  process.env.SUPABASE_SIGNED_URL_TTL = '3600';
   process.env.OLLAMA_BASE_URL = 'http://localhost:11434';
   process.env.LM_STUDIO_BASE_URL = 'http://localhost:1234/v1';
   process.env.LOCAL_OI_PROXY_URL = 'http://localhost:3333';
