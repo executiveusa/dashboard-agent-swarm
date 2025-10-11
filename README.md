@@ -1,5 +1,16 @@
 # Welcome to your Lovable project
 
+## Agents Dashboard (Flowise)
+Run the Flowise dashboard locally:
+
+```bash
+cp .env.example .env
+docker compose up -d        # starts Flowise at :3000
+npm run dev                 # Vite app; dashboard at http://localhost:8080/agents
+```
+
+Deploy: reverse proxy `/agents` and `/api/v1` to the Flowise service.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/93ccd06b-8bfa-45f2-b469-eceaf3d8ef32
@@ -35,6 +46,24 @@ npm i
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
+
+## Agents dashboard (Flowise)
+
+This project ships with a pre-configured [Flowise](https://github.com/FlowiseAI/Flowise) deployment for building and operating AI agents.
+
+### Local development
+
+```bash
+cp .env.example .env
+docker compose up -d           # Starts Flowise on http://localhost:3000
+npm run dev                    # Vite dev server; Flowise iframe at http://localhost:8080/agents
+```
+
+### Production notes
+
+- Reverse proxy the `/agents/` path prefix (including `/agents/api`) to the Flowise service running on port `3000`.
+- Persist Flowise state by keeping the `data/flowise` volume mounted.
+- Provide any provider keys (OpenAI, Anthropic, etc.) through the `.env` file before starting the service.
 
 **Edit a file directly in GitHub**
 

@@ -1,58 +1,76 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { useRealtimeCollection } from "@/integrations/data-service/client";
+import {
+  fetchRecentTasks,
+  subscribeToTaskStream,
+} from "@/integrations/data-service/client";
+import type { TaskRecord, TaskStreamEvent } from "@/integrations/data-service/types";
 import { CheckCircle2, Circle, Loader2, XCircle } from "lucide-react";
 
-interface Task {
-  id: string;
-  created_at: string;
-  task_type: string;
-  status: string;
-  progress: number;
-  model_used: string | null;
-}
-
 export function TaskMonitor() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const { data: tasks } = useRealtimeCollection<Task>({
+    resource: "tasks",
+    channel: "tasks",
+    limit: 10,
+    snapshotPath: "tasks",
+    realtimePath: "realtime/tasks",
+    getKey: (task) => task?.id,
+  });
+  const [tasks, setTasks] = useState<TaskRecord[]>([]);
+  const [isStreaming, setIsStreaming] = useState(true);
 
   useEffect(() => {
-    // Fetch initial tasks
-    const fetchTasks = async () => {
-      const { data } = await supabase
-        .from("tasks")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(10);
-      
-      if (data) setTasks(data);
+    let unsub: (() => void) | undefined;
+
+    const bootstrap = async () => {
+      try {
+        const initial = await fetchRecentTasks();
+        setTasks(initial);
+      } catch (error) {
+        console.error("Failed to load tasks", error);
+      }
+
+      unsub = subscribeToTaskStream(
+        (event: TaskStreamEvent) => {
+          if (event.type === "ready") {
+            setIsStreaming(true);
+            return;
+          }
+
+          if (!event.task) {
+            return;
+          }
+
+          setTasks((prev) => {
+            switch (event.type) {
+              case "insert":
+                return [event.task!, ...prev].slice(0, 10);
+              case "update":
+                return prev.map((task) =>
+                  task.id === event.task!.id ? event.task! : task
+                );
+              case "delete":
+                return prev.filter((task) => task.id !== event.task!.id);
+              default:
+                return prev;
+            }
+          });
+        },
+        () => {
+          setIsStreaming(false);
+        }
+      );
     };
 
-    fetchTasks();
-
-    // Subscribe to real-time updates
-    const channel = supabase
-      .channel("tasks-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "tasks" },
-        (payload) => {
-          if (payload.eventType === "INSERT") {
-            setTasks((prev) => [payload.new as Task, ...prev].slice(0, 10));
-          } else if (payload.eventType === "UPDATE") {
-            setTasks((prev) =>
-              prev.map((task) =>
-                task.id === payload.new.id ? (payload.new as Task) : task
-              )
-            );
-          }
-        }
-      )
-      .subscribe();
+    bootstrap();
 
     return () => {
-      supabase.removeChannel(channel);
+      if (unsub) {
+        unsub();
+      }
     };
   }, []);
 
@@ -84,18 +102,29 @@ export function TaskMonitor() {
     );
   };
 
+  const sortedTasks = useMemo(
+    () =>
+      [...tasks].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ),
+    [tasks]
+  );
+
   return (
     <Card className="p-6 bg-card/50 backdrop-blur-sm">
       <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
         <Loader2 className="h-6 w-6 text-primary animate-spin" />
         Live Task Monitor
+        {!isStreaming && (
+          <span className="ml-auto text-xs font-mono text-warning">reconnecting…</span>
+        )}
       </h2>
-      
+
       <div className="space-y-4">
-        {tasks.length === 0 ? (
+        {sortedTasks.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">No tasks yet</p>
         ) : (
-          tasks.map((task) => (
+          sortedTasks.map((task) => (
             <div
               key={task.id}
               className="p-4 rounded-lg bg-secondary/50 border border-border hover:border-primary/50 transition-all"
@@ -112,7 +141,7 @@ export function TaskMonitor() {
                 </div>
                 {getStatusBadge(task.status)}
               </div>
-              
+
               {task.status === "running" && (
                 <div className="mt-3">
                   <div className="flex items-center justify-between mb-2 text-sm">
@@ -122,7 +151,7 @@ export function TaskMonitor() {
                   <Progress value={task.progress} className="h-2" />
                 </div>
               )}
-              
+
               {task.model_used && (
                 <p className="mt-2 text-xs text-muted-foreground">
                   Model: <span className="font-mono text-accent">{task.model_used}</span>

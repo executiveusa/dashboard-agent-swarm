@@ -10,11 +10,11 @@
     "lint": "eslint 'src/**/*.{ts,tsx}' --config ../../configs/eslint.config.mjs",
     "test": "vitest run",
     "dev": "vitest watch --run",
-    "deploy": "echo 'Deploy via Lovable CLI: lovable deploy --project edge'"
+    "deploy": "echo 'Deploy via Lovable CLI: lovable deploy --project edge'",
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@ai-agent-platform/shared": "workspace:^",
-    "@supabase/supabase-js": "2.39.6",
     "cron-parser": "4.9.0",
     "js-yaml": "4.1.0",
     "node-fetch": "3.3.2",

@@ -9,6 +9,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@ai-agent-platform/shared": "workspace:^"
+    "@ai-agent-platform/shared": "workspace:^",
+    "playwright": "^1.49.0"
   }
 }

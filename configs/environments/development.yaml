@@ -1,0 +1,21 @@
+name: development
+supabase:
+  dbUrl: ${SUPABASE_DEV_DB_URL}
+  projectRef: ${SUPABASE_DEV_PROJECT_REF}
+  schema: public
+  migrationsDir: supabase/migrations
+secrets:
+  SUPABASE_URL: ${SUPABASE_DEV_URL}
+  SUPABASE_ANON_KEY: ${SUPABASE_DEV_ANON_KEY}
+  SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_DEV_SERVICE_ROLE_KEY}
+  JWT_SECRET: ${DEV_JWT_SECRET}
+  OLLAMA_BASE_URL: http://ollama.dev.internal:11434
+  LM_STUDIO_BASE_URL: http://lm-studio.dev.internal:1234/v1
+  LOCAL_OI_PROXY_URL: http://localhost:3333
+  FIRECRAWL_BASE_URL: https://api.firecrawl.dev
+  ROUTER_FREE_FIRST: "true"
+  OPTIMIZER_CRON: "*/10 * * * *"
+contabo:
+  stack: lovable-cloud
+  region: eu-central
+  coolifyPipeline: ../pipelines/coolify-contabo.yaml

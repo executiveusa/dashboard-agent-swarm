@@ -12,3 +12,10 @@ declare global {
 }
 
 export {};
+interface ImportMetaEnv {
+  readonly VITE_DATA_API_BASE_URL?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

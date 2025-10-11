@@ -1,4 +1,4 @@
-import { Activity, FileText, FolderTree, Settings, Terminal } from "lucide-react";
+import { Activity, Bot, FileText, FolderTree, Settings, Terminal } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -14,6 +14,8 @@ import {
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: Activity },
+  { title: "Analytics", url: "/analytics", icon: Activity },
+  { title: "Agents", url: "/agents", icon: Bot },
   { title: "Tasks", url: "/tasks", icon: Terminal },
   { title: "Logs", url: "/logs", icon: FileText },
   { title: "Files", url: "/files", icon: FolderTree },
