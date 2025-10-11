@@ -8,15 +8,15 @@ import { logger } from "../lib/logger";
 import { attachStreamCleanup } from "./shared";
 
 const listParamsSchema = z.object({
-  limit: z.coerce.number().min(1).max(500).default(100),
+  limit: z.coerce.number().min(1).max(200).default(50),
 });
 
-export function createLogRoutes(db: Database, config: RuntimeConfig) {
-  const listLogs = async (req: Request, res: Response) => {
+export function createRollbackRoutes(db: Database, config: RuntimeConfig) {
+  const listRollbacks = async (req: Request, res: Response) => {
     const params = listParamsSchema.parse(req.query);
     const result = await db.query(
-      `SELECT id, created_at, task_id, action, details, risk_level
-       FROM logs
+      `SELECT id, created_at, task_id, file_path, original_content, new_content, applied
+       FROM rollbacks
        ORDER BY created_at DESC
        LIMIT $1`,
       [params.limit]
@@ -25,20 +25,20 @@ export function createLogRoutes(db: Database, config: RuntimeConfig) {
     res.json({ data: result.rows });
   };
 
-  const streamLogs = async (_req: Request, res: Response) => {
+  const streamRollbacks = async (_req: Request, res: Response) => {
     const connection = createSseConnection(res, { heartbeatMs: config.SSE_HEARTBEAT_INTERVAL_MS });
     connection.send({ type: "ready" });
 
-    const release = await db.listen("logs_changes", (payload) => {
+    const release = await db.listen("rollbacks_changes", (payload) => {
       try {
         connection.send(JSON.parse(payload));
       } catch (error) {
-        logger.error({ error, payload }, "failed to parse log notification payload");
+        logger.error({ error, payload }, "failed to parse rollback notification payload");
       }
     });
 
     await attachStreamCleanup({ res, release, connection });
   };
 
-  return { listLogs, streamLogs };
+  return { listRollbacks, streamRollbacks };
 }

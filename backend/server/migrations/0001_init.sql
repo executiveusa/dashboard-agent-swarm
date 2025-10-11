@@ -52,30 +52,29 @@ CREATE TABLE IF NOT EXISTS ml_patterns (
   frequency INTEGER DEFAULT 1
 );
 
--- Notification helpers for SSE feeds
-CREATE OR REPLACE FUNCTION notify_task_change() RETURNS TRIGGER AS $$
+-- Notification helpers for SSE/WebSocket feeds
+CREATE OR REPLACE FUNCTION notify_table_change() RETURNS TRIGGER AS $$
 DECLARE
+  entity TEXT := TG_ARGV[0];
+  channel TEXT := TG_ARGV[1];
   payload JSON;
 BEGIN
   IF (TG_OP = 'DELETE') THEN
-    payload := json_build_object('type', 'delete', 'task', row_to_json(OLD));
+    payload := json_build_object('type', 'delete', 'entity', entity, 'previous', row_to_json(OLD));
+    PERFORM pg_notify(channel, payload::TEXT);
+    RETURN OLD;
   ELSIF (TG_OP = 'UPDATE') THEN
-    payload := json_build_object('type', 'update', 'task', row_to_json(NEW), 'previous', row_to_json(OLD));
+    payload := json_build_object(
+      'type', 'update',
+      'entity', entity,
+      'current', row_to_json(NEW),
+      'previous', row_to_json(OLD)
+    );
   ELSE
-    payload := json_build_object('type', 'insert', 'task', row_to_json(NEW));
+    payload := json_build_object('type', 'insert', 'entity', entity, 'current', row_to_json(NEW));
   END IF;
 
-  PERFORM pg_notify('tasks_changes', payload::TEXT);
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION notify_log_change() RETURNS TRIGGER AS $$
-DECLARE
-  payload JSON;
-BEGIN
-  payload := json_build_object('type', 'insert', 'log', row_to_json(NEW));
-  PERFORM pg_notify('logs_changes', payload::TEXT);
+  PERFORM pg_notify(channel, payload::TEXT);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -83,9 +82,24 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS tasks_notify_trigger ON tasks;
 CREATE TRIGGER tasks_notify_trigger
 AFTER INSERT OR UPDATE OR DELETE ON tasks
-FOR EACH ROW EXECUTE FUNCTION notify_task_change();
+FOR EACH ROW EXECUTE FUNCTION notify_table_change('task', 'tasks_changes');
 
 DROP TRIGGER IF EXISTS logs_notify_trigger ON logs;
 CREATE TRIGGER logs_notify_trigger
-AFTER INSERT ON logs
-FOR EACH ROW EXECUTE FUNCTION notify_log_change();
+AFTER INSERT OR UPDATE OR DELETE ON logs
+FOR EACH ROW EXECUTE FUNCTION notify_table_change('log', 'logs_changes');
+
+DROP TRIGGER IF EXISTS file_index_notify_trigger ON file_index;
+CREATE TRIGGER file_index_notify_trigger
+AFTER INSERT OR UPDATE OR DELETE ON file_index
+FOR EACH ROW EXECUTE FUNCTION notify_table_change('file_index', 'file_index_changes');
+
+DROP TRIGGER IF EXISTS rollbacks_notify_trigger ON rollbacks;
+CREATE TRIGGER rollbacks_notify_trigger
+AFTER INSERT OR UPDATE OR DELETE ON rollbacks
+FOR EACH ROW EXECUTE FUNCTION notify_table_change('rollback', 'rollbacks_changes');
+
+DROP TRIGGER IF EXISTS ml_patterns_notify_trigger ON ml_patterns;
+CREATE TRIGGER ml_patterns_notify_trigger
+AFTER INSERT OR UPDATE OR DELETE ON ml_patterns
+FOR EACH ROW EXECUTE FUNCTION notify_table_change('ml_pattern', 'ml_patterns_changes');
