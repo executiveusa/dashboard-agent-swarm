@@ -61,18 +61,6 @@ export const handler = async (req: Request): Promise<Response> => {
   try {
     const result = await runTask(task, context);
     await lifecycle.complete('completed', { output: result.output, steps: result.steps });
-    return new Response(JSON.stringify({ result }), { headers: { 'Content-Type': 'application/json' } });
-  } catch (error) {
-    await lifecycle.complete('failed', { error: (error as Error).message });
-    return new Response(
-      JSON.stringify({ error: (error as Error).message }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
-  const event = audit.newEvent('vapi_request', 'Vapi webhook received', { session: payload.session });
-  await audit.record(event);
-
-  try {
-    const result = await runTask(task, context);
     if (audit.recordStructured) {
       await audit.recordStructured({
         category: 'agent',
@@ -85,6 +73,7 @@ export const handler = async (req: Request): Promise<Response> => {
     }
     return new Response(JSON.stringify({ result }), { headers: { 'Content-Type': 'application/json' } });
   } catch (error) {
+    await lifecycle.complete('failed', { error: (error as Error).message });
     if (audit.recordStructured) {
       await audit.recordStructured({
         category: 'agent',

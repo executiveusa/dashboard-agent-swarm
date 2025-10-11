@@ -246,35 +246,6 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
         });
       };
 
-      emitToolEvent('Router', 'start', 'Selecting optimal research route');
-      const decision = await routeLLM(task, simulateLLMExecution);
-      context.logger.info('ResearchAgent routed', { decision });
-      const routeEvent = context.audit?.newEvent?.('agent_routed', 'ResearchAgent selected provider', { decision });
-      if (routeEvent && context.audit) {
-        await context.audit.record(routeEvent);
-      }
-      emitToolEvent('Router', 'complete', `Routed via ${decision.model}`, decision as Record<string, unknown>);
-      const actions = Array.isArray(task.metadata?.browserActions)
-        ? (task.metadata?.browserActions as { verb: any; args?: any[] }[])
-        : [];
-      let browser;
-      if (actions.length) {
-        emitToolEvent('BrowserTool', 'start', `Executing ${actions.length} scripted actions`);
-        browser = await browserTool.execute({ actions });
-        emitToolEvent('BrowserTool', 'complete', 'Browser automation finished', browser as Record<string, unknown>);
-      }
-      let crawl;
-      if (task.metadata?.firecrawl) {
-        emitToolEvent('FirecrawlTool', 'start', 'Starting Firecrawl ingestion');
-        crawl = await firecrawlTool.execute(task.metadata.firecrawl as any);
-        emitToolEvent('FirecrawlTool', 'complete', 'Firecrawl completed', crawl as Record<string, unknown>);
-      }
-      let httpResponse;
-      if (task.metadata?.probeUrl) {
-        emitToolEvent('HTTPTool', 'start', `Fetching ${String(task.metadata.probeUrl)}`);
-        httpResponse = await httpTool.execute({ url: String(task.metadata.probeUrl) });
-        emitToolEvent('HTTPTool', 'complete', 'HTTP probe finished', httpResponse as Record<string, unknown>);
-      }
       const llm = createLLMExecutor(task, context);
       const decision = await routeLLM(task, llm.executor, {
         requiredTools: ['BrowserTool', 'HTTPTool', 'FirecrawlTool'],
@@ -283,28 +254,6 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
       });
       context.logger.info('ResearchAgent routed', { decision });
       const llmOutput = llm.getResponse();
-      const actions = Array.isArray(task.metadata?.browserActions)
-        ? (task.metadata?.browserActions as { verb: any; args?: any[] }[])
-        : [];
-      const browser = actions.length
-        ? await browserTool.execute({ actions }, { sessionId: context.sessionId })
-        : undefined;
-      const crawl = task.metadata?.firecrawl
-        ? await firecrawlTool.execute(task.metadata.firecrawl as any)
-      const routeEvent = context.audit?.newEvent?.('agent_routed', 'ResearchAgent selected provider', { decision });
-      if (routeEvent && context.audit) {
-        await context.audit.record(routeEvent);
-      }
-      if (context.audit?.recordStructured) {
-        await context.audit.recordStructured({
-          category: 'agent',
-          name: 'Router',
-          action: 'finish',
-          requestId: context.requestId,
-          sessionId: context.sessionId,
-          metadata: { decision },
-        });
-      }
       const actions = asBrowserActions(task.metadata?.browserActions);
       const browser =
         actions.length && context.audit?.time
@@ -386,12 +335,6 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
         });
       };
 
-      emitTool('Router', 'start', 'Selecting coding model');
-      const decision = await routeLLM(task, simulateLLMExecution);
-      emitTool('Router', 'complete', `Routing complete via ${decision.model}`, decision as Record<string, unknown>);
-      emitTool('CodeTool', 'start', 'Executing generated code');
-      const code = await codeTool.execute({ runtime: 'python', source: task.instructions });
-      emitTool('CodeTool', 'complete', 'Code execution finished', code as Record<string, unknown>);
       const llm = createLLMExecutor(task, context);
       const decision = await routeLLM(task, llm.executor, {
         requiredTools: ['CodeTool'],
@@ -399,21 +342,6 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
         taskId: task.id,
       });
       const llmOutput = llm.getResponse();
-      const code = await codeTool.execute({ runtime: 'python', source: task.instructions }, {
-        sessionId: context.sessionId,
-      });
-    handler: async (task) => {
-      const decision = await routeLLM(task, simulateLLMExecution);
-      if (context.audit?.recordStructured) {
-        await context.audit.recordStructured({
-          category: 'agent',
-          name: 'Router',
-          action: 'finish',
-          requestId: context.requestId,
-          sessionId: context.sessionId,
-          metadata: { decision },
-        });
-      }
       const code = context.audit?.time
         ? await context.audit.time(
             {
@@ -471,13 +399,6 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
       if (!service) {
         throw new Error('AutomatorAgent requires metadata.service');
       }
-      emitToolEvent('RubeTool', 'start', `Invoking automation service ${service}`);
-      const result = await rubeTool.exec({ service: service as any, params: task.metadata?.params as any });
-      emitToolEvent('RubeTool', 'complete', 'Automation finished', result as Record<string, unknown>);
-      const result = await rubeTool.exec(
-        { service: service as any, params: task.metadata?.params as any, userToken: task.metadata?.userToken as any },
-        { sessionId: context.sessionId, audit: context.audit }
-      );
       const params = asRubeParams(task.metadata?.params);
       const result = context.audit?.time
         ? await context.audit.time(
@@ -514,9 +435,6 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
           timestamp: stamp(),
         });
       };
-      emitToolEvent('CodeTool', 'start', 'Running cleaning routine');
-      const code = await codeTool.execute({ runtime: 'python', source: task.instructions });
-      emitToolEvent('CodeTool', 'complete', 'Cleaning routine finished', code as Record<string, unknown>);
       const llm = createLLMExecutor(task, context);
       const decision = await routeLLM(task, llm.executor, {
         requiredTools: ['CodeTool'],
@@ -524,10 +442,6 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
         taskId: task.id,
       });
       const llmOutput = llm.getResponse();
-      const code = await codeTool.execute({ runtime: 'python', source: task.instructions }, {
-        sessionId: context.sessionId,
-      });
-    handler: async (task) => {
       const code = context.audit?.time
         ? await context.audit.time(
             {
@@ -581,12 +495,6 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
           timestamp: stamp(),
         });
       };
-      emitToolEvent('Router', 'start', 'Selecting voice synthesis provider');
-      const decision = await routeLLM(task, simulateLLMExecution);
-      emitToolEvent('Router', 'complete', `Voice routed via ${decision.model}`, decision as Record<string, unknown>);
-      emitToolEvent('SpeechTool', 'start', 'Generating spoken response');
-      const audio = await speechTool.synthesize({ text: task.instructions });
-      emitToolEvent('SpeechTool', 'complete', 'Speech synthesis complete', audio as Record<string, unknown>);
       const llm = createLLMExecutor(task, context);
       const decision = await routeLLM(task, llm.executor, {
         requiredTools: ['SpeechTool'],
@@ -594,19 +502,6 @@ const agentRegistry: Record<AgentName, AgentDefinition> = {
         taskId: task.id,
       });
       const spokenText = llm.getResponse() ?? task.instructions;
-      const audio = await speechTool.synthesize({ text: spokenText });
-    handler: async (task) => {
-      const decision = await routeLLM(task, simulateLLMExecution);
-      if (context.audit?.recordStructured) {
-        await context.audit.recordStructured({
-          category: 'agent',
-          name: 'Router',
-          action: 'finish',
-          requestId: context.requestId,
-          sessionId: context.sessionId,
-          metadata: { decision },
-        });
-      }
       const audio = context.audit?.time
         ? await context.audit.time(
             {

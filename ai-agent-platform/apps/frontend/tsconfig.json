@@ -4,7 +4,9 @@
     "jsx": "preserve",
     "allowJs": false,
     "noEmit": true,
-    "incremental": true
+    "incremental": true,
+    "rootDir": ".",
+    "outDir": "dist"
   },
   "include": ["next-env.d.ts", "src/**/*", "tailwind.config.ts"],
   "exclude": ["node_modules"]
