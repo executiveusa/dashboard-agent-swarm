@@ -71,3 +71,71 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Windows desktop build & runtime
+
+The repository ships with an Electron-based desktop shell that loads the existing React UI, exposes file-system helpers for local agents, and proxies API calls to a Lovable backend.
+
+### Prerequisites
+
+Install the following on Windows before building:
+
+- **Node.js 18+** (the project is tested with Node 22 via nvm).
+- **npm** (bundled with Node.js) or an alternative package manager compatible with `package-lock.json`.
+- **Microsoft Visual Studio Build Tools 2019+** with the Desktop development with C++ workload (required by native Node modules bundled via Electron Builder).
+- **Git** for cloning and version control.
+
+Optional but recommended:
+
+- **Windows 10/11 SDK** for full desktop integration.
+- **SignTool** (part of the Windows SDK) or your chosen code-signing utility.
+
+### Environment configuration
+
+The desktop runtime can forward API calls through a lightweight proxy. Configure these environment variables before running or packaging:
+
+- `LOVABLE_BACKEND_URL` – Base URL for your hosted Lovable backend (defaults to `https://lovable.dev`).
+- `DESKTOP_PROXY_PORT` – Local port exposed by the proxy (defaults to `48888`). Point any API base URLs (e.g., Supabase) used by the renderer at `http://127.0.0.1:<port>` when you need to inspect or tunnel requests.
+- `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, and other frontend environment values required by the existing web build.
+
+### Development workflow
+
+```powershell
+# Install dependencies
+echo "Installing dependencies"
+npm install
+
+# Run the renderer + desktop shell together
+npm run desktop:dev
+```
+
+The `desktop:dev` script starts Vite and then launches Electron once the dev server is reachable. Inside Electron the renderer can interact with the `window.desktopAgent` bridge to access workspace selection and text file helpers.
+
+### Packaging a Windows executable
+
+```powershell
+# Build the Vite renderer and compile the Electron main/preload bundle
+npm run desktop:build
+
+# Produce a signed installer or portable EXE (unsigned by default)
+npm run desktop:package:win
+```
+
+Electron Builder generates output under `out/desktop`. By default the NSIS installer is unsigned. To distribute safely on Windows:
+
+1. Acquire a **code-signing certificate** from a trusted CA (EV certificates reduce SmartScreen warnings).
+2. Configure the certificate for Electron Builder by setting environment variables before running the packaging command:
+   - `CSC_LINK` – HTTPS link or file path to the PFX/PKCS12 certificate bundle.
+   - `CSC_KEY_PASSWORD` – Password for the certificate bundle (if set).
+3. Re-run `npm run desktop:package:win`. Electron Builder signs the binaries during packaging.
+
+For enterprise or private distribution you can also sign the generated binaries manually using `signtool.exe`:
+
+```powershell
+signtool sign /fd SHA256 /a /t http://timestamp.digicert.com "out/desktop/Dashboard Agent Swarm-<version>-Setup.exe"
+```
+
+### Running the packaged app locally
+
+Double-click the generated installer to install the desktop agent UI. The proxy server embedded in the Electron main process starts automatically, so the renderer can continue to call the Lovable backend using the configured environment variables.
+
