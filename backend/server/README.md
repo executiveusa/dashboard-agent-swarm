@@ -1,13 +1,15 @@
 # Multi-Agent Data Service
 
-This service replaces the Supabase dependency with a self-hosted Postgres + SSE API that exposes
-recent task and log activity to every UI surface. The service is designed for deployment on Coolify
-or any container platform.
+This service replaces the Supabase dependency with a self-hosted Postgres + realtime API that
+exposes recent task, log, file index, rollback, and ML pattern activity to every UI surface. The
+service is designed for deployment on Coolify or any container platform.
 
 ## Features
 
-- REST endpoints for fetching the latest tasks and logs.
-- Server-Sent Events (SSE) streams backed by Postgres `LISTEN/NOTIFY` for realtime dashboards.
+- REST endpoints for fetching the latest tasks, logs, file index metadata, rollbacks, and ML
+  patterns.
+- Server-Sent Events (SSE) and WebSocket streams backed by Postgres `LISTEN/NOTIFY` for realtime
+  dashboards.
 - Lightweight Express runtime with configurable CORS and heartbeat support.
 - SQL migrations that recreate the original Supabase schema plus triggers for realtime events.
 
