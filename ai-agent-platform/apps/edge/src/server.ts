@@ -146,8 +146,7 @@ const sendResponse = async (res: ServerResponse, response: Response): Promise<vo
   }
 
   if (!response.body) {
-    const text = await response.text();
-    res.end(text);
+    res.end('');
     return;
   }
 
