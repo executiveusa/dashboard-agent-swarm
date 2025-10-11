@@ -10,7 +10,8 @@
     "lint": "eslint 'src/**/*.{ts,tsx}' --config ../../configs/eslint.config.mjs",
     "test": "vitest run",
     "dev": "vitest watch --run",
-    "deploy": "echo 'Deploy via Lovable CLI: lovable deploy --project edge'"
+    "deploy": "echo 'Deploy via Lovable CLI: lovable deploy --project edge'",
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@ai-agent-platform/shared": "workspace:^",
