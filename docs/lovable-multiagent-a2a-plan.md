@@ -62,10 +62,27 @@ This document captures the end-to-end plan for implementing the Lovable Cloud mu
 - [ ] Record demo video and capture screenshots for PR readiness.
 
 ## Risk & Mitigation
-- **Transport Reliability**: Validate NATS connectivity early; keep Redis fallback feature-complete.
-- **Security Compliance**: Schedule dedicated audit for session vault and secrets handling prior to beta launch.
-- **Cross-Platform Complexity**: Share as much code as possible via `/packages/sdk` and re-use API clients to minimize divergence.
-
+- **Transport Reliability**
+    - *Mitigation Steps*: 
+        1. Set up NATS sandbox environment and run connectivity tests during Milestone 2.
+        2. Implement automated health checks for NATS and Redis adapters.
+        3. Maintain Redis fallback with full feature parity and run failover simulations.
+    - *Responsible Party*: Backend Lead (assigned in Milestone 2)
+    - *Success Criteria*: All connectivity tests pass; Redis fallback passes failover scenarios; no message loss in e2e tests.
+- **Security Compliance**
+    - *Mitigation Steps*: 
+        1. Schedule and conduct a security audit for session vault and secrets handling before beta launch.
+        2. Implement automated secret scanning in CI/CD pipeline.
+        3. Document and enforce least-privilege access policies for all integrations.
+    - *Responsible Party*: Security Engineer (assigned in Milestone 7)
+    - *Success Criteria*: Audit report shows zero critical findings; CI/CD blocks on secret leaks; access policies reviewed and signed off.
+- **Cross-Platform Complexity**
+    - *Mitigation Steps*: 
+        1. Centralize shared business logic in `/packages/sdk` and enforce usage via code reviews.
+        2. Develop and maintain API client libraries for all platforms.
+        3. Run weekly cross-platform parity checks and address divergence immediately.
+    - *Responsible Party*: Tech Lead (assigned in Milestone 9)
+    - *Success Criteria*: All platforms pass parity checklist; no duplicated business logic; API clients are up-to-date and used consistently.
 ## Next Steps
 1. Confirm resource allocation for backend Postgres/Redis/Storage provisioning.
 2. Begin Milestone 1 tasks focusing on workspace alignment and environment configuration.
