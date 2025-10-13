@@ -1,0 +1,1 @@
+export { MCPRegistry } from './registry';

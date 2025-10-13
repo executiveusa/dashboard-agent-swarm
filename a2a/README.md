@@ -1,12 +1,10 @@
 # Agent-to-Agent (A2A) Protocol
 
-This package will house the shared schemas, adapters, and transport utilities that allow every agent runtime to communicate using
-the unified envelope format. Downstream services (Edge Functions, local runner, desktop shell, mobile app) should depend on these
-types to avoid drift.
+Provides shared schemas, adapters, and routing helpers that allow agents to communicate using the unified envelope format.
 
-## Key Responsibilities
+## Modules
 
-- Maintain JSON Schemas for message envelopes and tool call payloads.
-- Provide TypeScript types and validation helpers (e.g., Zod) for runtime safety.
-- Expose adapters for NATS subjects and Redis Streams channels so deployments can choose the most appropriate transport.
-- Surface testing utilities for end-to-end validation of multi-agent conversations.
+- `schemas/envelope.schema.json`: JSON Schema definition for the envelope.
+- `adapters/nats.ts`: NATS transport adapter that handles subscription lifecycle and deduplication.
+- `adapters/redis.ts`: Redis Streams fallback adapter with polling loop.
+- `router.ts`: Minimal LemonAI router helper for emitting validated envelopes.

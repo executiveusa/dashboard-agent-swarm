@@ -1,4 +1,8 @@
 # MCP Package
 
-Hosts the Model Context Protocol client registry, connection pooling, and Playwright server implementation. The runtime uses this
-package to discover available tools and their configuration metadata.
+Provides utilities for working with Model Context Protocol tool registries and client bindings.
+
+## Features
+
+- YAML-driven registry loader with runtime caching.
+- Minimal tool metadata definition including environment requirement hints.

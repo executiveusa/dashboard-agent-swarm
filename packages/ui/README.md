@@ -1,11 +1,7 @@
 # UI Package
 
-This package will own the Shadcn-based design system used across the web, desktop, and mobile clients. It should export locked
-tokens, component wrappers, and lint rules that prevent consumers from bypassing the shared styles.
+Holds the locked Shadcn UI theme tokens and component wrappers shared across the web, desktop, and mobile surfaces.
 
-## Planned Contents
+## Contents
 
-- `theme.ts`: CSS variable definitions and ThemeProvider wiring.
-- `components/`: Re-exported Shadcn primitives with opinionated defaults.
-- `lint/`: ESLint plugin that blocks direct imports from upstream `@/components/ui/*` paths.
-- `docs/`: Usage guidelines consumed by the Designer agent when auditing UI changes.
+- `theme.ts`: CSS variable-backed theme tokens for light/dark mode alignment.
