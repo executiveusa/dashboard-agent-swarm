@@ -1,0 +1,19 @@
+tools:
+  - id: filesystem
+    title: Filesystem
+    description: Access project files with read/write guards.
+    mcpServer: fs
+  - id: browser-playwright
+    title: Playwright Cluster
+    description: Headless browser automation exposed via MCP.
+    mcpServer: playwright
+    requires:
+      - PLAYWRIGHT_CLUSTER_URL
+  - id: secrets-vault
+    title: Secrets Vault
+    description: Encrypted secret retrieval via Lovable Vault.
+    mcpServer: secrets
+  - id: vector-db
+    title: Vector Database
+    description: Embedding store backed by Postgres + pgvector.
+    mcpServer: vector
