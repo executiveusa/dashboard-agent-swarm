@@ -38,7 +38,6 @@ const App = () => (
                   <Route path="/agents" element={<AgentsConsole />} />
                   <Route path="/logs" element={<Logs />} />
                   <Route path="/files" element={<Files />} />
-                  <Route path="/agents" element={<AgentsConsole />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
