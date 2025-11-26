@@ -1,4 +1,4 @@
-import { Activity, Bot, FileText, FolderTree, Settings, Terminal } from "lucide-react";
+import { Activity, Bot, FileText, FolderTree, LineChart, Settings, Terminal, Sparkles } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -6,6 +6,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -13,10 +14,11 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { title: "Dashboard", url: "/", icon: Activity },
-  { title: "Analytics", url: "/analytics", icon: Activity },
-  { title: "Agents", url: "/agents", icon: Bot },
+  { title: "Mission Control", url: "/", icon: Activity },
   { title: "Tasks", url: "/tasks", icon: Terminal },
+  { title: "Analytics", url: "/analytics", icon: LineChart },
+  { title: "Agents", url: "/agents", icon: Bot },
+  { title: "Content", url: "/content", icon: Sparkles },
   { title: "Logs", url: "/logs", icon: FileText },
   { title: "Files", url: "/files", icon: FolderTree },
   { title: "Settings", url: "/settings", icon: Settings },
@@ -28,12 +30,33 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="border-r border-border bg-sidebar">
+      <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
+        <div className="flex items-center gap-3">
+          {/* DAR Badge */}
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-primary shadow-glow-primary">
+            <span className="text-sm font-bold text-primary-foreground">DAR</span>
+          </div>
+          
+          {/* Studio Name - Hide when collapsed */}
+          {!isCollapsed && (
+            <div className="flex flex-col">
+              <span className="text-base font-bold text-sidebar-foreground font-heading">
+                DARYA Studio
+              </span>
+              <span className="text-[0.7rem] text-muted-foreground">
+                Agentic mission control
+              </span>
+            </div>
+          )}
+        </div>
+      </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">
-            {isCollapsed ? "AC" : "Agent Control"}
+          <SidebarGroupLabel className="px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {isCollapsed ? "Nav" : "Navigation"}
           </SidebarGroupLabel>
-          <SidebarGroupContent className="mt-4">
+          <SidebarGroupContent className="mt-2">
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>

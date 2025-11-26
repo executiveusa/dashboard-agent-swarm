@@ -1,20 +1,20 @@
 import { LogsViewer } from "@/components/LogsViewer";
+import { FileText } from "lucide-react";
 
 const Logs = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-primary bg-clip-text text-transparent">
-            System Logs
-          </h1>
-          <p className="text-muted-foreground">
-            View detailed system logs and activity
-          </p>
-        </div>
+    <div className="space-y-6 p-6">
+      <header>
+        <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+          Logs
+        </p>
+        <h2 className="mt-1 text-2xl font-semibold font-heading">System Logs</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Watch your agents, workflows, and webhooks in real time.
+        </p>
+      </header>
 
-        <LogsViewer />
-      </div>
+      <LogsViewer />
     </div>
   );
 };

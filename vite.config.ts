@@ -30,6 +30,9 @@ export default defineConfig(({ mode }) => ({
     proxy: {
       "/agents": flowiseProxy,
       "/api/v1": apiProxy,
+      "/darya": { target: "http://localhost:8787", changeOrigin: true },
+      "/api": { target: "http://localhost:8787", changeOrigin: true },
+      "/lemonai": { target: "http://localhost:8787", changeOrigin: true },
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(

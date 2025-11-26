@@ -15,7 +15,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-sans)'],
+        heading: ['var(--font-heading)'],
         mono: ['"JetBrains Mono"', 'Consolas', 'monospace'],
       },
       colors: {
@@ -97,7 +98,7 @@ export default {
         },
         "pulse-glow": {
           "0%, 100%": { boxShadow: "var(--glow-primary)" },
-          "50%": { boxShadow: "0 0 40px hsl(263 85% 65% / 0.6)" },
+          "50%": { boxShadow: "0 0 40px hsl(256 100% 68% / 0.6)" },
         },
         "slide-in": {
           "0%": { transform: "translateX(-100%)", opacity: "0" },

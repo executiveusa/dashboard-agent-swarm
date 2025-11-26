@@ -376,7 +376,6 @@ export const __internal = {
 };
 import { ApiListResponse, LogRecord, LogStreamEvent, TaskRecord, TaskStreamEvent } from "./types";
 
-const DEFAULT_API_BASE = "http://localhost:8787";
 
 const apiBase = ((): string => {
   const fromEnv = import.meta.env.VITE_API_BASE_URL as string | undefined;

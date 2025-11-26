@@ -1,8 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { useRealtimeCollection } from "@/integrations/data-service/client";
 import {
   fetchRecentTasks,
   subscribeToTaskStream,
@@ -11,14 +10,6 @@ import type { TaskRecord, TaskStreamEvent } from "@/integrations/data-service/ty
 import { CheckCircle2, Circle, Loader2, XCircle } from "lucide-react";
 
 export function TaskMonitor() {
-  const { data: tasks } = useRealtimeCollection<Task>({
-    resource: "tasks",
-    channel: "tasks",
-    limit: 10,
-    snapshotPath: "tasks",
-    realtimePath: "realtime/tasks",
-    getKey: (task) => task?.id,
-  });
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
   const [isStreaming, setIsStreaming] = useState(true);
 
