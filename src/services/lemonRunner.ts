@@ -67,9 +67,12 @@ export async function runAgent(request: AgentRunRequest): Promise<AgentRunRespon
   }
 
   const duration = Date.now() - startTime;
+  const runId = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
 
   // Log to agent_runs table via backend API
   const runLog = {
+    id: runId,
     agentId,
     orgId,
     projectId,
@@ -82,6 +85,7 @@ export async function runAgent(request: AgentRunRequest): Promise<AgentRunRespon
     modelUsed: result.meta?.model || agentDef.model,
     providerUsed: result.meta?.provider || "unknown",
     env: import.meta.env.MODE === "production" ? "prod" : "dev",
+    createdAt,
   };
 
   try {
