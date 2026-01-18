@@ -1,5 +1,18 @@
 # Welcome to your Lovable project
 
+## YAPP Dashboard UI (Agent Zero)
+
+This repository now includes a mobile-first YAPP Dashboard UI for Agent Zero. The UI is frontend-only and uses stubbed data for the task queue, agent registry, and `/health` status so it runs locally without backend changes.
+
+### Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+Open the app at `http://localhost:8080` and navigate to the main dashboard route (`/`).
+
 ## Agents Dashboard (Flowise)
 Run the Flowise dashboard locally:
 
@@ -167,4 +180,3 @@ signtool sign /fd SHA256 /a /t http://timestamp.digicert.com "out/desktop/Dashbo
 ### Running the packaged app locally
 
 Double-click the generated installer to install the desktop agent UI. The proxy server embedded in the Electron main process starts automatically, so the renderer can continue to call the Lovable backend using the configured environment variables.
-
