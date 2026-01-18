@@ -1,157 +1,320 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, Bot, FolderKanban, DollarSign, Zap, TrendingUp } from "lucide-react";
-import { heroMetrics } from "@/services/mockMetrics";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Activity,
+  Bot,
+  CheckCircle2,
+  Clock,
+  HeartPulse,
+  ShieldAlert,
+  Sparkles,
+  Zap,
+} from "lucide-react";
+import { getDashboardSnapshot } from "@/services/yappDashboard";
 
-// Map icons to metrics
-const metricIcons: Record<string, typeof FolderKanban> = {
-  "active-projects": FolderKanban,
-  "agents-online": Bot,
-  "tasks-24h": Zap,
-  "donations-today": DollarSign,
+const statusBadgeStyles: Record<string, string> = {
+  online: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  idle: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  offline: "bg-slate-500/15 text-slate-400 border-slate-500/30",
+  healthy: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  degraded: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  down: "bg-rose-500/15 text-rose-400 border-rose-500/30",
+  queued: "bg-sky-500/15 text-sky-400 border-sky-500/30",
+  running: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  blocked: "bg-rose-500/15 text-rose-400 border-rose-500/30",
+  done: "bg-slate-500/15 text-slate-400 border-slate-500/30",
 };
 
 const Index = () => {
+  const snapshot = getDashboardSnapshot();
+
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      {/* Hero Section */}
-      <section className="px-8 py-12">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-            {/* Left: Hero Content */}
-            <div className="flex flex-col justify-center space-y-6">
-              {/* Eyebrow Pill */}
-              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-glow-primary/40 backdrop-blur">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-                Live multi-agent swarm · DARYA vΩ orchestrating
-              </div>
-
-              {/* Headline */}
-              <h1 className="font-heading text-5xl font-bold leading-tight lg:text-6xl">
-                <span className="bg-gradient-primary bg-clip-text text-transparent">
-                  Mission Control
-                </span>
-                <br />
-                <span className="text-foreground">for your AI Agents</span>
-              </h1>
-
-              {/* Subcopy */}
-              <p className="text-lg text-muted-foreground lg:text-xl">
-                DAR Studio is your command center for orchestrating smart sites, 24/7 fundraising engines, 
-                and UGC swarms — all powered by DARYA and her Crypto Cuties.
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/40">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 pb-12 pt-6 sm:px-6 lg:px-8">
+        <section className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+                YAPP Dashboard
               </p>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap gap-4">
-                <button className="inline-flex items-center gap-2 rounded-lg bg-gradient-primary px-6 py-3 font-semibold text-primary-foreground shadow-glow-primary transition-all hover:scale-105 hover:shadow-glow-primary/80">
-                  <Activity className="h-5 w-5" />
-                  Launch Studio
-                </button>
-                <button className="inline-flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/10 px-6 py-3 font-semibold text-accent transition-all hover:bg-accent/20">
-                  <Bot className="h-5 w-5" />
-                  View Agent Roster
-                </button>
-              </div>
+              <h1 className="mt-2 text-3xl font-semibold text-foreground sm:text-4xl">
+                Welcome back, {snapshot.welcome.name}
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                {snapshot.welcome.summary}
+              </p>
             </div>
-
-            {/* Right: Metrics Grid */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              {heroMetrics.map((metric) => {
-                const Icon = metricIcons[metric.id] || Activity;
-                return (
-                  <Card 
-                    key={metric.id}
-                    className="border-border/50 bg-card/50 backdrop-blur transition-all hover:border-primary/30 hover:shadow-glow-primary/20"
-                  >
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">
-                        {metric.label}
-                      </CardTitle>
-                      <Icon className="h-4 w-4 text-primary" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="font-heading text-3xl font-bold text-foreground">
-                        {metric.value}
-                      </div>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {metric.hint}
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+            <div className="flex flex-wrap gap-2">
+              <Badge className="gap-1 border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Live sync
+              </Badge>
+              <Badge className="gap-1 border border-sky-500/30 bg-sky-500/10 text-sky-300">
+                <Sparkles className="h-3.5 w-3.5" />
+                Agent Zero online
+              </Badge>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Section: Active Projects */}
-      <section className="px-8 py-8">
-        <div className="mx-auto max-w-7xl">
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-heading text-xl">
-                <FolderKanban className="h-5 w-5 text-primary" />
-                Active Projects
+          <Card className="border-border/60 bg-card/70 shadow-lg shadow-primary/5">
+            <CardHeader className="gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Activity className="h-5 w-5 text-primary" />
+                Today at a glance
               </CardTitle>
               <CardDescription>
-                Recent blueprints and deployed sites
+                Quick pulse on your agents, queue, and active alerts.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg border border-border/30 bg-muted/20 p-8 text-center text-muted-foreground">
-                <p>Project list will appear here</p>
-                <p className="mt-1 text-xs">Connected to /darya/blueprint endpoint</p>
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="rounded-xl border border-border/50 bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Tasks queued
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-foreground">
+                    {snapshot.stats.queued}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-border/50 bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Running now
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-foreground">
+                    {snapshot.stats.running}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-border/50 bg-muted/40 p-4">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Active alerts
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-foreground">
+                    {snapshot.stats.alerts}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
-        </div>
-      </section>
+        </section>
 
-      {/* Section: Agent Activity */}
-      <section className="px-8 py-8">
-        <div className="mx-auto max-w-7xl">
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-heading text-xl">
-                <Bot className="h-5 w-5 text-accent" />
-                Agent Activity
-              </CardTitle>
-              <CardDescription>
-                Live agents & tasks
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-lg border border-border/30 bg-muted/20 p-8 text-center text-muted-foreground">
-                <p>Agent status will appear here</p>
-                <p className="mt-1 text-xs">DARYA + Crypto Cuties roster</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+        <section className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+          <div className="space-y-6">
+            <Card className="border-border/60 bg-card/80">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Zap className="h-5 w-5 text-primary" />
+                  Task feed
+                </CardTitle>
+                <CardDescription>
+                  Live queue updates from Agent Zero and the crew.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {snapshot.tasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex flex-col gap-3 rounded-xl border border-border/50 bg-muted/40 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-sm font-semibold text-foreground">
+                          {task.title}
+                        </p>
+                        <Badge
+                          className={`border text-[0.65rem] uppercase tracking-wide ${
+                            statusBadgeStyles[task.state]
+                          }`}
+                        >
+                          {task.state}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Owner: {task.owner} · ETA: {task.eta}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {task.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-border/60 bg-background/60 px-2 py-0.5 text-[0.65rem] text-muted-foreground"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <Button variant="secondary" className="w-full sm:w-auto">
+                      View
+                    </Button>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
 
-      {/* Section: Recent Logs */}
-      <section className="px-8 py-8 pb-16">
-        <div className="mx-auto max-w-7xl">
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 font-heading text-xl">
-                <TrendingUp className="h-5 w-5 text-success" />
-                Recent Activity
-              </CardTitle>
-              <CardDescription>
-                Automation logs and fundraising events
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-lg border border-border/30 bg-muted/20 p-8 text-center text-muted-foreground">
-                <p>Activity timeline will appear here</p>
-                <p className="mt-1 text-xs">automation_logs & interactions</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+            <Card className="border-border/60 bg-card/80">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Bot className="h-5 w-5 text-primary" />
+                  YAP input
+                </CardTitle>
+                <CardDescription>
+                  Send concise instructions for Agent Zero to execute.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Textarea
+                  placeholder="Describe the task, desired outcome, and urgency..."
+                  className="min-h-[120px] resize-none"
+                />
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-wrap gap-2">
+                    {["Summarize logs", "Spin up research", "Draft reply"].map(
+                      (prompt) => (
+                        <button
+                          key={prompt}
+                          className="rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs text-muted-foreground transition hover:border-primary/40 hover:text-primary"
+                          type="button"
+                        >
+                          {prompt}
+                        </button>
+                      )
+                    )}
+                  </div>
+                  <Button className="gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    Send YAP
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="border-border/60 bg-card/80">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <HeartPulse className="h-5 w-5 text-primary" />
+                  System health
+                </CardTitle>
+                <CardDescription>
+                  Status from /health, queue, and registry endpoints.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {snapshot.health.map((check) => (
+                  <div key={check.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">
+                          {check.label}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {check.detail}
+                        </p>
+                      </div>
+                      <Badge
+                        className={`border text-[0.65rem] uppercase tracking-wide ${
+                          statusBadgeStyles[check.status]
+                        }`}
+                      >
+                        {check.status}
+                      </Badge>
+                    </div>
+                    <Progress value={check.percent} />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60 bg-card/80">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Bot className="h-5 w-5 text-primary" />
+                  Crew status
+                </CardTitle>
+                <CardDescription>
+                  Active agents synced from the registry.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {snapshot.crew.map((member) => (
+                  <div
+                    key={member.id}
+                    className="flex flex-col gap-3 rounded-xl border border-border/50 bg-muted/40 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">
+                          {member.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {member.role} · {member.lastSeen}
+                        </p>
+                      </div>
+                      <Badge
+                        className={`border text-[0.65rem] uppercase tracking-wide ${
+                          statusBadgeStyles[member.status]
+                        }`}
+                      >
+                        {member.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground">
+                        Focus: {member.focus}
+                      </p>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Clock className="h-3.5 w-3.5" />
+                        {member.lastSeen}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60 bg-card/80">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <ShieldAlert className="h-5 w-5 text-primary" />
+                  Safety checks
+                </CardTitle>
+                <CardDescription>
+                  Governance guardrails for critical actions.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/40 px-3 py-2">
+                  <span>Human approval required</span>
+                  <Badge className="border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+                    Enabled
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/40 px-3 py-2">
+                  <span>Budget limits</span>
+                  <Badge className="border border-slate-500/30 bg-slate-500/10 text-slate-300">
+                    $5k cap
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/40 px-3 py-2">
+                  <span>Security posture</span>
+                  <Badge className="border border-amber-500/30 bg-amber-500/10 text-amber-300">
+                    Review
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

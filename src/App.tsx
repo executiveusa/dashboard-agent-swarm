@@ -35,10 +35,10 @@ const App = () => (
                   <SidebarTrigger />
                   <div className="flex flex-col">
                     <span className="text-xs font-semibold tracking-[0.22em] text-primary uppercase font-heading">
-                      DARYA Studio
+                      YAPP Dashboard
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      Agentic mission control for your AI swarms
+                      Mission control for Agent Zero and the crew
                     </span>
                   </div>
                 </div>
@@ -46,7 +46,7 @@ const App = () => (
                   <OrgSwitcher />
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[0.7rem] font-medium text-primary">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Antigravity-ready
+                    Agent Zero live
                   </span>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[0.7rem] font-medium text-accent">
                     env: prod
