@@ -1,0 +1,19 @@
+{
+  "agent_name": "Cody",
+  "agent_role": "Refactor Specialist",
+  "task_id": "CODY-READINESS-ACK-001",
+  "status": "READY",
+  "report": {
+    "system_prompt": "installed",
+    "execution_location": "local_on_site",
+    "capabilities": [
+      "large refactors",
+      "dependency rewrites",
+      "performance optimization"
+    ]
+  },
+  "next_actions": [
+    "Await task assignment from Agent Zero or U"
+  ],
+  "signature": "— Cody"
+}
