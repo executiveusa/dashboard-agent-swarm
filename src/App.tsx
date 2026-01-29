@@ -13,6 +13,7 @@ import Settings from "./pages/Settings";
 import Analytics from "./pages/Analytics";
 import AgentsConsole from "./pages/AgentsConsole";
 import Content from "./pages/Content";
+import CynthiaWatch from "./pages/CynthiaWatch";
 import NotFound from "./pages/NotFound";
 import { OrgProvider } from "./contexts/OrgContext";
 import { OrgSwitcher } from "./components/OrgSwitcher";
@@ -59,6 +60,7 @@ const App = () => (
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/analytics" element={<Analytics />} />
                   <Route path="/agents" element={<AgentsConsole />} />
+                  <Route path="/agents/cynthia/watch" element={<CynthiaWatch />} />
                   <Route path="/logs" element={<Logs />} />
                   <Route path="/files" element={<Files />} />
                   <Route path="/content" element={<Content />} />

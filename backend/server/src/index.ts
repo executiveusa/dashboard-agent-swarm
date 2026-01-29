@@ -12,7 +12,9 @@ import { createTaskRoutes } from "./routes/tasks";
 import { createFileIndexRoutes } from "./routes/fileIndex";
 import { createRollbackRoutes } from "./routes/rollbacks";
 import { createMlPatternRoutes } from "./routes/mlPatterns";
+import { createTelemetryRoutes } from "./routes/telemetry";
 import { PostgresWebSocketBridge } from "./lib/websocket";
+import { requireAdminToken } from "./lib/redaction";
 
 async function bootstrap() {
   const config = loadConfig();
@@ -33,6 +35,7 @@ async function bootstrap() {
   const fileIndexRoutes = createFileIndexRoutes(db, config);
   const rollbackRoutes = createRollbackRoutes(db, config);
   const mlPatternRoutes = createMlPatternRoutes(db, config);
+  const telemetryRoutes = createTelemetryRoutes(db, config);
 
   app.get("/health", (_req, res) => {
     res.json({ status: "ok" });
@@ -52,6 +55,14 @@ async function bootstrap() {
 
   app.get("/api/ml-patterns", mlPatternRoutes.listPatterns);
   app.get("/api/ml-patterns/stream", mlPatternRoutes.streamPatterns);
+
+  // Cynthia observability endpoints (secured with admin token)
+  app.post("/api/telemetry/event", requireAdminToken, telemetryRoutes.postEvent);
+  app.post("/api/telemetry/session", requireAdminToken, telemetryRoutes.postSession);
+  app.get("/api/telemetry/stream", telemetryRoutes.streamEvents);
+  app.get("/api/telemetry/sessions", telemetryRoutes.listSessions);
+  app.get("/api/telemetry/sessions/:id/events", telemetryRoutes.getSessionEvents);
+  app.get("/api/telemetry/events", telemetryRoutes.listEvents);
 
   const server = http.createServer(app);
 
