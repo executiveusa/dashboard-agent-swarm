@@ -33,6 +33,12 @@ export default defineConfig(({ mode }) => ({
       "/darya": { target: "http://localhost:8787", changeOrigin: true },
       "/api": { target: "http://localhost:8787", changeOrigin: true },
       "/lemonai": { target: "http://localhost:8787", changeOrigin: true },
+      "/agent-claw": {
+        target: "http://localhost:50001",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (incomingPath: string) => incomingPath.replace(/^\/agent-claw/, ""),
+      },
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(

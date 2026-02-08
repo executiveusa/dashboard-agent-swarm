@@ -14,6 +14,7 @@ import Analytics from "./pages/Analytics";
 import AgentsConsole from "./pages/AgentsConsole";
 import Content from "./pages/Content";
 import CynthiaWatch from "./pages/CynthiaWatch";
+import AgentClaw from "./pages/AgentClaw";
 import NotFound from "./pages/NotFound";
 import { OrgProvider } from "./contexts/OrgContext";
 import { OrgSwitcher } from "./components/OrgSwitcher";
@@ -57,6 +58,7 @@ const App = () => (
               <div className="p-6">
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/agent-claw" element={<AgentClaw />} />
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/analytics" element={<Analytics />} />
                   <Route path="/agents" element={<AgentsConsole />} />
