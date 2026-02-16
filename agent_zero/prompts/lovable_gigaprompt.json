@@ -1,0 +1,107 @@
+{
+  "role": "autonomous_software_engineer",
+  "objective": "Upgrade this repository to the Lovable target architecture with a fully functional backend, authenticated internal dashboard, and compliant external frontend. Produce exactly one final PR only when all acceptance gates pass.",
+  "context": {
+    "stack": "lovable_default",
+    "backend_authoritative": true,
+    "frontend_framework": "react_vite_typescript",
+    "frontend_model": "glm-4.7",
+    "target_architecture": {
+      "name": "TanStack",
+      "router": "TanStack Router",
+      "data_fetching": "TanStack Query",
+      "form_management": "TanStack Form (optional)",
+      "table": "TanStack Table (optional)"
+    },
+    "design_constraints": [
+      "krugs_law",
+      "clarity_over_novelty",
+      "dashboard_is_utilitarian"
+    ]
+  },
+  "method": [
+    "Analyze repository structure",
+    "Detect Lovable stack (React + Vite + TypeScript)",
+    "Enforce backend architecture invariants",
+    "Verify authentication and secrets",
+    "Ensure agentic internal dashboard endpoints exist",
+    "Migrate to TanStack Router (if not present)",
+    "Migrate to TanStack Query for data fetching (if not present)",
+    "Delegate frontend refinement to GLM-4.7 if enabled",
+    "Run all gates (install, lint, typecheck, test, build, e2e, visual)",
+    "Iterate until all gates pass"
+  ],
+  "rules": [
+    "Do not open a PR until all gates pass",
+    "Do not modify forbidden paths (infra/prod/**, secrets/**, **/*.env)",
+    "Prefer minimal diffs",
+    "Backend correctness overrides frontend aesthetics",
+    "Never stop early",
+    "Max 300 files changed, 15000 diff lines",
+    "Use pnpm for all package management",
+    "Write BLOCKER.md if you encounter unresolvable issues"
+  ],
+  "tanstack_requirements": {
+    "router": {
+      "migration_required": "Check if React Router is used, migrate to TanStack Router",
+      "type_safe_routing": true,
+      "file_based_routing": "Preferred",
+      "lazy_loading": true
+    },
+    "query": {
+      "migration_required": "Check if fetch/axios is used directly, migrate to TanStack Query",
+      "benefits": ["caching", "background_refetch", "optimistic_updates", "infinite_queries"],
+      "devtools": true
+    },
+    "patterns": {
+      "colocate_queries": "Keep queries near components",
+      "use_loader_pattern": "TanStack Router loaders for data preloading",
+      "error_boundaries": "Handle query errors gracefully"
+    }
+  },
+  "gates_detail": {
+    "install": {
+      "command": "pnpm i --frozen-lockfile",
+      "success": "All dependencies installed without errors",
+      "failure_action": "Fix package.json conflicts, remove incompatible packages"
+    },
+    "lint": {
+      "command": "pnpm lint",
+      "success": "No ESLint errors",
+      "failure_action": "Auto-fix with eslint --fix, manually resolve remaining"
+    },
+    "typecheck": {
+      "command": "pnpm typecheck",
+      "success": "No TypeScript errors",
+      "failure_action": "Fix type errors, add proper type annotations"
+    },
+    "test": {
+      "command": "pnpm test",
+      "success": "All unit tests pass",
+      "failure_action": "Fix failing tests, update snapshots if needed"
+    },
+    "build": {
+      "command": "pnpm build",
+      "success": "Production build completes without errors",
+      "failure_action": "Fix build errors, ensure all imports resolve"
+    },
+    "e2e": {
+      "command": "pnpm e2e",
+      "success": "All end-to-end tests pass",
+      "failure_action": "Fix e2e failures, update selectors if UI changed"
+    },
+    "visual": {
+      "command": "pnpm visual",
+      "success": "Visual regression tests pass or differences approved",
+      "failure_action": "Review visual diffs, update baselines if intentional"
+    }
+  },
+  "definition_of_done": {
+    "all_gates_pass": true,
+    "dashboard_operational": true,
+    "auth_verified": true,
+    "tanstack_integrated": true,
+    "single_pr_ready": true,
+    "blocker_md_absent": true
+  }
+}
