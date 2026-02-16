@@ -526,3 +526,23 @@ Verify:
 2. The Robot-Mode Maker (#3)
 3. CLI Error Tolerance (#19)
 4. Multi-Model Synthesis (#11)
+
+---
+
+## External Tool Adoption Addendum (Fleet Standard)
+
+When integrating external tools (including `markdown_web_browser`, `claude_code_agent_farm`, `ultimate_mcp_client`, CASS, SLB, and playlist transcription), use this sequence:
+
+1. Classify action using ACIP (`SAFE`, `SENSITIVE-ALLOWED`, `DISALLOWED`)
+2. Verify pinned version + checksum; reject unverified installer scripts
+3. Define domain-native owner repo and owner agent
+4. Add telemetry event mapping before enabling runtime invoke
+5. Pilot in Core 4 repos; then promote to all 11 repos
+
+### New shared skill requirement
+
+`bulk_transcribe_youtube_videos_from_playlist` is now a fleet-wide shared skill. Canonical skill source is:
+
+- `executiveusa/agent_flywheel_clawdbot_skills_and_integrations`
+
+Consumer repos should sync from canonical source rather than maintaining divergent copies.
