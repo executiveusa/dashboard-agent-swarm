@@ -59,3 +59,24 @@
 - Frontend Supabase access requires `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`; the agent edge function also checks `VITE_AGENT_ENDPOINT` when overriding defaults.
 - Keep secrets out of source—`.gitignore` already excludes `.env`, and provisioning scripts handle encrypted injection.
 
+## Persistent Memory (Beads)
+This project uses **bd (beads)** for persistent issue tracking and agent memory.
+Run `bd prime` for workflow context.
+
+**Quick reference:**
+- `bd ready` - Find unblocked work
+- `bd create "Title" --type task --priority 2` - Create issue
+- `bd update <id> --claim` - Claim a task
+- `bd close <id>` - Complete work
+- `bd sync` - Sync with git (run at session end)
+- `bd list --json` - List all open issues
+
+**Workflow:**
+1. Start session: `bd ready --json` to see what's unblocked
+2. Claim work: `bd update <id> --claim`
+3. Do the work
+4. Close: `bd close <id> --reason "what was done"`
+5. End session: `bd sync` (exports to JSONL, commits, pushes)
+
+**Connected repos:** `devika-agent` (Python Flask backend), `GPT-Agent-im-ready` (Meeting Room / Pauli's Place)
+**NEVER commit secrets.** All API keys must come from environment variables.
