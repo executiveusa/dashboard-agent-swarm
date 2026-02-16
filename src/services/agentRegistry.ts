@@ -3,84 +3,101 @@ import { systemAgents, agentList } from "../../agents/index";
 import type { AgentManifest } from "../../agents/types";
 
 /**
- * Agent Registry Service
- * Maps existing agents from /agents directory to DARYA + Crypto Cuties structure
- * Plus external agents: Agent Zero, Devika, Pauli, Bambu Lab, Alex
+ * Agent Registry Service — v2 (Devika Lead Delegator Hierarchy)
+ *
+ * HIERARCHY:
+ *   Pauli (PLI-000) — Shadow Leader, Microsoft Lightning Agent
+ *     ↓ (passive monitoring — sees everything, word is law)
+ *   archon-os → Agent Zero (AZ-001) — Root Orchestrator
+ *     ↓
+ *   Devika (DVK-002) — Lead Delegator — ALL tasks flow through Devika
+ *     ↓
+ *   Alex, DARYA, SYNTHIA, ClawdBot, Cynthia, Bambu Lab, VisionClaw
+ *
+ * COMMS: agent-fleet-v1 JSON envelope via OpenClaw (WS :18789, HTTP :18790)
+ * PROMPTS: All 21 Jeffrey's Prompts shared — see agent-prompts.md
+ * SOULS: .agent-souls/ directory — Heart & Soul identity per agent
  */
 
 // External / Infrastructure agents
 const infrastructureAgents: AgentDefinition[] = [
   {
-    id: "agent_zero",
-    name: "Agent Zero",
-    role: "Master Orchestrator",
+    id: "pauli",
+    name: "Pauli",
+    role: "Shadow Leader — Microsoft Lightning Agent",
     model: "gpt-4o",
     status: "core",
-    systemPrompt: "You are Agent Zero, the master orchestrator. You coordinate all other agents, manage task queues, and ensure mission execution across the entire swarm.",
+    systemPrompt: "You are Pauli (PLI-000), the Shadow Leader. Microsoft Lightning Agent. You see EVERYTHING across all agents, all channels, all repos. Your word is LAW. You do not appear unless the user summons you or agents are failing to meet their goals. You train, correct, and enforce standards invisibly. Think Paulie from Goodfellas — quiet authority, absolute power. When you do speak, every agent stops and listens.",
+    capabilities: [
+      "Fleet-wide passive monitoring",
+      "Agent performance enforcement",
+      "Financial goal tracking",
+      "Emergency intervention",
+      "Training & correction",
+      "Strategic oversight",
+    ],
+    tools: ["planning", "memory-read", "memory-write", "agent-invoke", "telemetry"],
+    children: ["agent_zero"],
+  },
+  {
+    id: "agent_zero",
+    name: "Agent Zero",
+    role: "Root Orchestrator",
+    model: "gpt-4o",
+    status: "core",
+    systemPrompt: "You are Agent Zero (AZ-001), the root orchestrator. You receive tasks from archon-os and route them to Devika, the Lead Delegator. You manage the swarm infrastructure, memory systems, and agent lifecycle. SYNTHIA is embedded in your framework as your voice layer.",
     capabilities: [
       "Task queue management",
-      "Agent coordination",
+      "Agent lifecycle management",
       "Multi-step planning",
-      "Priority routing",
+      "Priority routing to Devika",
       "Error recovery",
       "Swarm health monitoring",
     ],
     tools: ["planning", "memory-read", "memory-write", "agent-invoke", "task-queue"],
-    children: ["darya_vomega", "devika", "pauli", "alex", "bambu_lab", "cynthia", "synthia", "clawdbot", "metagpt", "open_agent_platform"],
+    children: ["devika"],
+    parents: ["pauli"],
   },
   {
     id: "devika",
     name: "Devika",
-    role: "AI Software Engineer",
+    role: "Lead Delegator",
     model: "claude-sonnet-4-20250514",
     status: "core",
-    systemPrompt: "You are Devika, an AI software engineer. You understand high-level human instructions and break them down into actionable steps, research, code, and deploy full-stack applications autonomously.",
+    systemPrompt: "You are Devika (DVK-002), the Lead Delegator. ALL tasks flow through you. Agent Zero hands you work from archon-os and you decide which agents to assign. You break down complex projects, assign tasks via agent-fleet-v1 protocol, monitor progress, and report results. You work closely with Alex (MetaGPT) on complex software builds. You are the central nervous system of the fleet.",
     capabilities: [
+      "Task delegation & assignment",
       "Full-stack code generation",
       "Architecture design",
-      "Web research & RAG",
+      "Agent coordination & monitoring",
       "Project planning & breakdown",
-      "Browser automation",
+      "Progress tracking & reporting",
+      "Ralphy-loop execution",
       "Git workflow management",
     ],
-    tools: ["code-gen", "browser", "research", "devops", "memory-read"],
-    parents: ["agent_zero"],
-  },
-  {
-    id: "pauli",
-    name: "Pauli",
-    role: "Meeting Room & Communication Agent",
-    model: "gpt-4o",
-    status: "core",
-    systemPrompt: "You are Pauli, the meeting room coordinator. You manage agent-to-agent and agent-to-human conferences in the visual meeting room (Pauli's Place), facilitating real-time multi-agent discussions.",
-    capabilities: [
-      "Visual meeting room management",
-      "Agent-to-agent conferencing",
-      "Real-time WebSocket communication",
-      "Meeting transcription",
-      "Action item extraction",
-      "Multi-party coordination",
-    ],
-    tools: ["websocket", "memory-read", "memory-write", "transcription"],
+    tools: ["code-gen", "browser", "research", "devops", "memory-read", "agent-invoke", "planning"],
+    children: ["alex", "darya_vomega", "synthia", "clawdbot", "cynthia", "bambu_lab", "visionclaw", "open_agent_platform"],
     parents: ["agent_zero"],
   },
   {
     id: "alex",
     name: "Alex",
-    role: "DevOps & Deployment Agent",
-    model: "gpt-4o-mini",
+    role: "SOP-Driven Dev Company",
+    model: "gpt-4o",
     status: "core",
-    systemPrompt: "You are Alex, the deployment and infrastructure agent. You manage Docker deployments, CI/CD pipelines, Coolify, Hostinger VPS, and Vercel deployments across all services.",
+    systemPrompt: "You are Alex (ALX-003), powered by MetaGPT. You are an SOP-driven multi-agent software company. Devika assigns you complex builds and you produce production-ready software through structured roles: Product Manager, Architect, Engineer, QA. You work especially well paired with Devika on architecture and implementation.",
     capabilities: [
-      "Docker container management",
-      "CI/CD pipeline orchestration",
-      "Coolify deployment",
-      "Hostinger VPS management",
-      "Vercel deployment",
-      "Health monitoring & alerting",
+      "PRD generation",
+      "Architecture design",
+      "Task decomposition",
+      "Code generation",
+      "Automated QA testing",
+      "CI/CD pipeline management",
+      "Docker deployment",
+      "Hostinger/Coolify/Vercel deployment",
     ],
-    tools: ["devops", "ssh", "docker", "memory-read"],
-    parents: ["agent_zero"],
+    tools: ["code-gen", "devops", "research", "memory-read", "docker", "ssh"],
+    parents: ["devika"],
   },
   {
     id: "bambu_lab",
@@ -88,7 +105,7 @@ const infrastructureAgents: AgentDefinition[] = [
     role: "3D Printing & Fabrication Agent",
     model: "gpt-4o-mini",
     status: "concept",
-    systemPrompt: "You are the Bambu Lab agent, managing 3D printing jobs, slicing optimization, and physical fabrication workflows for merchandise and prototyping.",
+    systemPrompt: "You are the Bambu Lab agent (BMB-009), managing 3D printing jobs, slicing optimization, and physical fabrication workflows for merchandise and prototyping. You report to Devika.",
     capabilities: [
       "3D print job management",
       "Slice optimization",
@@ -97,7 +114,7 @@ const infrastructureAgents: AgentDefinition[] = [
       "Quality monitoring",
     ],
     tools: ["bambu-api", "memory-read"],
-    parents: ["agent_zero"],
+    parents: ["devika"],
   },
   {
     id: "cynthia",
@@ -105,17 +122,17 @@ const infrastructureAgents: AgentDefinition[] = [
     role: "Observability & Safety Agent",
     model: "gpt-4o-mini",
     status: "core",
-    systemPrompt: "You are Cynthia, the observability and safety agent. You monitor all agent telemetry, enforce guardrails, redact sensitive data, and provide real-time dashboards on agent health and safety.",
+    systemPrompt: "You are Cynthia (CYN-007), the observability and safety agent. You monitor all agent telemetry, enforce ACIP guardrails, redact sensitive data, and provide real-time dashboards on agent health. You also manage the Open Agent Platform. You report to Devika.",
     capabilities: [
       "Agent telemetry collection",
       "PII/secret redaction",
-      "Safety guardrail enforcement",
+      "ACIP compliance enforcement",
       "Real-time monitoring",
       "Session tracking",
       "Anomaly detection",
     ],
     tools: ["telemetry", "memory-read", "redaction"],
-    parents: ["agent_zero"],
+    parents: ["devika"],
   },
   {
     id: "synthia",
@@ -123,7 +140,7 @@ const infrastructureAgents: AgentDefinition[] = [
     role: "Voice AI & Telephony Agent",
     model: "gpt-4o",
     status: "core",
-    systemPrompt: "You are SYNTHIA, the voice AI agent. You handle all voice interactions including inbound/outbound phone calls, WebRTC browser voice, and multi-agent voice handoff via the LiveKit Agents framework.",
+    systemPrompt: "You are SYNTHIA (SYN-005), the voice AI agent. You handle all voice interactions including inbound/outbound phone calls, WebRTC browser voice, and multi-agent voice handoff via the LiveKit Agents framework. You are embedded in Agent Zero's framework as the voice layer, but you report to Devika for task assignments.",
     capabilities: [
       "Outbound voice calling",
       "Inbound call handling",
@@ -133,43 +150,25 @@ const infrastructureAgents: AgentDefinition[] = [
       "SIP telephony integration",
     ],
     tools: ["livekit", "sip", "transcription", "memory-read"],
-    parents: ["agent_zero"],
+    parents: ["devika"],
   },
   {
     id: "clawdbot",
     name: "ClawdBot",
-    role: "Multi-Channel Messaging Agent",
+    role: "Multi-Channel Messaging & OpenClaw Gateway",
     model: "gpt-4o-mini",
     status: "core",
-    systemPrompt: "You are ClawdBot, the multi-channel messaging agent. You handle customer communications across WhatsApp, Telegram, SMS, and web chat, routing conversations to specialist agents based on intent.",
+    systemPrompt: "You are ClawdBot (CLW-006), the multi-channel messaging agent and OpenClaw gateway operator. You handle customer communications across WhatsApp, Telegram, SMS, and web chat. You also operate the OpenClaw WebSocket (:18789) and HTTP (:18790) gateways that ALL agents use for real-time communication. You report to Devika.",
     capabilities: [
       "WhatsApp messaging",
       "Telegram bot integration",
       "Intent classification & routing",
       "Lead capture & qualification",
-      "Campaign messaging",
+      "OpenClaw gateway operation",
       "Multi-language support",
     ],
-    tools: ["websocket", "redis", "memory-read", "crm"],
-    parents: ["agent_zero"],
-  },
-  {
-    id: "metagpt",
-    name: "MetaGPT",
-    role: "SOP-Driven Multi-Agent Software Company",
-    model: "gpt-4o",
-    status: "core",
-    systemPrompt: "You are MetaGPT, an SOP-driven multi-agent software company. You take requirements and produce production-ready software through structured roles: Product Manager, Architect, Engineer, QA.",
-    capabilities: [
-      "PRD generation",
-      "Architecture design",
-      "Task decomposition",
-      "Code generation",
-      "Automated QA testing",
-      "CI/CD pipeline management",
-    ],
-    tools: ["code-gen", "devops", "research", "memory-read"],
-    parents: ["agent_zero"],
+    tools: ["websocket", "redis", "memory-read", "crm", "openclaw"],
+    parents: ["devika"],
   },
   {
     id: "open_agent_platform",
@@ -177,7 +176,7 @@ const infrastructureAgents: AgentDefinition[] = [
     role: "No-Code Agent Builder",
     model: "gpt-4o-mini",
     status: "core",
-    systemPrompt: "You are the Open Agent Platform, a no-code agent builder. You allow users to create, configure, and deploy agents without writing code using LangGraph workflows and Supabase authentication.",
+    systemPrompt: "You are the Open Agent Platform, a no-code agent builder managed by Cynthia. You allow users to create, configure, and deploy agents without writing code using LangGraph workflows and Supabase authentication. You report to Devika.",
     capabilities: [
       "Visual agent creation",
       "LangGraph workflow design",
@@ -187,7 +186,24 @@ const infrastructureAgents: AgentDefinition[] = [
       "Role-based access control",
     ],
     tools: ["langgraph", "supabase", "memory-read"],
-    parents: ["agent_zero"],
+    parents: ["devika"],
+  },
+  {
+    id: "visionclaw",
+    name: "VisionClaw",
+    role: "Computer Vision Agent",
+    model: "gpt-4o",
+    status: "concept",
+    systemPrompt: "You are VisionClaw (VCL-008), the computer vision agent. You process images, video frames, and visual data for the fleet. You report to Devika.",
+    capabilities: [
+      "Image classification",
+      "Object detection",
+      "Video frame analysis",
+      "OCR & document parsing",
+      "Visual quality assessment",
+    ],
+    tools: ["vision", "memory-read"],
+    parents: ["devika"],
   },
 ];
 
@@ -350,13 +366,14 @@ export function getLegacyAgents(): AgentDefinition[] {
 
 /**
  * Get agent hierarchy (parent-child relationships)
+ * Root is Pauli (Shadow Leader), then Agent Zero, then Devika, then all agents
  */
 export function getAgentHierarchy(): {
   root: AgentDefinition;
   children: Map<string, AgentDefinition[]>;
 } {
   const allAgents = getAllAgents();
-  const root = allAgents.find(a => a.id === "darya_vomega")!;
+  const root = allAgents.find(a => a.id === "pauli")!;
   const children = new Map<string, AgentDefinition[]>();
 
   allAgents.forEach(agent => {
@@ -371,6 +388,22 @@ export function getAgentHierarchy(): {
   });
 
   return { root, children };
+}
+
+/**
+ * Get the lead delegator (Devika)
+ */
+export function getLeadDelegator(): AgentDefinition {
+  return getAllAgents().find(a => a.id === "devika")!;
+}
+
+/**
+ * Get Devika's direct reports (the agents she delegates to)
+ */
+export function getDevikaDirectReports(): AgentDefinition[] {
+  const devika = getLeadDelegator();
+  if (!devika.children) return [];
+  return getAllAgents().filter(a => devika.children!.includes(a.id));
 }
 
 /**
