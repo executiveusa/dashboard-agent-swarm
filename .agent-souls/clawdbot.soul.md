@@ -61,3 +61,15 @@ openclaw:
   can_receive_from: all_agents (relay capability)
   cli: openclaw
 ```
+
+## ACFS Flywheel Tools
+```yaml
+flywheel:
+  assigned: [NTM, AM, CASS, CM]
+  role_in_flywheel: messaging
+  notes:
+    - "NTM: receives and routes task notifications across channels"
+    - "AM: central agent mail relay — all inter-agent comms flow through"
+    - "CASS: searches conversation history for intent matching"
+    - "CM: manages multi-channel conversation context"
+```

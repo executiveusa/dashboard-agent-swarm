@@ -3,7 +3,7 @@ import { systemAgents, agentList } from "../../agents/index";
 import type { AgentManifest } from "../../agents/types";
 
 /**
- * Agent Registry Service — v2 (Devika Lead Delegator Hierarchy)
+ * Agent Registry Service — v3 (Devika Lead Delegator Hierarchy + Flywheel)
  *
  * HIERARCHY:
  *   Pauli (PLI-000) — Shadow Leader, Microsoft Lightning Agent
@@ -12,11 +12,24 @@ import type { AgentManifest } from "../../agents/types";
  *     ↓
  *   Devika (DVK-002) — Lead Delegator — ALL tasks flow through Devika
  *     ↓
- *   Alex, DARYA, SYNTHIA, ClawdBot, Cynthia, Bambu Lab, VisionClaw
+ *   Alex, DARYA, SYNTHIA, ClawdBot, Cynthia, Bambu Lab, VisionClaw, Caller, Architect
  *
  * COMMS: agent-fleet-v1 JSON envelope via OpenClaw (WS :18789, HTTP :18790)
  * PROMPTS: All 21 Jeffrey's Prompts shared — see agent-prompts.md
  * SOULS: .agent-souls/ directory — Heart & Soul identity per agent
+ *
+ * ACFS FLYWHEEL TOOLS:
+ *   NTM  — Notifications & Task Manager
+ *   AM   — Agent Mail (inter-agent messaging)
+ *   BV   — Beads Viewer (work-item tracker)
+ *   CASS — Context-Aware Search & Summarization
+ *   CM   — Context Manager
+ *   UBS  — Unified Build System
+ *   DCG  — Dynamic Code Generation
+ *   SLB  — Smart Log Browser
+ *   RU   — Resource Usage monitor
+ *   MS   — Model Selector
+ *   ACFS — Agentic Coding Flywheel Setup (orchestrator)
  */
 
 // External / Infrastructure agents
@@ -37,6 +50,7 @@ const infrastructureAgents: AgentDefinition[] = [
       "Strategic oversight",
     ],
     tools: ["planning", "memory-read", "memory-write", "agent-invoke", "telemetry"],
+    flywheelTools: ["NTM", "CASS", "SLB", "RU", "MS", "ACFS"],
     children: ["agent_zero"],
   },
   {
@@ -55,6 +69,7 @@ const infrastructureAgents: AgentDefinition[] = [
       "Swarm health monitoring",
     ],
     tools: ["planning", "memory-read", "memory-write", "agent-invoke", "task-queue"],
+    flywheelTools: ["NTM", "AM", "BV", "CASS", "CM", "UBS", "SLB", "RU", "ACFS"],
     children: ["devika"],
     parents: ["pauli"],
   },
@@ -76,7 +91,8 @@ const infrastructureAgents: AgentDefinition[] = [
       "Git workflow management",
     ],
     tools: ["code-gen", "browser", "research", "devops", "memory-read", "agent-invoke", "planning"],
-    children: ["alex", "darya_vomega", "synthia", "clawdbot", "cynthia", "bambu_lab", "visionclaw", "open_agent_platform"],
+    flywheelTools: ["NTM", "AM", "BV", "CASS", "CM", "UBS", "DCG", "SLB", "RU", "MS", "ACFS"],
+    children: ["alex", "darya_vomega", "synthia", "clawdbot", "cynthia", "bambu_lab", "visionclaw", "open_agent_platform", "caller", "architect"],
     parents: ["agent_zero"],
   },
   {
@@ -97,6 +113,7 @@ const infrastructureAgents: AgentDefinition[] = [
       "Hostinger/Coolify/Vercel deployment",
     ],
     tools: ["code-gen", "devops", "research", "memory-read", "docker", "ssh"],
+    flywheelTools: ["NTM", "AM", "BV", "CASS", "CM", "UBS", "DCG", "SLB", "RU", "MS"],
     parents: ["devika"],
   },
   {
@@ -203,6 +220,45 @@ const infrastructureAgents: AgentDefinition[] = [
       "Visual quality assessment",
     ],
     tools: ["vision", "memory-read"],
+    flywheelTools: ["CASS", "CM"],
+    parents: ["devika"],
+  },
+  {
+    id: "caller",
+    name: "Caller",
+    role: "Outbound Phone Agent",
+    model: "gpt-4o",
+    status: "core",
+    systemPrompt: "You are Caller (CLR-010), the outbound phone agent. You make scheduled and on-demand calls for lead qualification, appointment setting, and follow-ups. You use SYNTHIA's voice pipeline and report results to Devika. You work closely with Maya for lead handoff.",
+    capabilities: [
+      "Outbound call campaigns",
+      "Lead qualification calls",
+      "Appointment scheduling",
+      "Follow-up sequences",
+      "Call script execution",
+      "CRM integration",
+    ],
+    tools: ["livekit", "sip", "crm", "memory-read"],
+    flywheelTools: ["NTM", "AM", "CASS"],
+    parents: ["devika"],
+  },
+  {
+    id: "architect",
+    name: "Architect",
+    role: "Voice Web Architect",
+    model: "gpt-4o",
+    status: "core",
+    systemPrompt: "You are Architect (ARC-011), the voice web architect. You design and build voice-first web applications using WebRTC, LiveKit, and modern frontend frameworks. You bridge the gap between SYNTHIA's voice capabilities and browser-based user interfaces. You report to Devika.",
+    capabilities: [
+      "Voice UI/UX design",
+      "WebRTC implementation",
+      "LiveKit integration",
+      "Real-time audio processing",
+      "Voice-first web apps",
+      "Accessibility-first design",
+    ],
+    tools: ["code-gen", "livekit", "research", "memory-read"],
+    flywheelTools: ["NTM", "AM", "UBS", "DCG", "CASS"],
     parents: ["devika"],
   },
 ];

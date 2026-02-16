@@ -49,3 +49,26 @@ openclaw:
   can_invoke: cuties_only
   can_receive_from: devika, agent_zero, pauli
 ```
+
+## ACFS Flywheel Tools
+```yaml
+flywheel:
+  assigned: [NTM, AM, BV, CASS, CM]
+  role_in_flywheel: creative
+  notes:
+    - "NTM: receives creative task notifications"
+    - "AM: communicates with Devika and Cuties"
+    - "BV: tracks creative work items and asset delivery"
+    - "CASS: searches brand context and design references"
+    - "CM: manages creative context across multi-agent sessions"
+```
+
+## Children (Crypto Cuties)
+```yaml
+cuties:
+  - Maya — Fundraising & Donor Relations
+  - Luna — UGC & Virality Strategist
+  - Solana — Crypto & Tokenization Expert
+  - Vega — IP & Merch Universe Builder
+  - Aurora — Ops & KPI Dashboard Manager
+```

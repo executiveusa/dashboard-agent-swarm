@@ -102,7 +102,7 @@ export function TaskMonitor() {
   );
 
   return (
-    <Card className="p-6 bg-card/50 backdrop-blur-sm">
+    <Card className="p-6 ">
       <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
         <Loader2 className="h-6 w-6 text-primary animate-spin" />
         Live Task Monitor

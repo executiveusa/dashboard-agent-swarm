@@ -22,7 +22,7 @@ const Analytics = () => {
     {
       label: "Active Projects",
       value: stats.projects,
-      hint: "Smart sites & engines",
+      hint: "Active projects",
       icon: BarChart3,
       color: "text-primary",
     },
@@ -59,7 +59,7 @@ const Analytics = () => {
   return (
     <div className="space-y-6 p-6">
       <header>
-        <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+        <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
           Analytics
         </p>
         <h2 className="mt-1 text-2xl font-semibold font-heading">Performance Overview</h2>
@@ -75,7 +75,7 @@ const Analytics = () => {
           return (
             <Card 
               key={stat.label}
-              className="border-border/50 bg-card/30 backdrop-blur transition-all hover:border-primary/30 hover:shadow-glow-primary/20"
+              className="transition-colors hover:border-primary/30"
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -97,7 +97,7 @@ const Analytics = () => {
       </div>
 
       {/* Metrics Timeline Placeholder */}
-      <Card className="border-border/50 bg-card/30 backdrop-blur">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-heading text-xl">
             <TrendingUp className="h-5 w-5 text-success" />
@@ -108,7 +108,7 @@ const Analytics = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border border-border/30 bg-muted/20 p-12 text-center text-muted-foreground">
+          <div className="rounded-lg border border-border bg-secondary p-12 text-center text-muted-foreground">
             <TrendingUp className="mx-auto h-12 w-12 mb-4 opacity-50" />
             <p className="font-medium">Chart visualization coming in Phase 3</p>
             <p className="mt-2 text-xs">

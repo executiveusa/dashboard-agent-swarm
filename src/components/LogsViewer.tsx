@@ -72,7 +72,7 @@ export function LogsViewer() {
   }, [query]);
 
   return (
-    <Card className="bg-card/60 backdrop-blur">
+    <Card className="">
       <CardHeader className="space-y-4">
         <div className="flex items-center justify-between">
           <CardTitle>Logs</CardTitle>
@@ -103,7 +103,7 @@ export function LogsViewer() {
                 return (
                   <div
                     key={log.id}
-                    className="rounded-lg border border-border/60 bg-secondary/30 p-4"
+                    className="rounded-lg border border-border bg-secondary p-4"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex items-center gap-2">

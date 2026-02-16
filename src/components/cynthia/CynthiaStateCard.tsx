@@ -30,7 +30,7 @@ export function CynthiaStateCard({ session, isLive = false }: CynthiaStateCardPr
 
   if (!session) {
     return (
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-muted/20">
+      <Card className="p-6  border-muted/20">
         <div className="flex items-center justify-center py-8">
           <p className="text-muted-foreground">No active session</p>
         </div>
@@ -41,7 +41,7 @@ export function CynthiaStateCard({ session, isLive = false }: CynthiaStateCardPr
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {/* Status Card */}
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-primary/20">
+      <Card className="p-6  border-primary/20">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-lg bg-primary/20">
             <Activity className="h-6 w-6 text-primary" />
@@ -66,7 +66,7 @@ export function CynthiaStateCard({ session, isLive = false }: CynthiaStateCardPr
       </Card>
 
       {/* Mode Card */}
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-accent/20">
+      <Card className="p-6  border-accent/20">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-lg bg-accent/20">
             <Settings className="h-6 w-6 text-accent" />
@@ -81,7 +81,7 @@ export function CynthiaStateCard({ session, isLive = false }: CynthiaStateCardPr
       </Card>
 
       {/* Model Card */}
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-purple/20">
+      <Card className="p-6  border-purple/20">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-lg bg-purple/20">
             <Cpu className="h-6 w-6 text-purple-400" />
@@ -96,7 +96,7 @@ export function CynthiaStateCard({ session, isLive = false }: CynthiaStateCardPr
       </Card>
 
       {/* Goal Card */}
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-success/20">
+      <Card className="p-6  border-success/20">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-lg bg-success/20">
             <Target className="h-6 w-6 text-success" />

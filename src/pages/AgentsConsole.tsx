@@ -67,17 +67,17 @@ const AgentsConsole = () => {
   return (
     <div className="space-y-6 p-6">
       <header>
-        <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+        <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
           Agents
         </p>
-        <h2 className="mt-1 text-2xl font-semibold font-heading">DARYA + Crypto Cuties Roster</h2>
+        <h2 className="mt-1 text-2xl font-semibold font-heading">Agent Fleet Roster</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Meet the agentic team orchestrating your smart sites and fundraising engines.
+          The full agent fleet  infrastructure, creative, voice, and operations.
         </p>
       </header>
 
       {/* Orchestration Graph */}
-      <Card className="border-border/50 bg-card/30 backdrop-blur">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-heading text-xl">
             <Network className="h-5 w-5 text-primary" />
@@ -96,7 +96,7 @@ const AgentsConsole = () => {
                 <div className="text-xs text-muted-foreground">{hierarchy.root.role}</div>
               </div>
             </div>
-            <div className="ml-8 space-y-2 border-l-2 border-border/30 pl-4">
+            <div className="ml-8 space-y-2 border-l-2 border-border pl-4">
               {hierarchy.children.get("darya_vomega")?.map((child) => {
                 const Icon = iconMap[child.id] || Bot;
                 const color = colorMap[child.id] || "text-foreground";
@@ -124,13 +124,13 @@ const AgentsConsole = () => {
             return (
               <Card 
                 key={agent.id}
-                className="border-border/50 bg-card/30 backdrop-blur transition-all hover:border-primary/30 hover:shadow-glow-primary/20 cursor-pointer"
+                className="transition-colors hover:border-primary/30 cursor-pointer"
                 onClick={() => pageUrl ? navigate(pageUrl) : setSelectedAgent(agent)}
               >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`rounded-lg bg-muted/50 p-2 ${color}`}>
+                      <div className={`rounded-lg bg-secondary p-2 ${color}`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>
@@ -179,13 +179,13 @@ const AgentsConsole = () => {
             return (
               <Card 
                 key={agent.id}
-                className="border-border/50 bg-card/30 backdrop-blur transition-all hover:border-primary/30 hover:shadow-glow-primary/20 cursor-pointer"
+                className="transition-colors hover:border-primary/30 cursor-pointer"
                 onClick={() => setSelectedAgent(agent)}
               >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`rounded-lg bg-muted/50 p-2 ${color}`}>
+                      <div className={`rounded-lg bg-secondary p-2 ${color}`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>
@@ -232,7 +232,7 @@ const AgentsConsole = () => {
             {legacyAgents.map((agent) => (
               <Card 
                 key={agent.id}
-                className="border-border/50 bg-card/30 backdrop-blur transition-all hover:border-accent/30 cursor-pointer"
+                className="border-border  transition-all hover:border-accent/30 cursor-pointer"
                 onClick={() => setSelectedAgent(agent)}
               >
                 <CardHeader>
@@ -247,7 +247,7 @@ const AgentsConsole = () => {
 
       {/* Agent Detail Modal */}
       {selectedAgent && (
-        <Card className="border-border/50 bg-card/30 backdrop-blur">
+        <Card className="border-border ">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -270,7 +270,7 @@ const AgentsConsole = () => {
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 System Prompt
               </p>
-              <div className="rounded-lg border border-border/30 bg-muted/20 p-4">
+              <div className="rounded-lg border border-border bg-secondary p-4">
                 <p className="text-sm text-muted-foreground font-mono whitespace-pre-wrap">
                   {selectedAgent.systemPrompt || "No system prompt defined"}
                 </p>

@@ -22,7 +22,7 @@ export function CynthiaTimeline({ events, autoScroll = true }: CynthiaTimelinePr
 
   if (events.length === 0) {
     return (
-      <Card className="p-8 bg-card/50 backdrop-blur-sm border-muted/20">
+      <Card className="p-8  border-muted/20">
         <div className="flex flex-col items-center justify-center text-center">
           <p className="text-muted-foreground mb-2">No events yet</p>
           <p className="text-sm text-muted-foreground/70">
@@ -34,8 +34,8 @@ export function CynthiaTimeline({ events, autoScroll = true }: CynthiaTimelinePr
   }
 
   return (
-    <Card className="bg-card/50 backdrop-blur-sm border-muted/20">
-      <div className="p-4 border-b border-border/50">
+    <Card className=" border-muted/20">
+      <div className="p-4 border-b border-border">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           Event Timeline
           <Badge variant="secondary" className="ml-auto">
@@ -61,7 +61,7 @@ export function CynthiaTimeline({ events, autoScroll = true }: CynthiaTimelinePr
                   {/* Icon */}
                   <div className="flex-shrink-0 mt-1">
                     <div
-                      className={`w-8 h-8 rounded-full bg-background border-2 border-border/50 flex items-center justify-center text-lg ${
+                      className={`w-8 h-8 rounded-full bg-background border-2 border-border flex items-center justify-center text-lg ${
                         isLast ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-background" : ""
                       }`}
                     >
@@ -71,7 +71,7 @@ export function CynthiaTimeline({ events, autoScroll = true }: CynthiaTimelinePr
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <Card className="p-4 bg-background/50 border-border/50 hover:border-primary/30 transition-colors">
+                    <Card className="p-4 bg-background border-border hover:border-primary/30 transition-colors">
                       {/* Header */}
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -93,7 +93,7 @@ export function CynthiaTimeline({ events, autoScroll = true }: CynthiaTimelinePr
 
                       {/* Data */}
                       {event.data && Object.keys(event.data).length > 0 && (
-                        <div className="mt-2 p-3 bg-muted/30 rounded-md border border-border/30">
+                        <div className="mt-2 p-3 bg-muted/30 rounded-md border border-border">
                           <details className="cursor-pointer">
                             <summary className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors select-none">
                               Event Data

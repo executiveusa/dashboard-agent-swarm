@@ -249,7 +249,7 @@ const AgentClaw = () => {
       {/* Header */}
       <header className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+          <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
             Agent Claw
           </p>
           <h2 className="mt-1 text-2xl font-semibold font-heading">SYNTHIA Control</h2>
@@ -275,7 +275,7 @@ const AgentClaw = () => {
         {/* ── Left Column: Voice + History ────────── */}
         <div className="space-y-4">
           {/* Voice Input */}
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg font-heading">
                 <Volume2 className="h-4 w-4 text-primary" />
@@ -321,7 +321,7 @@ const AgentClaw = () => {
 
           {/* Command Grid (collapsible) */}
           {commandsOpen && (
-            <Card className="border-border/50 bg-card/30 backdrop-blur">
+            <Card className="border-border ">
               <CardContent className="pt-4">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {Object.entries(groupedCommands).map(([cat, cmds]) => (
@@ -332,7 +332,7 @@ const AgentClaw = () => {
                           <button
                             key={c.id}
                             onClick={() => sendCommand(c.triggers[0] ?? c.id)}
-                            className="rounded-full border border-border/30 bg-muted/20 px-2.5 py-1 text-[0.7rem] hover:border-primary/40 hover:bg-primary/10 transition-all"
+                            className="rounded-full border border-border bg-secondary px-2.5 py-1 text-[0.7rem] hover:border-primary/40 hover:bg-primary/10 transition-all"
                           >
                             {c.id}
                           </button>
@@ -346,12 +346,12 @@ const AgentClaw = () => {
           )}
 
           {/* Conversation History */}
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-heading">Conversation</CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[300px] rounded-md border border-border/30 bg-background/50 p-3 font-mono text-sm">
+              <ScrollArea className="h-[300px] rounded-md border border-border bg-background p-3 font-mono text-sm">
                 {history.length === 0 && (
                   <p className="text-muted-foreground text-center py-8 text-xs">
                     Say something to SYNTHIA…
@@ -373,7 +373,7 @@ const AgentClaw = () => {
         {/* ── Right Column: Tasks + Health ────────── */}
         <div className="space-y-4">
           {/* System Health */}
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-lg font-heading">
@@ -387,22 +387,22 @@ const AgentClaw = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-lg border border-border/30 bg-muted/10 p-3 text-center">
+                <div className="rounded-lg border border-border bg-muted/10 p-3 text-center">
                   <Cpu className="h-4 w-4 mx-auto mb-1 text-primary" />
                   <p className="text-lg font-bold">{online ? "OK" : "--"}</p>
                   <p className="text-[0.65rem] text-muted-foreground">Agent Core</p>
                 </div>
-                <div className="rounded-lg border border-border/30 bg-muted/10 p-3 text-center">
+                <div className="rounded-lg border border-border bg-muted/10 p-3 text-center">
                   <HardDrive className="h-4 w-4 mx-auto mb-1 text-primary" />
                   <p className="text-lg font-bold">{contexts.length}</p>
                   <p className="text-[0.65rem] text-muted-foreground">Contexts</p>
                 </div>
-                <div className="rounded-lg border border-border/30 bg-muted/10 p-3 text-center">
+                <div className="rounded-lg border border-border bg-muted/10 p-3 text-center">
                   <Zap className="h-4 w-4 mx-auto mb-1 text-amber-400" />
                   <p className="text-lg font-bold">{runningTasks.length}</p>
                   <p className="text-[0.65rem] text-muted-foreground">Running</p>
                 </div>
-                <div className="rounded-lg border border-border/30 bg-muted/10 p-3 text-center">
+                <div className="rounded-lg border border-border bg-muted/10 p-3 text-center">
                   <Clock className="h-4 w-4 mx-auto mb-1 text-cyan-400" />
                   <p className="text-lg font-bold">{cronTasks.length}</p>
                   <p className="text-[0.65rem] text-muted-foreground">Cron Jobs</p>
@@ -415,7 +415,7 @@ const AgentClaw = () => {
           </Card>
 
           {/* Running Tasks */}
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-lg font-heading">
@@ -431,7 +431,7 @@ const AgentClaw = () => {
               ) : (
                 <div className="space-y-2">
                   {runningTasks.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between rounded-lg border border-border/30 bg-muted/10 px-3 py-2">
+                    <div key={t.id} className="flex items-center justify-between rounded-lg border border-border bg-muted/10 px-3 py-2">
                       <div>
                         <p className="text-sm font-medium">{t.task_name}</p>
                         <p className="text-[0.65rem] text-muted-foreground">{t.type}</p>
@@ -445,7 +445,7 @@ const AgentClaw = () => {
           </Card>
 
           {/* Cron Jobs */}
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-lg font-heading">
@@ -461,7 +461,7 @@ const AgentClaw = () => {
               ) : (
                 <div className="space-y-2">
                   {cronTasks.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between rounded-lg border border-border/30 bg-muted/10 px-3 py-2">
+                    <div key={t.id} className="flex items-center justify-between rounded-lg border border-border bg-muted/10 px-3 py-2">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium truncate">{t.task_name}</p>
                         <p className="text-[0.65rem] font-mono text-muted-foreground">{t.schedule ?? "—"}</p>
@@ -488,7 +488,7 @@ const AgentClaw = () => {
           </Card>
 
           {/* Active Contexts */}
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm font-heading">
                 Contexts

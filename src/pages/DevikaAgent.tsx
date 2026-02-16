@@ -124,7 +124,7 @@ const DevikaAgent = () => {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+          <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
             AI Software Engineer
           </p>
           <h2 className="mt-1 text-2xl font-semibold font-heading flex items-center gap-2">
@@ -168,7 +168,7 @@ const DevikaAgent = () => {
           { icon: Code2, label: "Code Generation", desc: "Full-stack from prompts" },
           { icon: GitBranch, label: "Git Workflow", desc: "Commits & PRs" },
         ].map(({ icon: Icon, label, desc }) => (
-          <Card key={label} className="border-border/50 bg-card/30 backdrop-blur">
+          <Card key={label} className="border-border ">
             <CardContent className="flex items-center gap-3 p-4">
               <Icon className="h-5 w-5 text-primary shrink-0" />
               <div>
@@ -181,7 +181,7 @@ const DevikaAgent = () => {
       </div>
 
       {/* New Task Input */}
-      <Card className="border-border/60 bg-card/70">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Sparkles className="h-5 w-5 text-primary" />
@@ -212,7 +212,7 @@ const DevikaAgent = () => {
                 <button
                   key={q}
                   type="button"
-                  className="rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs text-muted-foreground transition hover:border-primary/40 hover:text-primary"
+                  className="rounded-full border border-border bg-background px-3 py-1 text-xs text-muted-foreground transition hover:border-primary/40 hover:text-primary"
                   onClick={() => setPrompt(q)}
                   disabled={isRunning}
                 >
@@ -242,7 +242,7 @@ const DevikaAgent = () => {
 
       {/* Project Output */}
       {project && (
-        <Card className="border-border/60 bg-card/70">
+        <Card className="border-border ">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -268,7 +268,7 @@ const DevikaAgent = () => {
                   className={`rounded-lg p-3 text-sm ${
                     msg.role === "user"
                       ? "bg-primary/10 border border-primary/20"
-                      : "bg-muted/40 border border-border/50"
+                      : "bg-secondary border border-border"
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">

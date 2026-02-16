@@ -260,6 +260,7 @@ export interface AgentDefinition {
   role: string;
   model?: string;
   tools?: string[];
+  flywheelTools?: string[];
   prompt?: string;
   systemPrompt?: string;
   parents?: string[];

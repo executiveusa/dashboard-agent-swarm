@@ -140,7 +140,7 @@ const CynthiaWatch = () => {
             <Eye className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+            <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
               Observability
             </p>
             <h2 className="mt-1 text-2xl font-semibold font-heading">Cynthia Agent Monitor</h2>
@@ -152,7 +152,7 @@ const CynthiaWatch = () => {
       </header>
 
       {/* Controls */}
-      <Card className="border-border/50 bg-card/30 backdrop-blur">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="text-lg font-heading">Session Controls</CardTitle>
           <CardDescription>Select a session to view or enable live streaming</CardDescription>
@@ -250,7 +250,7 @@ const CynthiaWatch = () => {
       </div>
 
       {/* Info Card */}
-      <Card className="border-border/50 bg-card/30 backdrop-blur">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="text-sm font-heading">About This Dashboard</CardTitle>
         </CardHeader>

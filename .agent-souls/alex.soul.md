@@ -83,3 +83,21 @@ openclaw:
   can_receive_from: devika, agent_zero, pauli
   broadcast: false
 ```
+
+## ACFS Flywheel Tools
+```yaml
+flywheel:
+  assigned: [NTM, AM, BV, CASS, CM, UBS, DCG, SLB, RU, MS]
+  role_in_flywheel: engineering (10 tools — all except ACFS orchestrator)
+  notes:
+    - "NTM: receives build/deploy task notifications"
+    - "AM: communicates specs to Devika and other agents"
+    - "BV: tracks engineering beads (PRDs, designs, implementations)"
+    - "CASS: searches codebase context for architecture decisions"
+    - "CM: manages multi-file code contexts"
+    - "UBS: triggers and monitors builds"
+    - "DCG: generates production code via SOP flow"
+    - "SLB: reviews build logs and test results"
+    - "RU: monitors token and compute usage"
+    - "MS: selects best model per engineering task"
+```

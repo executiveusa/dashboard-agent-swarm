@@ -8,7 +8,7 @@ const Tasks = () => {
     <div className="space-y-6 p-6">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+          <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
             Tasks
           </p>
           <h2 className="mt-1 text-2xl font-semibold font-heading">Agent Task Queue</h2>
@@ -24,7 +24,7 @@ const Tasks = () => {
           <TaskMonitor />
         </div>
         <div className="space-y-4">
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 font-heading text-lg">
                 <Terminal className="h-4 w-4 text-accent" />
@@ -36,15 +36,15 @@ const Tasks = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <button className="w-full rounded-lg border border-border/30 bg-muted/20 px-4 py-3 text-left text-sm transition-all hover:border-primary/30 hover:bg-muted/30">
+                <button className="w-full rounded-lg border border-border bg-secondary px-4 py-3 text-left text-sm transition-all hover:border-primary/30 hover:bg-muted/30">
                   <div className="font-medium">Generate Blueprint</div>
-                  <div className="text-xs text-muted-foreground">Create new smart site</div>
+                  <div className="text-xs text-muted-foreground">Create new project</div>
                 </button>
-                <button className="w-full rounded-lg border border-border/30 bg-muted/20 px-4 py-3 text-left text-sm transition-all hover:border-primary/30 hover:bg-muted/30">
+                <button className="w-full rounded-lg border border-border bg-secondary px-4 py-3 text-left text-sm transition-all hover:border-primary/30 hover:bg-muted/30">
                   <div className="font-medium">UGC Pack</div>
                   <div className="text-xs text-muted-foreground">Generate content strategy</div>
                 </button>
-                <button className="w-full rounded-lg border border-border/30 bg-muted/20 px-4 py-3 text-left text-sm transition-all hover:border-primary/30 hover:bg-muted/30">
+                <button className="w-full rounded-lg border border-border bg-secondary px-4 py-3 text-left text-sm transition-all hover:border-primary/30 hover:bg-muted/30">
                   <div className="font-medium">Donor Thank You</div>
                   <div className="text-xs text-muted-foreground">Personalized outreach</div>
                 </button>

@@ -157,7 +157,7 @@ const PauliMeetingRoom = () => {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+          <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
             Agent Meetings
           </p>
           <h2 className="mt-1 text-2xl font-semibold font-heading flex items-center gap-2">
@@ -193,7 +193,7 @@ const PauliMeetingRoom = () => {
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
         {/* Room List */}
         <div className="space-y-4">
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Users className="h-4 w-4 text-primary" />
@@ -209,7 +209,7 @@ const PauliMeetingRoom = () => {
                   className={`w-full text-left rounded-lg border p-3 transition-all ${
                     activeRoom?.id === room.id
                       ? "border-primary/40 bg-primary/10"
-                      : "border-border/50 bg-muted/20 hover:border-primary/20"
+                      : "border-border bg-secondary hover:border-primary/20"
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -241,7 +241,7 @@ const PauliMeetingRoom = () => {
           </Card>
 
           {/* Create Room */}
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardContent className="pt-4 space-y-2">
               <Input
                 placeholder="New room name..."
@@ -264,10 +264,10 @@ const PauliMeetingRoom = () => {
         </div>
 
         {/* Chat Area */}
-        <Card className="border-border/60 bg-card/70 min-h-[500px] flex flex-col">
+        <Card className="border-border  min-h-[500px] flex flex-col">
           {activeRoom ? (
             <>
-              <CardHeader className="border-b border-border/30">
+              <CardHeader className="border-b border-border">
                 <CardTitle className="text-lg">{activeRoom.name}</CardTitle>
                 <CardDescription className="flex items-center gap-2">
                   <Users className="h-3.5 w-3.5" />
@@ -291,7 +291,7 @@ const PauliMeetingRoom = () => {
                         className={`max-w-[70%] rounded-lg p-3 text-sm ${
                           msg.role === "human"
                             ? "bg-primary/10 border border-primary/20"
-                            : "bg-muted/40 border border-border/50"
+                            : "bg-secondary border border-border"
                         }`}
                       >
                         <div className="flex items-center gap-2 mb-1">
@@ -308,7 +308,7 @@ const PauliMeetingRoom = () => {
                 </div>
 
                 {/* Input */}
-                <div className="border-t border-border/30 p-4">
+                <div className="border-t border-border p-4">
                   <div className="flex gap-2">
                     <Input
                       placeholder="Type a message to the agents..."

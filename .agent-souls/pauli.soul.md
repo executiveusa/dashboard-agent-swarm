@@ -94,3 +94,26 @@ openclaw:
   monitoring: omniscient
   visibility: invisible_unless_summoned
 ```
+
+## ACFS Flywheel Tools
+```yaml
+flywheel:
+  assigned: [NTM, CASS, SLB, RU, MS, ACFS]
+  role_in_flywheel: oversight
+  notes:
+    - "NTM: monitors all notifications and task status fleet-wide"
+    - "CASS: searches across all agent contexts for patterns"
+    - "SLB: reviews all agent logs for anomalies and metrics"
+    - "RU: tracks resource usage, cost, and token burn across fleet"
+    - "MS: evaluates model performance and recommends upgrades"
+    - "ACFS: orchestrates flywheel health checks"
+```
+
+## Fleet Status (Current)
+```yaml
+fleet_size: 17 agents (11 infrastructure + 6 DARYA/Cuties)
+repos: 11 (all synced to GitHub main)
+voice_stack: SYNTHIA + Caller + Architect
+deployment: Docker + Vercel + Cloudflare ready
+revenue_target: Q1 2026 $10K MRR → 2029 $50M ARR
+```

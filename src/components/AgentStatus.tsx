@@ -4,25 +4,25 @@ import { Card } from "@/components/ui/card";
 export function AgentStatus() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-primary/20">
+      <Card className="p-5">
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-lg bg-primary/20">
-            <Activity className="h-6 w-6 text-primary" />
+          <div className="p-2.5 rounded-md bg-primary/10">
+            <Activity className="h-5 w-5 text-primary" />
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Status</p>
-            <p className="text-2xl font-bold text-success flex items-center gap-2">
+            <p className="text-2xl font-bold text-green-500 flex items-center gap-2">
               Active
-              <span className="inline-block w-2 h-2 rounded-full bg-success animate-pulse-glow" />
+              <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
             </p>
           </div>
         </div>
       </Card>
 
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-accent/20">
+      <Card className="p-5">
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-lg bg-accent/20">
-            <Cpu className="h-6 w-6 text-accent" />
+          <div className="p-2.5 rounded-md bg-secondary">
+            <Cpu className="h-5 w-5 text-muted-foreground" />
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Model</p>
@@ -31,10 +31,10 @@ export function AgentStatus() {
         </div>
       </Card>
 
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-warning/20">
+      <Card className="p-5">
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-lg bg-warning/20">
-            <Zap className="h-6 w-6 text-warning" />
+          <div className="p-2.5 rounded-md bg-amber-500/10">
+            <Zap className="h-5 w-5 text-amber-500" />
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Tokens Used</p>
@@ -43,10 +43,10 @@ export function AgentStatus() {
         </div>
       </Card>
 
-      <Card className="p-6 bg-card/50 backdrop-blur-sm border-success/20">
+      <Card className="p-5">
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-lg bg-success/20">
-            <DollarSign className="h-6 w-6 text-success" />
+          <div className="p-2.5 rounded-md bg-green-500/10">
+            <DollarSign className="h-5 w-5 text-green-500" />
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Cost Today</p>

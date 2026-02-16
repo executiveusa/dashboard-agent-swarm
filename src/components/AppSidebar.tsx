@@ -35,22 +35,22 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar className="border-r border-border bg-sidebar">
+    <Sidebar className="border-r border-sidebar-border bg-sidebar">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
         <div className="flex items-center gap-3">
-          {/* DAR Badge */}
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-primary shadow-glow-primary">
-            <span className="text-sm font-bold text-primary-foreground">DAR</span>
+          {/* Logo Badge */}
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <span className="text-sm font-bold">PE</span>
           </div>
           
-          {/* Studio Name - Hide when collapsed */}
+          {/* Studio Name */}
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className="text-base font-bold text-sidebar-foreground font-heading">
-                DARYA Studio
+              <span className="text-sm font-semibold text-sidebar-foreground">
+                The Pauli Effect
               </span>
               <span className="text-[0.7rem] text-muted-foreground">
-                Agentic mission control
+                Agent Dashboard
               </span>
             </div>
           )}
@@ -59,10 +59,10 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <SidebarGroupLabel className="px-4 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             {isCollapsed ? "Nav" : "Navigation"}
           </SidebarGroupLabel>
-          <SidebarGroupContent className="mt-2">
+          <SidebarGroupContent className="mt-1">
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
@@ -71,15 +71,15 @@ export function AppSidebar() {
                       to={item.url}
                       end
                       className={({ isActive }) =>
-                        `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                        `flex items-center gap-3 px-4 py-2.5 rounded-md transition-colors ${
                           isActive
-                            ? "bg-primary/20 text-primary shadow-glow-primary"
-                            : "text-muted-foreground hover:bg-primary/10 hover:text-foreground"
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-muted-foreground hover:bg-accent hover:text-foreground"
                         }`
                       }
                     >
-                      <item.icon className="h-5 w-5" />
-                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      <item.icon className="h-4 w-4" />
+                      {!isCollapsed && <span className="text-sm">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

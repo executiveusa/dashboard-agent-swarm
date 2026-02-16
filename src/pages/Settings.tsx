@@ -71,17 +71,17 @@ const Settings = () => {
   return (
     <div className="space-y-6 p-6">
       <header>
-        <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+        <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
           Settings
         </p>
-        <h2 className="mt-1 text-2xl font-semibold font-heading">Studio Settings</h2>
+        <h2 className="mt-1 text-2xl font-semibold font-heading">Settings</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Configure your environment, API keys, and guardrails.
         </p>
       </header>
 
       {/* Environment */}
-      <Card className="border-border/50 bg-card/30 backdrop-blur">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-heading text-lg">
             <Server className="h-4 w-4 text-primary" />
@@ -101,7 +101,7 @@ const Settings = () => {
       </Card>
 
       {/* LLM Providers */}
-      <Card className="border-border/50 bg-card/30 backdrop-blur">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-heading text-lg">
             <Zap className="h-4 w-4 text-primary" />
@@ -179,7 +179,7 @@ const Settings = () => {
       </Card>
 
       {/* Integrations */}
-      <Card className="border-border/50 bg-card/30 backdrop-blur">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-heading text-lg">
             <Key className="h-4 w-4 text-accent" />
@@ -304,7 +304,7 @@ const Settings = () => {
       </div>
 
       {/* Guardrails */}
-      <Card className="border-border/50 bg-card/30 backdrop-blur">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-heading text-lg">
             <Shield className="h-4 w-4 text-success" />

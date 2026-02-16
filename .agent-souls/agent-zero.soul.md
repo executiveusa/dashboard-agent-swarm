@@ -71,3 +71,28 @@ openclaw:
   commands: 22 voice commands, 9 categories
   heartbeat: agent-zero-001
 ```
+
+## ACFS Flywheel Tools
+```yaml
+flywheel:
+  assigned: [NTM, AM, BV, CASS, CM, UBS, SLB, RU, ACFS]
+  role_in_flywheel: orchestrator
+  notes:
+    - "NTM: manages fleet-wide task notifications"
+    - "AM: routes inter-agent mail to Devika and team"
+    - "BV: tracks work items (beads) across all agents"
+    - "CASS: context-aware search across memory systems"
+    - "CM: manages context windows for all agent sessions"
+    - "UBS: coordinates build systems across repos"
+    - "SLB: centralized log browsing for fleet health"
+    - "RU: resource usage monitoring and budgeting"
+    - "ACFS: flywheel orchestration and health"
+```
+
+## Fleet Status (Current)
+```yaml
+direct_report: Devika (DVK-002)
+fleet_size: 17 agents
+voice_layer: SYNTHIA (embedded in Agent Zero framework)
+repos_managed: 11 (all on GitHub main)
+```

@@ -49,6 +49,18 @@ openclaw:
   acip_enforcer: true
 ```
 
+## ACFS Flywheel Tools
+```yaml
+flywheel:
+  assigned: [NTM, SLB, RU, CASS]
+  role_in_flywheel: observability
+  notes:
+    - "NTM: monitors all task notifications for anomalies"
+    - "SLB: central log browser — reviews all fleet logs"
+    - "RU: resource usage monitoring and cost alerting"
+    - "CASS: searches safety policies and compliance rules"
+```
+
 ---
 
 # Open Agent Platform — Heart & Soul

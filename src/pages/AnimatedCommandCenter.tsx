@@ -315,7 +315,7 @@ const AnimatedCommandCenter = () => {
                   className={`relative overflow-hidden border transition-all duration-300 ${
                     selectedAgent === agent.id
                       ? "border-primary/50 bg-card/90 shadow-lg shadow-primary/10"
-                      : "border-border/50 bg-card/70 hover:border-border"
+                      : "border-border  hover:border-border"
                   } ${agent.status === "concept" ? "opacity-60" : ""}`}
                   onClick={() => setSelectedAgent(agent.id === selectedAgent ? null : agent.id)}
                 >
@@ -474,7 +474,7 @@ const AnimatedCommandCenter = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            <Card className="border-border/50 bg-card/70">
+            <Card className="border-border ">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Activity className="h-4 w-4 text-primary" />
@@ -559,7 +559,7 @@ const AnimatedCommandCenter = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="flex items-center justify-between rounded-lg border border-border/30 bg-muted/20 px-3 py-2"
+                        className="flex items-center justify-between rounded-lg border border-border bg-secondary px-3 py-2"
                       >
                         <div className="flex items-center gap-2">
                           <motion.div
@@ -595,7 +595,7 @@ const AnimatedCommandCenter = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5, duration: 0.5 }}
           >
-            <Card className="border-border/50 bg-card/70">
+            <Card className="border-border ">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Terminal className="h-4 w-4 text-primary" />
@@ -652,7 +652,7 @@ const AnimatedCommandCenter = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
-          <Card className="border-border/50 bg-card/70">
+          <Card className="border-border ">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <Globe className="h-4 w-4 text-primary" />

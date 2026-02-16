@@ -52,3 +52,32 @@ openclaw:
   can_invoke: clawdbot (for message follow-up)
   can_receive_from: devika, agent_zero, clawdbot
 ```
+
+## ACFS Flywheel Tools
+```yaml
+flywheel:
+  assigned: [NTM, AM, CASS]
+  role_in_flywheel: voice
+  notes:
+    - "NTM: receives voice task notifications and call schedules"
+    - "AM: communicates call results to Devika, Maya, ClawdBot"
+    - "CASS: searches caller context and conversation history"
+```
+
+## Voice Stack (Current)
+```yaml
+pipeline: VAD > STT > LLM > TTS
+tech:
+  - LiveKit Agents Framework
+  - WebRTC browser voice
+  - SIP telephony (Twilio)
+  - ElevenLabs TTS
+team_members:
+  - Caller (CLR-010) — uses SYNTHIA pipeline for outbound calls
+  - Architect (ARC-011) — builds voice-first web UIs
+repos:
+  - executiveusa/voice-agents-fork (primary)
+  - executiveusa/phone-call-assistant
+  - executiveusa/voice-web-architect
+  - executiveusa/VisionClaw
+```

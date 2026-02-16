@@ -53,7 +53,7 @@ const Content = () => {
   return (
     <div className="space-y-6 p-6">
       <header>
-        <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+        <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
           Content Engine
         </p>
         <h2 className="mt-1 text-2xl font-semibold font-heading">AI-Powered Content Generation</h2>
@@ -63,7 +63,7 @@ const Content = () => {
       </header>
 
       {/* Input Form */}
-      <Card className="border-border/50 bg-card/30 backdrop-blur">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-heading text-xl">
             <Sparkles className="h-5 w-5 text-primary" />
@@ -111,7 +111,7 @@ const Content = () => {
           <Button
             onClick={handleGenerate}
             disabled={loading}
-            className="w-full gap-2 bg-gradient-primary hover:scale-105 transition-all"
+            className="w-full gap-2"
           >
             {loading ? (
               <>
@@ -133,7 +133,7 @@ const Content = () => {
         <div className="space-y-6">
           {/* Blog Posts */}
           {contentPack.blogPosts && contentPack.blogPosts.length > 0 && (
-            <Card className="border-border/50 bg-card/30 backdrop-blur">
+            <Card className="border-border ">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-heading text-lg">
                   <FileText className="h-5 w-5 text-primary" />
@@ -144,7 +144,7 @@ const Content = () => {
                 {contentPack.blogPosts.map((post, idx) => (
                   <div
                     key={idx}
-                    className="rounded-lg border border-border/30 bg-muted/20 p-4 space-y-2"
+                    className="rounded-lg border border-border bg-secondary p-4 space-y-2"
                   >
                     <div className="flex items-start justify-between">
                       <h3 className="font-semibold text-foreground">{post.title}</h3>
@@ -175,7 +175,7 @@ const Content = () => {
 
           {/* Tutorials */}
           {contentPack.tutorials && contentPack.tutorials.length > 0 && (
-            <Card className="border-border/50 bg-card/30 backdrop-blur">
+            <Card className="border-border ">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-heading text-lg">
                   <Video className="h-5 w-5 text-accent" />
@@ -186,7 +186,7 @@ const Content = () => {
                 {contentPack.tutorials.map((tutorial, idx) => (
                   <div
                     key={idx}
-                    className="rounded-lg border border-border/30 bg-muted/20 p-4 space-y-2"
+                    className="rounded-lg border border-border bg-secondary p-4 space-y-2"
                   >
                     <div className="flex items-start justify-between">
                       <h3 className="font-semibold text-foreground">{tutorial.title}</h3>
@@ -222,7 +222,7 @@ const Content = () => {
 
           {/* Social Snippets */}
           {contentPack.socialSnippets && contentPack.socialSnippets.length > 0 && (
-            <Card className="border-border/50 bg-card/30 backdrop-blur">
+            <Card className="border-border ">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-heading text-lg">
                   <MessageSquare className="h-5 w-5 text-success" />
@@ -233,7 +233,7 @@ const Content = () => {
                 {contentPack.socialSnippets.map((snippet, idx) => (
                   <div
                     key={idx}
-                    className="rounded-lg border border-border/30 bg-muted/20 p-4 space-y-2"
+                    className="rounded-lg border border-border bg-secondary p-4 space-y-2"
                   >
                     <div className="flex items-start justify-between">
                       <Badge variant="secondary">{snippet.platform}</Badge>
@@ -265,7 +265,7 @@ const Content = () => {
           )}
 
           {/* Actions */}
-          <Card className="border-border/50 bg-card/30 backdrop-blur">
+          <Card className="border-border ">
             <CardContent className="pt-6">
               <div className="flex gap-3">
                 <Button

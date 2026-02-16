@@ -2,91 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the DAR Studio design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/*
+ * The Pauli Effect — Agent Dashboard Design System
+ * Clean, professional, utilitarian. Inspired by pickaxe.io.
+ * No glassmorphism. No glow. No animated gradients.
+ * All colors MUST be HSL.
+ */
 
 @layer base {
   :root {
-    /* DAR Studio Color Palette */
-    --background: 227 56% 5%;          /* #050712 */
-    --foreground: 228 100% 99%;        /* #F9FAFF */
+    /* Clean Dark Palette — Professional & Utilitarian */
+    --background: 220 16% 8%;          /* #111318 — near-black slate */
+    --foreground: 220 13% 91%;         /* #E4E6EB — soft white */
 
-    --card: 222 47% 9%;                /* #0B0F1F */
-    --card-foreground: 228 100% 99%;   /* #F9FAFF */
+    --card: 220 14% 11%;              /* #171A21 — elevated surface */
+    --card-foreground: 220 13% 91%;
 
-    --popover: 222 47% 9%;
-    --popover-foreground: 228 100% 99%;
+    --popover: 220 14% 11%;
+    --popover-foreground: 220 13% 91%;
 
-    --primary: 256 100% 68%;           /* #7C5CFF */
-    --primary-foreground: 228 100% 99%;
+    --primary: 217 91% 60%;           /* #3B82F6 — clean blue */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 223 40% 13%;          /* #111629 */
-    --secondary-foreground: 228 100% 99%;
+    --secondary: 220 14% 14%;         /* #1E2028 — subtle contrast */
+    --secondary-foreground: 220 13% 91%;
 
-    --muted: 223 40% 13%;
-    --muted-foreground: 232 22% 69%;   /* #A0A4C0 */
+    --muted: 220 14% 14%;
+    --muted-foreground: 220 9% 56%;   /* #858A96 — readable gray */
 
-    --accent: 173 91% 56%;             /* #26F4D2 */
-    --accent-foreground: 227 56% 5%;
+    --accent: 220 14% 18%;            /* #272A33 — hover/active bg */
+    --accent-foreground: 220 13% 91%;
 
-    --success: 154 69% 53%;            /* #35D49B */
-    --success-foreground: 227 56% 5%;
+    --success: 142 71% 45%;           /* #22C55E — green */
+    --success-foreground: 0 0% 100%;
 
-    --warning: 38 100% 67%;            /* #FFC857 */
-    --warning-foreground: 227 56% 5%;
+    --warning: 38 92% 50%;            /* #F59E0B — amber */
+    --warning-foreground: 0 0% 100%;
 
-    --destructive: 350 100% 68%;       /* #FF5C7C */
-    --destructive-foreground: 228 100% 99%;
+    --destructive: 0 84% 60%;         /* #EF4444 — red */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 100% / 0.06;        /* rgba(255,255,255,0.06) */
-    --input: 223 40% 13%;
-    --ring: 256 100% 68%;
+    --border: 220 13% 18%;            /* #282B33 — solid subtle border */
+    --input: 220 14% 14%;
+    --ring: 217 91% 60%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --sidebar-background: 227 56% 5%;
-    --sidebar-foreground: 228 100% 99%;
-    --sidebar-primary: 256 100% 68%;
-    --sidebar-primary-foreground: 228 100% 99%;
-    --sidebar-accent: 222 47% 9%;
-    --sidebar-accent-foreground: 228 100% 99%;
-    --sidebar-border: 0 0% 100% / 0.06;
-    --sidebar-ring: 256 100% 68%;
-
-    /* DAR Studio Extended Tokens */
-    --dar-bg: 227 56% 5%;              /* #050712 */
-    --dar-surface: 222 47% 9%;         /* #0B0F1F */
-    --dar-surface-elevated: 223 40% 13%; /* #111629 */
-    --dar-primary: 256 100% 68%;       /* #7C5CFF */
-    --dar-primary-soft: 256 100% 68% / 0.18;
-    --dar-accent: 173 91% 56%;         /* #26F4D2 */
-    --dar-accent-soft: 173 91% 56% / 0.1;
-    --dar-text-main: 228 100% 99%;     /* #F9FAFF */
-    --dar-text-muted: 232 22% 69%;     /* #A0A4C0 */
-    --dar-border-subtle: 0 0% 100% / 0.06;
-    --dar-danger: 350 100% 68%;        /* #FF5C7C */
-    --dar-warning: 38 100% 67%;        /* #FFC857 */
-    --dar-success: 154 69% 53%;        /* #35D49B */
+    /* Sidebar */
+    --sidebar-background: 220 16% 7%; /* slightly darker than main bg */
+    --sidebar-foreground: 220 13% 91%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 14%;
+    --sidebar-accent-foreground: 220 13% 91%;
+    --sidebar-border: 220 13% 15%;
+    --sidebar-ring: 217 91% 60%;
 
     /* Font Families */
     --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-heading: "Space Grotesk", system-ui, sans-serif;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(256 100% 68%) 0%, hsl(256 100% 58%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(173 91% 56%) 0%, hsl(154 69% 53%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(222 47% 9%) 0%, hsl(227 56% 5%) 100%);
-    
-    /* Glows */
-    --glow-primary: 0 0 20px hsl(256 100% 68% / 0.3);
-    --glow-accent: 0 0 20px hsl(173 91% 56% / 0.3);
-    --glow-success: 0 0 20px hsl(154 69% 53% / 0.3);
-  }
-
-  .dark {
-    --background: 227 56% 5%;
-    --foreground: 228 100% 99%;
+    --font-heading: "Inter", system-ui, sans-serif;
   }
 }
 
@@ -98,35 +72,12 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   .font-heading {
     font-family: var(--font-heading);
-  }
-}
-
-@layer utilities {
-  .bg-gradient-primary {
-    background: var(--gradient-primary);
-  }
-
-  .bg-gradient-accent {
-    background: var(--gradient-accent);
-  }
-
-  .bg-gradient-subtle {
-    background: var(--gradient-subtle);
-  }
-
-  .shadow-glow-primary {
-    box-shadow: var(--glow-primary);
-  }
-
-  .shadow-glow-accent {
-    box-shadow: var(--glow-accent);
-  }
-
-  .shadow-glow-success {
-    box-shadow: var(--glow-success);
+    font-weight: 600;
   }
 }

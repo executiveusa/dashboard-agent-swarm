@@ -85,3 +85,39 @@ openclaw:
   can_receive_from: agent_zero, pauli
   broadcast: true
 ```
+
+## ACFS Flywheel Tools
+```yaml
+flywheel:
+  assigned: [NTM, AM, BV, CASS, CM, UBS, DCG, SLB, RU, MS, ACFS]
+  role_in_flywheel: lead_delegator (all 11 tools)
+  notes:
+    - "Full access to entire flywheel — delegates tool usage to team"
+    - "NTM: receives all task notifications, assigns to agents"
+    - "AM: sends/receives agent mail for coordination"
+    - "BV: creates and tracks beads (work items) for all projects"
+    - "CASS: searches all agent contexts for optimal delegation"
+    - "CM: manages context for multi-agent conversations"
+    - "UBS: triggers builds across repos via CI/CD"
+    - "DCG: generates code scaffolding for new features"
+    - "SLB: reviews logs from all agents"
+    - "RU: monitors resource usage and cost"
+    - "MS: selects optimal models per task"
+    - "ACFS: overall flywheel health and optimization"
+```
+
+## Direct Reports (Current)
+```yaml
+team:
+  - Alex (ALX-003) — SOP-Driven Dev Company
+  - DARYA vΩ (DRY-004) — Creative Director
+  - SYNTHIA (SYN-005) — Voice AI
+  - ClawdBot (CLW-006) — Multi-Channel Messaging
+  - Cynthia (CYN-007) — Observability & Safety
+  - VisionClaw (VCL-008) — Computer Vision
+  - Bambu Lab (BMB-009) — 3D Printing
+  - Caller (CLR-010) — Outbound Phone Agent
+  - Architect (ARC-011) — Voice Web Architect
+  - Open Agent Platform (OAP-008) — No-Code Builder
+total: 10 direct reports
+```

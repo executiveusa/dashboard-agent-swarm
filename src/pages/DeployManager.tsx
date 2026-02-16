@@ -157,7 +157,7 @@ const DeployManager = () => {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-xs font-semibold tracking-[0.22em] uppercase text-primary font-heading">
+        <p className="text-xs font-semibold tracking-wide uppercase text-primary font-heading">
           Deployment
         </p>
         <h2 className="mt-1 text-2xl font-semibold font-heading flex items-center gap-2">
@@ -171,7 +171,7 @@ const DeployManager = () => {
 
       {/* Summary Stats */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="border-border/50 bg-card/30 backdrop-blur">
+        <Card className="border-border ">
           <CardContent className="p-4">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Services Running</p>
             <p className="mt-2 text-2xl font-semibold text-emerald-400">
@@ -179,7 +179,7 @@ const DeployManager = () => {
             </p>
           </CardContent>
         </Card>
-        <Card className="border-border/50 bg-card/30 backdrop-blur">
+        <Card className="border-border ">
           <CardContent className="p-4">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Docker Containers</p>
             <p className="mt-2 text-2xl font-semibold">
@@ -187,7 +187,7 @@ const DeployManager = () => {
             </p>
           </CardContent>
         </Card>
-        <Card className="border-border/50 bg-card/30 backdrop-blur">
+        <Card className="border-border ">
           <CardContent className="p-4">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Vercel Deployments</p>
             <p className="mt-2 text-2xl font-semibold">
@@ -198,7 +198,7 @@ const DeployManager = () => {
       </div>
 
       {/* Service Grid */}
-      <Card className="border-border/60 bg-card/70">
+      <Card className="border-border ">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Server className="h-5 w-5 text-primary" />
@@ -213,7 +213,7 @@ const DeployManager = () => {
             {services.map((service) => (
               <div
                 key={service.id}
-                className="flex items-center justify-between rounded-xl border border-border/50 bg-muted/40 p-4"
+                className="flex items-center justify-between rounded-xl border border-border bg-secondary p-4"
               >
                 <div className="flex items-center gap-3">
                   {typeIcon(service.type)}
