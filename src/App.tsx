@@ -18,6 +18,7 @@ import AgentClaw from "./pages/AgentClaw";
 import DevikaAgent from "./pages/DevikaAgent";
 import PauliMeetingRoom from "./pages/PauliMeetingRoom";
 import DeployManager from "./pages/DeployManager";
+import AnimatedCommandCenter from "./pages/AnimatedCommandCenter";
 import NotFound from "./pages/NotFound";
 import { OrgProvider } from "./contexts/OrgContext";
 import { OrgSwitcher } from "./components/OrgSwitcher";
@@ -61,6 +62,7 @@ const App = () => (
               <div className="p-6">
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/command-center" element={<AnimatedCommandCenter />} />
                   <Route path="/agent-claw" element={<AgentClaw />} />
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/analytics" element={<Analytics />} />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -64,8 +65,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/40">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 pb-12 pt-6 sm:px-6 lg:px-8">
-        <section className="space-y-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 pb-12 pt-6 sm:px-6 lg:px-8"
+      >
+        <motion.section
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="space-y-4"
+        >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
@@ -132,9 +143,14 @@ const Index = () => {
               </div>
             </CardContent>
           </Card>
-        </section>
+        </motion.section>
 
-        <section className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="grid gap-6 lg:grid-cols-[1.6fr_1fr]"
+        >
           <div className="space-y-6">
             <Card className="border-border/60 bg-card/80">
               <CardHeader>
@@ -341,8 +357,8 @@ const Index = () => {
               </CardContent>
             </Card>
           </div>
-        </section>
-      </div>
+        </motion.section>
+      </motion.div>
     </div>
   );
 };

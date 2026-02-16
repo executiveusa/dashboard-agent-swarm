@@ -1,4 +1,4 @@
-import { Activity, Bot, FileText, FolderTree, LineChart, Settings, Terminal, Sparkles, Eye, Mic, Code2, MessageSquare, Rocket } from "lucide-react";
+import { Activity, Bot, FileText, FolderTree, LineChart, Settings, Terminal, Sparkles, Eye, Mic, Code2, MessageSquare, Rocket, Zap } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
   Sidebar,
@@ -15,6 +15,7 @@ import {
 
 const navItems = [
   { title: "Mission Control", url: "/", icon: Activity },
+  { title: "Command Center", url: "/command-center", icon: Zap },
   { title: "Agent Claw", url: "/agent-claw", icon: Mic },
   { title: "Tasks", url: "/tasks", icon: Terminal },
   { title: "Analytics", url: "/analytics", icon: LineChart },
