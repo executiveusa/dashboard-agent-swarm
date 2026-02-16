@@ -1,4 +1,21 @@
-# Welcome to your Lovable project
+<div align="center">
+
+# ⚡ DARYA Studio — Agent Command Center
+
+### `DRY-004` · Creative Director & Master Dashboard
+
+[![Built by The Pauli Effect](https://img.shields.io/badge/Built%20by-The%20Pauli%20Effect-blueviolet?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJMMyAxNGgxOEwxMiAyeiIgZmlsbD0id2hpdGUiLz48L3N2Zz4=)](https://github.com/executiveusa)
+[![Agent Fleet](https://img.shields.io/badge/Agent%20Fleet-v1.0-ff6b6b?style=for-the-badge)](https://github.com/executiveusa/dashboard-agent-swarm/blob/main/AGENTS.md)
+[![Deploy to Vercel](https://img.shields.io/badge/Deploy-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/executiveusa/dashboard-agent-swarm)
+[![Deploy to Cloudflare](https://img.shields.io/badge/Deploy-Cloudflare-f38020?style=for-the-badge&logo=cloudflare)](https://deploy.workers.cloudflare.com/?url=https://github.com/executiveusa/dashboard-agent-swarm)
+[![Run on Docker](https://img.shields.io/badge/Run%20on-Docker-2496ED?style=for-the-badge&logo=docker)](https://github.com/executiveusa/dashboard-agent-swarm#docker)
+
+</div>
+
+---
+
+> **Part of the 17-agent Pauli Effect fleet** · React 18 + Vite + TypeScript + Hono BFF + PostgreSQL  
+> Master control dashboard for all agents · UI/UX · Brand · Content Strategy
 
 ## YAPP Dashboard UI (Agent Zero)
 

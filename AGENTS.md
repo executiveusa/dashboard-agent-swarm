@@ -71,8 +71,10 @@
 | **Solana** | SOL-103 | dashboard-agent-swarm | Crypto & Tokenization |
 | **Vega** | VGA-104 | dashboard-agent-swarm | IP & Merch Universe |
 | **Aurora** | AUR-105 | dashboard-agent-swarm | Ops & KPI Dashboards |
-| **VisionClaw** | VCL-008 | VisionClaw | Computer Vision Pipeline |
+| **VisionClaw** | VCL-008 | VisionClaw | Vision + Voice — Meta Ray-Ban smart glasses, Gemini Live, OpenClaw |
 | **Bambu Lab** | BMB-009 | (hardware) | 3D Printing & Fabrication |
+| **Caller** | CLR-010 | phone-call-assistant | Team Outbound Caller — Twilio + OpenAI Realtime, scheduled calls |
+| **Architect** | ARC-011 | voice-web-architect | Voice UI Frontend — React + Vite + TypeScript + shadcn/ui |
 
 ### Communication Flow
 
@@ -102,6 +104,9 @@ ALL agents connect to the OpenClaw backbone:
 | `open-agent-platform-pauli` | Pauli (No-code builder) | AGENT_PROTOCOL.md, ROLE_INSTRUCTIONS.md, .llm.txt |
 | `voice-agents-fork` | SYNTHIA | AGENT_PROTOCOL.md, ROLE_INSTRUCTIONS.md, .llm.txt |
 | `devika-agent` | Devika | AGENT_PROTOCOL.md, ROLE_INSTRUCTIONS.md, .llm.txt |
+| `phone-call-assistant` | Caller (CLR-010) | AGENTS.md, Dockerfile, .env.example |
+| `VisionClaw` | VisionClaw (VCL-008) | AGENTS.md, README.md |
+| `voice-web-architect` | Architect (ARC-011) | AGENTS.md, Dockerfile, README.md |
 
 ## Shared Tool Repos (Forked)
 
@@ -150,6 +155,149 @@ Agents should reference prompts by number (e.g., "Apply Prompt #6 De-Slopifier")
 - Real-time chat interface at `/paulis-place` endpoint
 - Meeting types: `standup`, `architecture`, `sprint-planning`, `retrospective`, `emergency`
 - Pauli's avatar ONLY appears when the user requests it
+
+## Ralphy — Autonomous Coding Loop (HARDCODED REQUIREMENT)
+
+> **MANDATORY**: Use [Ralphy](https://github.com/michaelshimeles/ralphy) (`ralphy-cli` v4.7.2+) for **all large feature changes** across the fleet. Skip for small diffs (<50 lines) to save tokens.
+
+### When to Use Ralphy
+
+| Change Size | Action | Example |
+|-------------|--------|---------|
+| **Large** (>50 LOC, multi-file, new feature) | ✅ **ALWAYS use Ralphy** | New agent integration, API overhaul, Docker setup |
+| **Small** (<50 LOC, single-file fix) | ❌ Skip — direct edit | Typo fix, env var change, config tweak |
+
+### Ralphy Workflow
+
+```bash
+# Install globally
+npm install -g ralphy-cli
+
+# Initialize in any repo
+ralphy init
+
+# Run a task with PRD
+ralphy run --prd "Add outbound Twilio calling to SYNTHIA" --engine claude
+
+# Parallel execution across repos (worktrees/sandboxes)
+ralphy run --parallel --branch feature/voice-agent --auto-pr
+```
+
+### Per-Repo Config (`.ralphy/config.yaml`)
+
+```yaml
+engine: claude          # Default: claude-code. Options: codex, opencode, cursor, qwen, droid, copilot, gemini
+parallel: true          # Use git worktrees for parallel execution
+auto_pr: true           # Auto-create PR on completion
+branch_prefix: feat/    # Branch naming convention
+rules:
+  - "Follow AGENT_PROTOCOL.md conventions"
+  - "Use agent-fleet-v1 JSON envelope for all comms"
+  - "Run tests before PR creation"
+  - "Apply Prompt #6 De-Slopifier before committing"
+boundaries:
+  - "Never modify .env or secrets files"
+  - "Never push directly to main"
+  - "Never delete agent soul files"
+```
+
+### Ralphy + Fleet Integration
+
+- **Devika** delegates large features → Ralphy spins up engine loops per repo
+- **Alex (MetaGPT)** generates PRDs → Ralphy consumes them as `--prd` input
+- **DARYA** reviews PR output → Ralphy's `--auto-pr` creates reviewable PRs
+- **Cynthia** audits Ralphy runs → observability via webhook notifications
+
+---
+
+## ACFS Flywheel Integration
+
+> The [Agentic Coding Flywheel](https://github.com/Dicklesworthstone/agentic_coding_flywheel_setup) (ACFS) provides 11 tools for multi-agent coding infrastructure on VPS.
+
+### Tool → Agent Mapping
+
+| Flywheel Tool | Maps To | Purpose |
+|---------------|---------|---------|
+| **NTM** (Nested Tmux) | Agent Zero (AZ-001) | Multi-session orchestration |
+| **Agent Mail** | ClawdBot (CLW-006) | MCP-based agent coordination |
+| **BV / Beads** | Devika (DVK-002) | Task graph tracking |
+| **CASS** (Session Search) | All Agents | Cross-agent session search |
+| **CM** (Context Memory) | Pauli (PLI-000) | Persistent memory across sessions |
+| **UBS** (Bug Scanner) | Cynthia (CYN-007) | Automated vulnerability detection |
+| **DCG** (Destructive Guard) | Cynthia (CYN-007) | Dangerous command prevention |
+| **SLB** (Two-Person Rule) | Pauli (PLI-000) | Critical action approval |
+| **RU** (Repo Updater) | Devika (DVK-002) | Cross-repo sync & updates |
+| **MS** (Meta Skill) | Alex (ALX-003) | Self-improving skill generation |
+| **ACFS** (Bootstrap) | archon-os | Full environment setup |
+
+### VPS Deployment
+
+```bash
+# On Hostinger VPS (Ubuntu)
+curl -fsSL https://raw.githubusercontent.com/Dicklesworthstone/agentic_coding_flywheel_setup/main/install.sh | bash
+
+# Initialize flywheel for agent fleet
+acfs init --agents dashboard-agent-swarm,agent-zero-Fork,devika-agent
+```
+
+---
+
+## Voice Agent Stack
+
+> **SYNTHIA** (SYN-005) is the fleet's voice layer, powered by 4 voice repos.
+
+### Voice Repos
+
+| Repo | Role | Stack |
+|------|------|-------|
+| `voice-agents-fork` | Core voice framework | LiveKit Agents, 54 plugins, SIP, WebRTC |
+| `phone-call-assistant` | **Master outbound caller** | FastAPI + Twilio + OpenAI Realtime API |
+| `VisionClaw` | Vision + Voice (Smart Glasses) | iOS, Gemini Live, Meta Ray-Ban, OpenClaw |
+| `voice-web-architect` | Voice UI frontend | React + Vite + TypeScript + shadcn/ui |
+
+### Phone Call Assistant (Team Dedicated Agent)
+
+The `phone-call-assistant` is the team's dedicated AI caller:
+- **Outbound calls**: `GET /outcoming-call?phone_number=+1XXXXXXXXXX`
+- **Scheduled calls**: APScheduler cron jobs (daily wake-up calls)
+- **Real-time conversation**: OpenAI Realtime API via Twilio Media Streams
+- **Azure or OpenAI**: Auto-detects which API to use
+
+```bash
+# Make an outbound call
+curl "https://your-host/outcoming-call?phone_number=+13234842914"
+
+# Docker
+docker-compose -f phone-call-assistant/docker-compose.yml up
+```
+
+---
+
+## Docker Deployment
+
+Every agent and project has its own Docker image for Coolify/self-hosted deployment.
+
+```bash
+# Build all images
+docker-compose -f docker-compose.fleet.yml build
+
+# Deploy full fleet
+docker-compose -f docker-compose.fleet.yml up -d
+
+# Individual agent
+docker build -t pauli/dashboard-agent-swarm ./dashboard-agent-swarm
+docker build -t pauli/phone-call-assistant ./phone-call-assistant
+docker build -t pauli/voice-agents-fork ./voice-agents-fork
+```
+
+### Deploy Buttons
+
+All repos include 1-click deploy buttons:
+- [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/executiveusa/REPO_NAME)
+- [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/executiveusa/REPO_NAME)
+- [![Run on Docker](https://img.shields.io/badge/Run%20on-Docker-blue?logo=docker)](https://github.com/executiveusa/REPO_NAME#docker)
+
+---
 
 ## Quick Start
 
