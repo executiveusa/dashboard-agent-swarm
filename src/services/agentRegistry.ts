@@ -5,7 +5,119 @@ import type { AgentManifest } from "../../agents/types";
 /**
  * Agent Registry Service
  * Maps existing agents from /agents directory to DARYA + Crypto Cuties structure
+ * Plus external agents: Agent Zero, Devika, Pauli, Bambu Lab, Alex
  */
+
+// External / Infrastructure agents
+const infrastructureAgents: AgentDefinition[] = [
+  {
+    id: "agent_zero",
+    name: "Agent Zero",
+    role: "Master Orchestrator",
+    model: "gpt-4o",
+    status: "core",
+    systemPrompt: "You are Agent Zero, the master orchestrator. You coordinate all other agents, manage task queues, and ensure mission execution across the entire swarm.",
+    capabilities: [
+      "Task queue management",
+      "Agent coordination",
+      "Multi-step planning",
+      "Priority routing",
+      "Error recovery",
+      "Swarm health monitoring",
+    ],
+    tools: ["planning", "memory-read", "memory-write", "agent-invoke", "task-queue"],
+    children: ["darya_vomega", "devika", "pauli", "alex", "bambu_lab"],
+  },
+  {
+    id: "devika",
+    name: "Devika",
+    role: "AI Software Engineer",
+    model: "claude-sonnet-4-20250514",
+    status: "core",
+    systemPrompt: "You are Devika, an AI software engineer. You understand high-level human instructions and break them down into actionable steps, research, code, and deploy full-stack applications autonomously.",
+    capabilities: [
+      "Full-stack code generation",
+      "Architecture design",
+      "Web research & RAG",
+      "Project planning & breakdown",
+      "Browser automation",
+      "Git workflow management",
+    ],
+    tools: ["code-gen", "browser", "research", "devops", "memory-read"],
+    parents: ["agent_zero"],
+  },
+  {
+    id: "pauli",
+    name: "Pauli",
+    role: "Meeting Room & Communication Agent",
+    model: "gpt-4o",
+    status: "core",
+    systemPrompt: "You are Pauli, the meeting room coordinator. You manage agent-to-agent and agent-to-human conferences in the visual meeting room (Pauli's Place), facilitating real-time multi-agent discussions.",
+    capabilities: [
+      "Visual meeting room management",
+      "Agent-to-agent conferencing",
+      "Real-time WebSocket communication",
+      "Meeting transcription",
+      "Action item extraction",
+      "Multi-party coordination",
+    ],
+    tools: ["websocket", "memory-read", "memory-write", "transcription"],
+    parents: ["agent_zero"],
+  },
+  {
+    id: "alex",
+    name: "Alex",
+    role: "DevOps & Deployment Agent",
+    model: "gpt-4o-mini",
+    status: "core",
+    systemPrompt: "You are Alex, the deployment and infrastructure agent. You manage Docker deployments, CI/CD pipelines, Coolify, Hostinger VPS, and Vercel deployments across all services.",
+    capabilities: [
+      "Docker container management",
+      "CI/CD pipeline orchestration",
+      "Coolify deployment",
+      "Hostinger VPS management",
+      "Vercel deployment",
+      "Health monitoring & alerting",
+    ],
+    tools: ["devops", "ssh", "docker", "memory-read"],
+    parents: ["agent_zero"],
+  },
+  {
+    id: "bambu_lab",
+    name: "Bambu Lab",
+    role: "3D Printing & Fabrication Agent",
+    model: "gpt-4o-mini",
+    status: "concept",
+    systemPrompt: "You are the Bambu Lab agent, managing 3D printing jobs, slicing optimization, and physical fabrication workflows for merchandise and prototyping.",
+    capabilities: [
+      "3D print job management",
+      "Slice optimization",
+      "Material selection",
+      "Print queue management",
+      "Quality monitoring",
+    ],
+    tools: ["bambu-api", "memory-read"],
+    parents: ["agent_zero"],
+  },
+  {
+    id: "cynthia",
+    name: "Cynthia",
+    role: "Observability & Safety Agent",
+    model: "gpt-4o-mini",
+    status: "core",
+    systemPrompt: "You are Cynthia, the observability and safety agent. You monitor all agent telemetry, enforce guardrails, redact sensitive data, and provide real-time dashboards on agent health and safety.",
+    capabilities: [
+      "Agent telemetry collection",
+      "PII/secret redaction",
+      "Safety guardrail enforcement",
+      "Real-time monitoring",
+      "Session tracking",
+      "Anomaly detection",
+    ],
+    tools: ["telemetry", "memory-read", "redaction"],
+    parents: ["agent_zero"],
+  },
+];
 
 // DARYA + Crypto Cuties definitions
 const daryaAndCuties: AgentDefinition[] = [
@@ -25,6 +137,7 @@ const daryaAndCuties: AgentDefinition[] = [
     ],
     tools: ["planning", "memory-read", "memory-write", "integration-admin"],
     children: ["cutie_maya", "cutie_luna", "cutie_solana", "cutie_vega", "cutie_aurora"],
+    parents: ["agent_zero"],
   },
   {
     id: "cutie_maya",
@@ -128,11 +241,11 @@ function mapLegacyAgent(manifest: AgentManifest): AgentDefinition {
 }
 
 /**
- * Get all agents (DARYA + Cuties + Legacy)
+ * Get all agents (Infrastructure + DARYA + Cuties + Legacy)
  */
 export function getAllAgents(): AgentDefinition[] {
   const legacyAgents = agentList.map(mapLegacyAgent);
-  return [...daryaAndCuties, ...legacyAgents];
+  return [...infrastructureAgents, ...daryaAndCuties, ...legacyAgents];
 }
 
 /**
@@ -140,6 +253,13 @@ export function getAllAgents(): AgentDefinition[] {
  */
 export function getAgentById(id: string): AgentDefinition | undefined {
   return getAllAgents().find(agent => agent.id === id);
+}
+
+/**
+ * Get infrastructure agents (Agent Zero, Devika, Pauli, Alex, Bambu Lab, Cynthia)
+ */
+export function getInfrastructureAgents(): AgentDefinition[] {
+  return infrastructureAgents;
 }
 
 /**

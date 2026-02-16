@@ -1,10 +1,73 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Settings as SettingsIcon, Key, Shield, Server, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Settings as SettingsIcon, Key, Shield, Server, Zap, Save, CheckCircle2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const SETTINGS_KEY = "darya_studio_settings";
+
+interface SettingsState {
+  litellmUrl: string;
+  openaiKey: string;
+  anthropicKey: string;
+  geminiKey: string;
+  localLlmUrl: string;
+  stripeKey: string;
+  firecrawlKey: string;
+  whatsappUrl: string;
+  whatsappToken: string;
+  whatsappNumber: string;
+  n8nUrl: string;
+  hostingerApiToken: string;
+  coolifyUrl: string;
+}
+
+const defaultSettings: SettingsState = {
+  litellmUrl: "",
+  openaiKey: "",
+  anthropicKey: "",
+  geminiKey: "",
+  localLlmUrl: "",
+  stripeKey: "",
+  firecrawlKey: "",
+  whatsappUrl: "https://graph.facebook.com/v18.0",
+  whatsappToken: "",
+  whatsappNumber: "",
+  n8nUrl: "",
+  hostingerApiToken: "",
+  coolifyUrl: "",
+};
 
 const Settings = () => {
+  const [settings, setSettings] = useState<SettingsState>(defaultSettings);
+  const [saved, setSaved] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    if (stored) {
+      try {
+        setSettings({ ...defaultSettings, ...JSON.parse(stored) });
+      } catch {}
+    }
+  }, []);
+
+  const handleChange = (key: keyof SettingsState, value: string) => {
+    setSettings((prev) => ({ ...prev, [key]: value }));
+    setSaved(false);
+  };
+
+  const handleSave = () => {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    setSaved(true);
+    toast({
+      title: "Settings saved",
+      description: "Configuration saved to local storage. API keys are stored client-side only.",
+    });
+  };
   return (
     <div className="space-y-6 p-6">
       <header>
@@ -53,7 +116,8 @@ const Settings = () => {
               id="litellm-url" 
               type="text" 
               placeholder="https://litellm.example.com" 
-              disabled
+              value={settings.litellmUrl}
+              onChange={(e) => handleChange("litellmUrl", e.target.value)}
               className="font-mono text-sm"
             />
             <p className="text-xs text-muted-foreground">
@@ -67,7 +131,8 @@ const Settings = () => {
               id="openai-key" 
               type="password" 
               placeholder="sk-..." 
-              disabled
+              value={settings.openaiKey}
+              onChange={(e) => handleChange("openaiKey", e.target.value)}
               className="font-mono text-sm"
             />
           </div>
@@ -78,7 +143,8 @@ const Settings = () => {
               id="anthropic-key" 
               type="password" 
               placeholder="sk-ant-..." 
-              disabled
+              value={settings.anthropicKey}
+              onChange={(e) => handleChange("anthropicKey", e.target.value)}
               className="font-mono text-sm"
             />
           </div>
@@ -89,7 +155,8 @@ const Settings = () => {
               id="gemini-key" 
               type="password" 
               placeholder="AIza..." 
-              disabled
+              value={settings.geminiKey}
+              onChange={(e) => handleChange("geminiKey", e.target.value)}
               className="font-mono text-sm"
             />
             <p className="text-xs text-muted-foreground">
@@ -103,7 +170,8 @@ const Settings = () => {
               id="local-llm-url" 
               type="text" 
               placeholder="http://localhost:8000" 
-              disabled
+              value={settings.localLlmUrl}
+              onChange={(e) => handleChange("localLlmUrl", e.target.value)}
               className="font-mono text-sm"
             />
           </div>
@@ -126,7 +194,8 @@ const Settings = () => {
               id="stripe-key" 
               type="password" 
               placeholder="sk_live_..." 
-              disabled
+              value={settings.stripeKey}
+              onChange={(e) => handleChange("stripeKey", e.target.value)}
               className="font-mono text-sm"
             />
           </div>
@@ -137,7 +206,8 @@ const Settings = () => {
               id="firecrawl-key" 
               type="password" 
               placeholder="fc-..." 
-              disabled
+              value={settings.firecrawlKey}
+              onChange={(e) => handleChange("firecrawlKey", e.target.value)}
               className="font-mono text-sm"
             />
             <p className="text-xs text-muted-foreground">
@@ -151,7 +221,8 @@ const Settings = () => {
               id="whatsapp-url" 
               type="text" 
               placeholder="https://graph.facebook.com/v18.0" 
-              disabled
+              value={settings.whatsappUrl}
+              onChange={(e) => handleChange("whatsappUrl", e.target.value)}
               className="font-mono text-sm"
             />
           </div>
@@ -162,7 +233,8 @@ const Settings = () => {
               id="whatsapp-token" 
               type="password" 
               placeholder="EAAx..." 
-              disabled
+              value={settings.whatsappToken}
+              onChange={(e) => handleChange("whatsappToken", e.target.value)}
               className="font-mono text-sm"
             />
             <p className="text-xs text-muted-foreground">
@@ -176,7 +248,8 @@ const Settings = () => {
               id="whatsapp-number" 
               type="text" 
               placeholder="+52..." 
-              disabled
+              value={settings.whatsappNumber}
+              onChange={(e) => handleChange("whatsappNumber", e.target.value)}
               className="font-mono text-sm"
             />
           </div>
@@ -187,7 +260,8 @@ const Settings = () => {
               id="n8n-url" 
               type="text" 
               placeholder="https://n8n.example.com" 
-              disabled
+              value={settings.n8nUrl}
+              onChange={(e) => handleChange("n8nUrl", e.target.value)}
               className="font-mono text-sm"
             />
             <p className="text-xs text-muted-foreground">
@@ -195,11 +269,39 @@ const Settings = () => {
             </p>
           </div>
 
-          <p className="text-xs text-muted-foreground pt-2">
-            API key management will be enabled in Phase 3
-          </p>
+          <div className="space-y-2">
+            <Label htmlFor="hostinger-token" className="text-sm">Hostinger API Token</Label>
+            <Input 
+              id="hostinger-token" 
+              type="password" 
+              placeholder="hostinger_..." 
+              value={settings.hostingerApiToken}
+              onChange={(e) => handleChange("hostingerApiToken", e.target.value)}
+              className="font-mono text-sm"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="coolify-url" className="text-sm">Coolify URL</Label>
+            <Input 
+              id="coolify-url" 
+              type="text" 
+              placeholder="https://coolify.example.com" 
+              value={settings.coolifyUrl}
+              onChange={(e) => handleChange("coolifyUrl", e.target.value)}
+              className="font-mono text-sm"
+            />
+          </div>
         </CardContent>
       </Card>
+
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <Button onClick={handleSave} className="gap-2">
+          {saved ? <CheckCircle2 className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+          {saved ? "Saved" : "Save Settings"}
+        </Button>
+      </div>
 
       {/* Guardrails */}
       <Card className="border-border/50 bg-card/30 backdrop-blur">

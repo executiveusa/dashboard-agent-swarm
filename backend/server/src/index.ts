@@ -13,6 +13,9 @@ import { createFileIndexRoutes } from "./routes/fileIndex";
 import { createRollbackRoutes } from "./routes/rollbacks";
 import { createMlPatternRoutes } from "./routes/mlPatterns";
 import { createTelemetryRoutes } from "./routes/telemetry";
+import { createAgentRoutes } from "./routes/agents";
+import { createDaryaRoutes } from "./routes/darya";
+import { createDeployRoutes } from "./routes/deploy";
 import { PostgresWebSocketBridge } from "./lib/websocket";
 import { requireAdminToken } from "./lib/redaction";
 
@@ -36,6 +39,8 @@ async function bootstrap() {
   const rollbackRoutes = createRollbackRoutes(db, config);
   const mlPatternRoutes = createMlPatternRoutes(db, config);
   const telemetryRoutes = createTelemetryRoutes(db, config);
+  const agentRoutes = createAgentRoutes(db, config);
+  const daryaRoutes = createDaryaRoutes(db, config);
 
   app.get("/health", (_req, res) => {
     res.json({ status: "ok" });
@@ -63,6 +68,23 @@ async function bootstrap() {
   app.get("/api/telemetry/sessions", telemetryRoutes.listSessions);
   app.get("/api/telemetry/sessions/:id/events", telemetryRoutes.getSessionEvents);
   app.get("/api/telemetry/events", telemetryRoutes.listEvents);
+
+  // Agent management endpoints
+  app.get("/api/agents", agentRoutes.listAgents);
+  app.get("/api/agents/:id/status", agentRoutes.getAgentStatus);
+  app.post("/api/agents/:id/run", agentRoutes.runAgent);
+
+  // DARYA generation endpoints
+  app.post("/darya/blueprint", daryaRoutes.blueprint);
+  app.post("/darya/ugc-pack", daryaRoutes.ugcPack);
+  app.post("/darya/donor-thankyou", daryaRoutes.donorThankYou);
+  app.post("/darya/content-pack", daryaRoutes.contentPack);
+  app.post("/darya/product-factory", daryaRoutes.productFactory);
+  app.post("/darya/experiment-plan", daryaRoutes.experimentPlan);
+
+  // Deploy management endpoints (Coolify API proxy)
+  const deployRoutes = createDeployRoutes();
+  app.use("/api/deploy", deployRoutes);
 
   const server = http.createServer(app);
 

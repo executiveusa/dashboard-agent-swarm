@@ -1,11 +1,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bot, Sparkles, TrendingUp, Coins, Package, BarChart3, Network } from "lucide-react";
-import { getDaryaAndCuties, getLegacyAgents, getAgentHierarchy } from "@/services/agentRegistry";
+import { Bot, Sparkles, TrendingUp, Coins, Package, BarChart3, Network, Code2, MessageSquare, Rocket, Container, Eye, Shield } from "lucide-react";
+import { getDaryaAndCuties, getLegacyAgents, getInfrastructureAgents, getAgentHierarchy } from "@/services/agentRegistry";
 import type { AgentDefinition } from "@/types/api";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const iconMap: Record<string, typeof Bot> = {
+  "agent_zero": Shield,
+  "devika": Code2,
+  "pauli": MessageSquare,
+  "alex": Rocket,
+  "bambu_lab": Container,
+  "cynthia": Eye,
   "darya_vomega": Sparkles,
   "cutie_maya": TrendingUp,
   "cutie_luna": Sparkles,
@@ -15,6 +22,12 @@ const iconMap: Record<string, typeof Bot> = {
 };
 
 const colorMap: Record<string, string> = {
+  "agent_zero": "text-sky-400",
+  "devika": "text-violet-400",
+  "pauli": "text-emerald-400",
+  "alex": "text-amber-400",
+  "bambu_lab": "text-orange-400",
+  "cynthia": "text-cyan-400",
   "darya_vomega": "text-primary",
   "cutie_maya": "text-success",
   "cutie_luna": "text-accent",
@@ -23,11 +36,20 @@ const colorMap: Record<string, string> = {
   "cutie_aurora": "text-muted-foreground",
 };
 
+const agentPageMap: Record<string, string> = {
+  "devika": "/agents/devika",
+  "pauli": "/agents/meetings",
+  "cynthia": "/agents/cynthia/watch",
+  "alex": "/deploy",
+};
+
 const AgentsConsole = () => {
   const daryaAndCuties = getDaryaAndCuties();
   const legacyAgents = getLegacyAgents();
+  const infraAgents = getInfrastructureAgents();
   const hierarchy = getAgentHierarchy();
   const [selectedAgent, setSelectedAgent] = useState<AgentDefinition | null>(null);
+  const navigate = useNavigate();
 
   const getStatusVariant = (status: AgentDefinition["status"]) => {
     switch (status) {
@@ -90,6 +112,62 @@ const AgentsConsole = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Infrastructure Agents */}
+      <div>
+        <h3 className="mb-4 text-lg font-semibold font-heading">Infrastructure &amp; External Agents</h3>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {infraAgents.map((agent) => {
+            const Icon = iconMap[agent.id] || Bot;
+            const color = colorMap[agent.id] || "text-foreground";
+            const pageUrl = agentPageMap[agent.id];
+            return (
+              <Card 
+                key={agent.id}
+                className="border-border/50 bg-card/30 backdrop-blur transition-all hover:border-primary/30 hover:shadow-glow-primary/20 cursor-pointer"
+                onClick={() => pageUrl ? navigate(pageUrl) : setSelectedAgent(agent)}
+              >
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`rounded-lg bg-muted/50 p-2 ${color}`}>
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="font-heading text-lg">{agent.name}</CardTitle>
+                        <CardDescription className="text-xs">{agent.role}</CardDescription>
+                      </div>
+                    </div>
+                  </div>
+                  <Badge variant={getStatusVariant(agent.status)} className="w-fit text-xs capitalize">
+                    {agent.status.replace("_", " ")}
+                  </Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Capabilities
+                    </p>
+                    <ul className="space-y-1">
+                      {agent.capabilities?.slice(0, 3).map((item, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm">
+                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+                          <span className="text-muted-foreground">{item}</span>
+                        </li>
+                      ))}
+                      {agent.capabilities && agent.capabilities.length > 3 && (
+                        <li className="text-xs text-muted-foreground">
+                          +{agent.capabilities.length - 3} more...
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
 
       {/* DARYA + Cuties Grid */}
       <div>

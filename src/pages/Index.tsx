@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -18,8 +19,11 @@ import {
   ShieldAlert,
   Sparkles,
   Zap,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
-import { getDashboardSnapshot } from "@/services/yappDashboard";
+import { getDashboardSnapshotAsync, getDashboardSnapshot } from "@/services/yappDashboard";
+import type { DashboardSnapshot } from "@/services/yappDashboard";
 
 const statusBadgeStyles: Record<string, string> = {
   online: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
@@ -35,7 +39,28 @@ const statusBadgeStyles: Record<string, string> = {
 };
 
 const Index = () => {
-  const snapshot = getDashboardSnapshot();
+  const [snapshot, setSnapshot] = useState<DashboardSnapshot>(getDashboardSnapshot());
+  const [loading, setLoading] = useState(true);
+  const [isLive, setIsLive] = useState(false);
+
+  const refresh = async () => {
+    setLoading(true);
+    try {
+      const data = await getDashboardSnapshotAsync();
+      setSnapshot(data);
+      setIsLive(true);
+    } catch {
+      setIsLive(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    refresh();
+    const interval = setInterval(refresh, 30000); // Refresh every 30s
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/40">
@@ -54,14 +79,17 @@ const Index = () => {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Badge className="gap-1 border border-emerald-500/30 bg-emerald-500/10 text-emerald-300">
+              <Badge className={`gap-1 border ${isLive ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-amber-500/30 bg-amber-500/10 text-amber-300"}`}>
                 <CheckCircle2 className="h-3.5 w-3.5" />
-                Live sync
+                {isLive ? "Live sync" : "Fallback data"}
               </Badge>
               <Badge className="gap-1 border border-sky-500/30 bg-sky-500/10 text-sky-300">
                 <Sparkles className="h-3.5 w-3.5" />
-                Agent Zero online
+                Agent swarm
               </Badge>
+              <Button variant="ghost" size="sm" onClick={refresh} disabled={loading}>
+                {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+              </Button>
             </div>
           </div>
 

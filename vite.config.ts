@@ -33,6 +33,16 @@ export default defineConfig(({ mode }) => ({
       "/darya": { target: "http://localhost:8787", changeOrigin: true },
       "/api": { target: "http://localhost:8787", changeOrigin: true },
       "/lemonai": { target: "http://localhost:8787", changeOrigin: true },
+      "/devika": {
+        target: "http://localhost:1337",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/pauli": {
+        target: "http://localhost:5001",
+        changeOrigin: true,
+        secure: false,
+      },
       "/agent-claw": {
         target: "http://localhost:50001",
         changeOrigin: true,
