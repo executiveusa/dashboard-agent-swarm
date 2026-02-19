@@ -16,6 +16,7 @@ import { createTelemetryRoutes } from "./routes/telemetry";
 import { createAgentRoutes } from "./routes/agents";
 import { createDaryaRoutes } from "./routes/darya";
 import { createDeployRoutes } from "./routes/deploy";
+import { createAccessKernelRoutes } from "./routes/accessKernel";
 import { PostgresWebSocketBridge } from "./lib/websocket";
 import { requireAdminToken } from "./lib/redaction";
 
@@ -41,6 +42,7 @@ async function bootstrap() {
   const telemetryRoutes = createTelemetryRoutes(db, config);
   const agentRoutes = createAgentRoutes(db, config);
   const daryaRoutes = createDaryaRoutes(db, config);
+  const accessKernelRoutes = createAccessKernelRoutes();
 
   app.get("/health", (_req, res) => {
     res.json({ status: "ok" });
@@ -85,6 +87,7 @@ async function bootstrap() {
   // Deploy management endpoints (Coolify API proxy)
   const deployRoutes = createDeployRoutes();
   app.use("/api/deploy", deployRoutes);
+  app.use("/api/access-kernel", accessKernelRoutes);
 
   const server = http.createServer(app);
 

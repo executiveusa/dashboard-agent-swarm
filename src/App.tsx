@@ -19,6 +19,12 @@ import DevikaAgent from "./pages/DevikaAgent";
 import PauliMeetingRoom from "./pages/PauliMeetingRoom";
 import DeployManager from "./pages/DeployManager";
 import AnimatedCommandCenter from "./pages/AnimatedCommandCenter";
+import AccessSecrets from "./pages/AccessSecrets";
+import AccessGrants from "./pages/AccessGrants";
+import AccessAudit from "./pages/AccessAudit";
+import AccessVoice from "./pages/AccessVoice";
+import AccessHealth from "./pages/AccessHealth";
+import AccessSession from "./pages/AccessSession";
 import NotFound from "./pages/NotFound";
 import { OrgProvider } from "./contexts/OrgContext";
 import { OrgSwitcher } from "./components/OrgSwitcher";
@@ -71,6 +77,12 @@ const App = () => (
                   <Route path="/agents/devika" element={<DevikaAgent />} />
                   <Route path="/agents/meetings" element={<PauliMeetingRoom />} />
                   <Route path="/deploy" element={<DeployManager />} />
+                  <Route path="/access/secrets" element={<AccessSecrets />} />
+                  <Route path="/access/session" element={<AccessSession />} />
+                  <Route path="/access/grants" element={<AccessGrants />} />
+                  <Route path="/access/audit" element={<AccessAudit />} />
+                  <Route path="/access/voice" element={<AccessVoice />} />
+                  <Route path="/access/health" element={<AccessHealth />} />
                   <Route path="/logs" element={<Logs />} />
                   <Route path="/files" element={<Files />} />
                   <Route path="/content" element={<Content />} />
