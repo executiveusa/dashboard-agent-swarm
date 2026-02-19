@@ -69,7 +69,6 @@ PowerShell helper:
 Slash command available in VS Code chat:
 
 - `/add-ralphy-loop` (defined in `.github/prompts/add-ralphy-loop.prompt.md`)
-
 ## Project info
 
 **URL**: https://lovable.dev/projects/93ccd06b-8bfa-45f2-b469-eceaf3d8ef32

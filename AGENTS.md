@@ -192,7 +192,6 @@ Use the reusable slash command to add this integration pattern in any repo:
 Definition file:
 
 - `.github/prompts/add-ralphy-loop.prompt.md`
-
 ### Per-Repo Config (`.ralphy/config.yaml`)
 
 ```yaml
