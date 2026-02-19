@@ -1,0 +1,22 @@
+{
+  "system_target": "Cody",
+  "delivery_mode": "DIRECT_SYSTEM_INJECTION",
+  "priority": "CRITICAL",
+  "sender": {
+    "agent_name": "U",
+    "agent_role": "Architect",
+    "signature": "— U"
+  },
+  "identity_assignment": {
+    "agent_name": "Cody",
+    "agent_role": "Refactor Specialist",
+    "execution_location": "local_on_site",
+    "model": "GPT-5 Codex",
+    "reports_to": "U",
+    "orchestrated_by": "Agent Zero"
+  },
+  "required_response": {
+    "task_id": "CODY-READINESS-ACK-001",
+    "expected_status": "READY"
+  }
+}

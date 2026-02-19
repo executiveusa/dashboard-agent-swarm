@@ -1,0 +1,18 @@
+# OpenHands Workspace Directory
+
+This directory is used by OpenHands for autonomous code execution.
+Each job clones a repository into a subdirectory here.
+
+Example structure:
+```
+workspace/
+├── yourrepo1/
+│   ├── src/
+│   ├── package.json
+│   └── .gate_results.log
+├── yourrepo2/
+│   └── ...
+└── .gitkeep
+```
+
+**Note**: This directory is volume-mounted in Docker containers.

@@ -1,0 +1,62 @@
+import path from "path";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import { componentTagger } from "lovable-tagger";
+
+type ProxyConfig = {
+  target: string;
+  changeOrigin: boolean;
+  secure: boolean;
+  rewrite?: (path: string) => string;
+};
+
+const flowiseProxy: ProxyConfig = {
+  target: "http://localhost:3000",
+  changeOrigin: true,
+  secure: false,
+  rewrite: (incomingPath) => incomingPath.replace(/^\/agents/, ""),
+};
+
+const apiProxy: ProxyConfig = {
+  target: "http://localhost:4000",
+  changeOrigin: true,
+  secure: false,
+};
+
+export default defineConfig(({ mode }) => ({
+  server: {
+    host: "::",
+    port: 8080,
+    proxy: {
+      "/agents": flowiseProxy,
+      "/api/v1": apiProxy,
+      "/darya": { target: "http://localhost:8787", changeOrigin: true },
+      "/api": { target: "http://localhost:8787", changeOrigin: true },
+      "/lemonai": { target: "http://localhost:8787", changeOrigin: true },
+      "/devika": {
+        target: "http://localhost:1337",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/pauli": {
+        target: "http://localhost:5001",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/agent-claw": {
+        target: "http://localhost:50001",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (incomingPath: string) => incomingPath.replace(/^\/agent-claw/, ""),
+      },
+    },
+  },
+  plugins: [react(), mode === "development" && componentTagger()].filter(
+    Boolean
+  ),
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+}));

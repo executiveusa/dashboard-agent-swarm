@@ -1,0 +1,31 @@
+project:
+  name: "dashboard-agent-swarm"
+  language: "TypeScript"
+  framework: "React + Vite"
+
+commands:
+  test: "npm run test -- --run"
+  lint: "npm run lint"
+  build: "npm run build"
+
+rules:
+  - "Follow AGENTS.md, AGENT_PROTOCOL.md, and AGENT_COMMS_PROTOCOL.md"
+  - "Keep changes scoped and production-safe"
+  - "Run lint and build before completing tasks"
+  - "Prefer strongly typed APIs and avoid any"
+
+boundaries:
+  never_touch:
+    - "**/.env*"
+    - "**/secrets/**"
+    - "**/*.pem"
+    - "**/*.key"
+    - "**/.agent-souls/**"
+
+capabilities:
+  browser: "auto"
+
+notifications:
+  discord_webhook: ""
+  slack_webhook: ""
+  custom_webhook: ""

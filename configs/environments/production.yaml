@@ -1,0 +1,21 @@
+name: production
+supabase:
+  dbUrl: ${SUPABASE_PROD_DB_URL}
+  projectRef: ${SUPABASE_PROD_PROJECT_REF}
+  schema: public
+  migrationsDir: supabase/migrations
+secrets:
+  SUPABASE_URL: ${SUPABASE_PROD_URL}
+  SUPABASE_ANON_KEY: ${SUPABASE_PROD_ANON_KEY}
+  SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_PROD_SERVICE_ROLE_KEY}
+  JWT_SECRET: ${PROD_JWT_SECRET}
+  OLLAMA_BASE_URL: https://ollama.contabo.prod
+  LM_STUDIO_BASE_URL: https://lm-studio.contabo.prod/v1
+  LOCAL_OI_PROXY_URL: https://oi-proxy.contabo.prod
+  FIRECRAWL_BASE_URL: https://api.firecrawl.dev
+  ROUTER_FREE_FIRST: "false"
+  OPTIMIZER_CRON: "*/5 * * * *"
+contabo:
+  stack: lovable-cloud
+  region: eu-central
+  coolifyPipeline: ../pipelines/coolify-contabo.yaml

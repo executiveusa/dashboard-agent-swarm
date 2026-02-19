@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * The Pauli Effect — Agent Dashboard Design System
+ * Clean, professional, utilitarian. Inspired by pickaxe.io.
+ * No glassmorphism. No glow. No animated gradients.
+ * All colors MUST be HSL.
+ */
+
+@layer base {
+  :root {
+    /* Clean Dark Palette — Professional & Utilitarian */
+    --background: 220 16% 8%;          /* #111318 — near-black slate */
+    --foreground: 220 13% 91%;         /* #E4E6EB — soft white */
+
+    --card: 220 14% 11%;              /* #171A21 — elevated surface */
+    --card-foreground: 220 13% 91%;
+
+    --popover: 220 14% 11%;
+    --popover-foreground: 220 13% 91%;
+
+    --primary: 217 91% 60%;           /* #3B82F6 — clean blue */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 14%;         /* #1E2028 — subtle contrast */
+    --secondary-foreground: 220 13% 91%;
+
+    --muted: 220 14% 14%;
+    --muted-foreground: 220 9% 56%;   /* #858A96 — readable gray */
+
+    --accent: 220 14% 18%;            /* #272A33 — hover/active bg */
+    --accent-foreground: 220 13% 91%;
+
+    --success: 142 71% 45%;           /* #22C55E — green */
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;            /* #F59E0B — amber */
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;         /* #EF4444 — red */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 18%;            /* #282B33 — solid subtle border */
+    --input: 220 14% 14%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar */
+    --sidebar-background: 220 16% 7%; /* slightly darker than main bg */
+    --sidebar-foreground: 220 13% 91%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 14%;
+    --sidebar-accent-foreground: 220 13% 91%;
+    --sidebar-border: 220 13% 15%;
+    --sidebar-ring: 217 91% 60%;
+
+    /* Font Families */
+    --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: "Inter", system-ui, sans-serif;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .font-heading {
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
+}

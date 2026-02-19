@@ -1,0 +1,71 @@
+dar_studio_master_plan:
+  name: "DAR Studio – Agentic Dashboard & Smart Site Engine"
+  phases:
+    - id: "p0_roles"
+      label: "Roles & Protocol"
+      done_when:
+        - "Rockabye Baby protocol established for Architect ↔ Builder"
+        - "Global system prompt for DARYA vΩ written"
+    - id: "p1_ui_shell"
+      label: "DAR Studio UI Shell"
+      steps:
+        - "Rebrand dashboard-agent-swarm to DARYA Studio"
+        - "Implement AppSidebar with DAR badge and nav items"
+        - "Implement Hero + Mission Control layout on /"
+        - "Apply design tokens (dark theme, gradients, glow)"
+    - id: "p2_routes"
+      label: "Routes wired to intents"
+      steps:
+        - "Ensure /, /tasks, /analytics, /agents, /logs, /files, /settings routes exist"
+        - "Create minimal page components with headings and scaffolding"
+    - id: "p3_backend_api"
+      label: "DARYA API Endpoints"
+      steps:
+        - "Create TypeScript types for Blueprint, UGCPack, DonorThankYouPack, DesignSystem, ExperimentPlan"
+        - "Implement safeLlmCall wrapper with retries and schema validation"
+        - "Implement /darya/blueprint, /darya/ugc-pack, /darya/donor-thankyou, /darya/design-system, /darya/experiment-plan, /darya/feedback"
+        - "Use per-endpoint system prompts for personas (DARYA, Luna, Maya, Aurora)"
+    - id: "p4_db_layer"
+      label: "Postgres Schema & Data Layer"
+      steps:
+        - "Create migrations for users, organizations, projects, sites, pages"
+        - "Create migrations for contacts, fundraising_campaigns, donations"
+        - "Create migrations for interactions, voice_calls, automations, automation_logs"
+        - "Create migrations for metrics_daily, agent_feedback, agent_training_logs"
+    - id: "p5_automation"
+      label: "n8n Workflows"
+      steps:
+        - "Implement Client Intake workflow: webhook → org/contact → /darya/blueprint → DB → notify owner"
+        - "Implement Stripe Donation workflow: webhook → upsert donor/donation → /darya/donor-thankyou"
+        - "Document required env vars and webhook URLs"
+    - id: "p6_agents"
+      label: "Agent Config & Training Spec"
+      steps:
+        - "Add config/agents/darya-smart-site-agent.yaml"
+        - "Add config/training/lightning_config.yaml"
+        - "Create docs/AGENTS.md describing DARYA + Crypto Cuties"
+    - id: "p7_frontend_integration"
+      label: "Dashboard–API Integration"
+      steps:
+        - "Projects page calls /darya/blueprint and shows blueprint"
+        - "Fundraising page calls /darya/donor-thankyou for a donation"
+        - "Content/UGC page calls /darya/ugc-pack"
+        - "Design System page calls /darya/design-system"
+        - "Experiments page calls /darya/experiment-plan"
+        - "Feedback UI posts to /darya/feedback"
+    - id: "p8_guardrails"
+      label: "Error Handling & Fallbacks"
+      steps:
+        - "Add global error boundary in frontend"
+        - "Implement LLM fallbacks with safe defaults"
+        - "Log failures to automation_logs and surface in Logs page"
+    - id: "p9_lightning_future"
+      label: "Agent Lightning Integration (Future)"
+      steps:
+        - "Connect metrics_daily and agent_feedback to Lightning"
+        - "Configure reward function"
+        - "Set up human approval process for updated prompts"
+  envs:
+    - dev
+    - staging
+    - prod

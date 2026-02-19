@@ -1,0 +1,25 @@
+id: default
+name: Default Multi-Agent Plan
+description: Coordinated routing between planner, researcher, builder, and reviewer agents.
+triggers:
+  - type: lovable
+    schedule: "*/15 * * * *"
+    channel: lovable-scheduler
+  - type: supabase
+    table: tasks
+    event: INSERT
+steps:
+  - id: plan
+    role: planner
+    summary: Break the incoming request into actionable steps and success criteria.
+  - id: research
+    role: researcher
+    summary: Gather the necessary product or code context to execute the plan.
+    input:
+      file: README.md
+  - id: build
+    role: builder
+    summary: Implement the requested change or feature incrementally.
+  - id: review
+    role: reviewer
+    summary: Validate the deliverable, flag issues, and summarize the output for the user.
