@@ -2,6 +2,18 @@ import { Hono } from 'hono';
 import { sql } from '../index';
 
 const app = new Hono();
+const ARCHONX_API_BASE = process.env.ARCHONX_API_BASE_URL || 'http://localhost:8000';
+
+async function callArchonX(path: string, init?: RequestInit): Promise<Response> {
+  const url = `${ARCHONX_API_BASE}${path}`;
+  return fetch(url, {
+    ...init,
+    headers: {
+      'content-type': 'application/json',
+      ...(init?.headers || {}),
+    },
+  });
+}
 
 // POST /api/agents/run
 app.post('/run', async (c) => {
@@ -13,15 +25,38 @@ app.post('/run', async (c) => {
   }
 
   const startTime = Date.now();
-
-  // TODO: Call actual LemonAI runtime
-  // For now, return mock response
-  const output = {
-    status: 'success',
-    message: `Agent ${agentId} executed for org ${orgId}`,
-    taskKind,
-    input,
+  const runtimePayload = {
+    type: taskKind || 'general',
+    crew: body.crew || 'white',
+    specialty_hint: body.specialtyHint || '',
+    session_id: body.sessionId || null,
+    params: {
+      input,
+      agentId,
+      orgId,
+      projectId: projectId || null,
+      metadata: body.metadata || {},
+    },
   };
+
+  const runtimeRes = await callArchonX('/api/task', {
+    method: 'POST',
+    body: JSON.stringify(runtimePayload),
+  });
+
+  if (!runtimeRes.ok) {
+    const errorText = await runtimeRes.text();
+    return c.json(
+      {
+        error: 'Runtime execution failed',
+        status: runtimeRes.status,
+        details: errorText,
+      },
+      502,
+    );
+  }
+
+  const output = await runtimeRes.json();
 
   const duration = Date.now() - startTime;
   const runId = crypto.randomUUID();
@@ -36,8 +71,9 @@ app.post('/run', async (c) => {
       ) VALUES (
         ${runId}, ${agentId}, ${orgId}, ${projectId || null}, ${taskKind || 'general'},
         ${JSON.stringify({ summary: 'Input sanitized' })},
-        ${JSON.stringify({ status: 'success' })},
-        ${duration}, ${0}, ${0}, ${'mock-model'}, ${'mock'}, ${process.env.NODE_ENV || 'dev'}
+        ${JSON.stringify(output)},
+        ${duration}, ${output.tokens_used || 0}, ${output.cost_usd || 0},
+        ${output.model || 'archonx-kernel'}, ${'archonx'}, ${process.env.NODE_ENV || 'dev'}
       )
     `;
   } catch (error) {
@@ -48,11 +84,93 @@ app.post('/run', async (c) => {
     id: runId,
     agentId,
     output,
-    tokensUsed: 0,
-    model: 'mock-model',
+    tokensUsed: output.tokens_used || 0,
+    model: output.model || 'archonx-kernel',
     duration,
     createdAt: new Date().toISOString(),
   });
+});
+
+// GET /api/agents/runtime/agents
+app.get('/runtime/agents', async (c) => {
+  try {
+    const res = await callArchonX('/api/agents');
+    const text = await res.text();
+    if (!res.ok) {
+      return c.json({ error: 'Failed to fetch runtime agents', details: text }, 502);
+    }
+    return c.body(text, 200, { 'content-type': 'application/json' });
+  } catch (error) {
+    console.error('Failed to fetch runtime agents:', error);
+    return c.json({ error: 'Runtime unavailable' }, 503);
+  }
+});
+
+// GET /api/agents/runtime/flywheel
+app.get('/runtime/flywheel', async (c) => {
+  try {
+    const res = await callArchonX('/api/flywheel');
+    const text = await res.text();
+    if (!res.ok) {
+      return c.json({ error: 'Failed to fetch flywheel stats', details: text }, 502);
+    }
+    return c.body(text, 200, { 'content-type': 'application/json' });
+  } catch (error) {
+    console.error('Failed to fetch flywheel stats:', error);
+    return c.json({ error: 'Runtime unavailable' }, 503);
+  }
+});
+
+// GET /api/agents/runtime/tasks
+app.get('/runtime/tasks', async (c) => {
+  try {
+    const [latestRuns] = await sql`
+      SELECT COALESCE(
+        JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'id', id,
+            'title', task_type,
+            'state', CASE
+              WHEN output_meta->>'status' = 'completed' THEN 'done'
+              WHEN output_meta->>'status' = 'running' THEN 'running'
+              ELSE 'queued'
+            END,
+            'owner', agent_id,
+            'eta', 'auto',
+            'tags', ARRAY[provider_used]
+          )
+          ORDER BY created_at DESC
+        ),
+        '[]'::json
+      ) AS rows
+      FROM (
+        SELECT id, task_type, output_meta, agent_id, provider_used, created_at
+        FROM agent_runs
+        ORDER BY created_at DESC
+        LIMIT 20
+      ) r
+    `;
+
+    return c.json(latestRuns?.rows || []);
+  } catch (error) {
+    console.error('Failed to fetch runtime tasks:', error);
+    return c.json({ error: 'Failed to fetch runtime tasks' }, 500);
+  }
+});
+
+// GET /api/agents/runtime/theater
+app.get('/runtime/theater', async (c) => {
+  try {
+    const res = await callArchonX('/api/theater/events?limit=10');
+    const text = await res.text();
+    if (!res.ok) {
+      return c.json({ error: 'Failed to fetch theater feed', details: text }, 502);
+    }
+    return c.body(text, 200, { 'content-type': 'application/json' });
+  } catch (error) {
+    console.error('Failed to fetch theater feed:', error);
+    return c.json({ error: 'Runtime unavailable' }, 503);
+  }
 });
 
 // POST /api/agents/agent-runs (for logging from frontend)

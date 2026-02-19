@@ -8,8 +8,7 @@ COPY server/package*.json ./server/
 
 # Install dependencies
 # We need to install dependencies in the root and server directory
-RUN npm install
-cd server && npm install
+RUN npm install && cd server && npm install
 
 # Copy source code
 COPY . .
