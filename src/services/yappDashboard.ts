@@ -43,6 +43,15 @@ export interface DashboardSnapshot {
   };
 }
 
+export interface OnboardingRunResult {
+  status: string;
+  org_id: string;
+  project_id: string;
+  tasks_executed: number;
+  profile: Record<string, unknown>;
+  results: Array<Record<string, unknown>>;
+}
+
 const API_BASE = "/api";
 
 /**
@@ -181,4 +190,21 @@ export async function getDashboardSnapshotAsync(): Promise<DashboardSnapshot> {
     health,
     tasks,
   };
+}
+
+export async function runOnboarding(params: {
+  orgId: string;
+  projectId: string;
+  transcript: string;
+}): Promise<OnboardingRunResult> {
+  const res = await fetch(`${API_BASE}/agents/runtime/onboarding`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) {
+    const details = await res.text();
+    throw new Error(`Onboarding failed (${res.status}): ${details}`);
+  }
+  return res.json() as Promise<OnboardingRunResult>;
 }

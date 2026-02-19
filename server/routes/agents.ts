@@ -3,13 +3,18 @@ import { sql } from '../index';
 
 const app = new Hono();
 const ARCHONX_API_BASE = process.env.ARCHONX_API_BASE_URL || 'http://localhost:8000';
+const ARCHONX_API_TOKEN = process.env.ARCHONX_API_TOKEN || '';
 
 async function callArchonX(path: string, init?: RequestInit): Promise<Response> {
   const url = `${ARCHONX_API_BASE}${path}`;
+  const authHeaders = ARCHONX_API_TOKEN
+    ? { authorization: `Bearer ${ARCHONX_API_TOKEN}` }
+    : {};
   return fetch(url, {
     ...init,
     headers: {
       'content-type': 'application/json',
+      ...authHeaders,
       ...(init?.headers || {}),
     },
   });
@@ -169,6 +174,32 @@ app.get('/runtime/theater', async (c) => {
     return c.body(text, 200, { 'content-type': 'application/json' });
   } catch (error) {
     console.error('Failed to fetch theater feed:', error);
+    return c.json({ error: 'Runtime unavailable' }, 503);
+  }
+});
+
+// POST /api/agents/runtime/onboarding
+app.post('/runtime/onboarding', async (c) => {
+  try {
+    const body = await c.req.json();
+    const payload = {
+      org_id: body.orgId || body.org_id || 'default-org',
+      project_id: body.projectId || body.project_id || 'default-project',
+      transcript: body.transcript || '',
+    };
+
+    const res = await callArchonX('/api/onboarding/run', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+
+    const text = await res.text();
+    if (!res.ok) {
+      return c.json({ error: 'Failed to run onboarding', details: text }, 502);
+    }
+    return c.body(text, 200, { 'content-type': 'application/json' });
+  } catch (error) {
+    console.error('Failed to run onboarding:', error);
     return c.json({ error: 'Runtime unavailable' }, 503);
   }
 });

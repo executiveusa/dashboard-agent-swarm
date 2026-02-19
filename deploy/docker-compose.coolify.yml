@@ -31,6 +31,7 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL:-postgresql://dashboard:changeme@postgres:5432/dashboard}
       - ARCHONX_API_BASE_URL=${ARCHONX_API_BASE_URL:-http://archonx:8000}
+      - ARCHONX_API_TOKEN=${ARCHONX_API_TOKEN:-}
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8080}
     ports:
       - "8787:8787"

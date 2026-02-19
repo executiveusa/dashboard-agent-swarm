@@ -22,7 +22,7 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react";
-import { getDashboardSnapshotAsync, getDashboardSnapshot } from "@/services/yappDashboard";
+import { getDashboardSnapshotAsync, getDashboardSnapshot, runOnboarding } from "@/services/yappDashboard";
 import type { DashboardSnapshot } from "@/services/yappDashboard";
 
 const statusBadgeStyles: Record<string, string> = {
@@ -42,6 +42,9 @@ const Index = () => {
   const [snapshot, setSnapshot] = useState<DashboardSnapshot>(getDashboardSnapshot());
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);
+  const [commandText, setCommandText] = useState("");
+  const [onboardingBusy, setOnboardingBusy] = useState(false);
+  const [onboardingMessage, setOnboardingMessage] = useState("");
 
   const refresh = async () => {
     setLoading(true);
@@ -61,6 +64,24 @@ const Index = () => {
     const interval = setInterval(refresh, 30000); // Refresh every 30s
     return () => clearInterval(interval);
   }, []);
+
+  const runOnboardingFlow = async () => {
+    setOnboardingBusy(true);
+    setOnboardingMessage("");
+    try {
+      const result = await runOnboarding({
+        orgId: "dashboard-org",
+        projectId: "mission-control",
+        transcript: commandText,
+      });
+      setOnboardingMessage(`Onboarding executed: ${result.tasks_executed} task(s) completed.`);
+      await refresh();
+    } catch (error) {
+      setOnboardingMessage(error instanceof Error ? error.message : "Onboarding failed.");
+    } finally {
+      setOnboardingBusy(false);
+    }
+  };
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
@@ -192,6 +213,8 @@ const Index = () => {
               <Textarea
                 placeholder="Describe the task, desired outcome, and urgency..."
                 className="min-h-[100px] resize-none bg-background"
+                value={commandText}
+                onChange={(e) => setCommandText(e.target.value)}
               />
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap gap-2">
@@ -207,11 +230,26 @@ const Index = () => {
                     )
                   )}
                 </div>
-                <Button size="sm" className="gap-2">
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="gap-2"
+                    onClick={runOnboardingFlow}
+                    disabled={onboardingBusy}
+                  >
+                    {onboardingBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Activity className="h-3.5 w-3.5" />}
+                    Run Onboarding
+                  </Button>
+                  <Button size="sm" className="gap-2">
                   <Send className="h-3.5 w-3.5" />
                   Send
-                </Button>
+                  </Button>
+                </div>
               </div>
+              {onboardingMessage ? (
+                <p className="text-xs text-muted-foreground">{onboardingMessage}</p>
+              ) : null}
             </CardContent>
           </Card>
         </div>

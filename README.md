@@ -20,8 +20,10 @@
 ## YAPP Dashboard UI (Agent Zero)
 
 This repository now includes a mobile-first YAPP Dashboard UI for Agent Zero. The dashboard is wired to the backend runtime endpoints under `/api/agents/runtime/*`, which proxy live ArchonX state (`/api/agents`, `/api/flywheel`, `/api/theater/events`) and persisted run logs.
+It also supports transcript-driven onboarding execution via `POST /api/agents/runtime/onboarding` (proxied to ArchonX `POST /api/onboarding/run`).
 
 Set `ARCHONX_API_BASE_URL` in the backend environment when ArchonX is not running on `http://localhost:8000`.
+If ArchonX token protection is enabled, also set `ARCHONX_API_TOKEN` in the dashboard backend so runtime proxy calls include `Authorization: Bearer <token>`.
 
 ### Run locally
 
