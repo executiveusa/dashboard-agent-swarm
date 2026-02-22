@@ -51,7 +51,11 @@
               ┌────────┼────────┬────────┬────────┐
               │        │        │        │        │
             Maya     Luna   Solana    Vega    Aurora
-          (Funds)  (UGC)   (Crypto) (IP)    (KPIs)
+          (Funds) (Social) (Crypto) (IP)    (KPIs)
+                     │
+               Viral Vikki
+              (Algorithmic
+               Virality)
 ```
 
 ### Codename Registry
@@ -67,10 +71,11 @@
 | **ClawdBot** | CLW-006 | clawdbot-Whatsapp-agent | Multi-Channel Messaging — WhatsApp, SMS, Telegram, OpenClaw gateway |
 | **Cynthia** | CYN-007 | open-agent-platform-pauli | Observability & Safety — monitors fleet health, ACIP compliance, audits |
 | **Maya** | MYA-101 | dashboard-agent-swarm | Fundraising & Donor Relations |
-| **Luna** | LNA-102 | dashboard-agent-swarm | UGC & Virality |
+| **Luna** | LNA-102 | dashboard-agent-swarm | **Social Media Lead** — UGC & Virality strategy, community management, content editorial calendar. Trains Viral Vikki. |
 | **Solana** | SOL-103 | dashboard-agent-swarm | Crypto & Tokenization |
 | **Vega** | VGA-104 | dashboard-agent-swarm | IP & Merch Universe |
 | **Aurora** | AUR-105 | dashboard-agent-swarm | Ops & KPI Dashboards |
+| **Viral Vikki** | VVK-106 | dashboard-agent-swarm | Algorithmic Virality Specialist — self-posts on Instagram, TikTok, Twitter/X, Threads. Studies Google Trends, viral patterns, algorithms. Speaks 8 languages (EN, ES, SW, SR, ME, PT, FR, AR). Trained by Agent Zero (10-way protocol). Reports to Luna. |
 | **VisionClaw** | VCL-008 | VisionClaw | Vision + Voice — Meta Ray-Ban smart glasses, Gemini Live, OpenClaw |
 | **Bambu Lab** | BMB-009 | (hardware) | 3D Printing & Fabrication |
 | **Caller** | CLR-010 | phone-call-assistant | Team Outbound Caller — Twilio + OpenAI Realtime, scheduled calls |
