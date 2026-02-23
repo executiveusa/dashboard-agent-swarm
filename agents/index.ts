@@ -5,6 +5,7 @@ import designerManifest from './designer/manifest';
 import browserOpsManifest from './browserops/manifest';
 import devOpsManifest from './devops/manifest';
 import crmManifest from './crm/manifest';
+import daryaManifest from './darya/manifest';
 
 export const systemAgents: AgentRegistry = {
   [lemonManifest.slug]: {
@@ -39,6 +40,12 @@ export const systemAgents: AgentRegistry = {
   },
   [crmManifest.slug]: {
     ...crmManifest,
+    version: '1.0.0',
+    owner: 'system',
+    enabled: true,
+  },
+  [daryaManifest.slug]: {
+    ...daryaManifest,
     version: '1.0.0',
     owner: 'system',
     enabled: true,
