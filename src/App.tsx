@@ -19,6 +19,8 @@ import DevikaAgent from "./pages/DevikaAgent";
 import PauliMeetingRoom from "./pages/PauliMeetingRoom";
 import DeployManager from "./pages/DeployManager";
 import AnimatedCommandCenter from "./pages/AnimatedCommandCenter";
+import KingMode from "./pages/KingMode";
+import PaulisWorld from "./pages/PaulisWorld";
 import NotFound from "./pages/NotFound";
 import { OrgProvider } from "./contexts/OrgContext";
 import { OrgSwitcher } from "./components/OrgSwitcher";
@@ -63,6 +65,8 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/command-center" element={<AnimatedCommandCenter />} />
+                  <Route path="/king-mode" element={<KingMode />} />
+                  <Route path="/paulis-world" element={<PaulisWorld />} />
                   <Route path="/agent-claw" element={<AgentClaw />} />
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/analytics" element={<Analytics />} />

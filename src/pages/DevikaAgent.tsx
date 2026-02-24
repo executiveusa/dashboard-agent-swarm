@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -30,22 +30,25 @@ interface DevikaProject {
   messages: Array<{ role: "user" | "devika"; content: string; timestamp: string }>;
 }
 
+type DevikaExecutionProfile = "devika-pi-default" | "devika-pi-safe" | "devika-pi-research";
+
 const DevikaAgent = () => {
   const [prompt, setPrompt] = useState("");
   const [projectName, setProjectName] = useState("");
   const [isRunning, setIsRunning] = useState(false);
   const [project, setProject] = useState<DevikaProject | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<"connected" | "disconnected" | "checking">("checking");
+  const [executionProfile, setExecutionProfile] = useState<DevikaExecutionProfile>("devika-pi-default");
 
   // Check Devika backend health on mount
-  useState(() => {
+  useEffect(() => {
     fetch(`${DEVIKA_BASE}/api/health`)
       .then((r) => {
         if (r.ok) setConnectionStatus("connected");
         else setConnectionStatus("disconnected");
       })
       .catch(() => setConnectionStatus("disconnected"));
-  });
+  }, []);
 
   const handleSubmit = async () => {
     if (!prompt.trim() || !projectName.trim()) return;
@@ -72,7 +75,8 @@ const DevikaAgent = () => {
         body: JSON.stringify({
           prompt,
           project_name: projectName,
-          model_id: "claude-sonnet-4-20250514",
+          executionProfile,
+          beadId: `BEAD-DEVIKA-PI-${Date.now()}`,
         }),
       });
 
@@ -199,6 +203,19 @@ const DevikaAgent = () => {
             className="font-mono text-sm"
             disabled={isRunning}
           />
+          <label className="flex flex-col gap-1 text-xs text-muted-foreground">
+            Execution profile
+            <select
+              value={executionProfile}
+              onChange={(e) => setExecutionProfile(e.target.value as DevikaExecutionProfile)}
+              disabled={isRunning}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+            >
+              <option value="devika-pi-default">devika-pi-default</option>
+              <option value="devika-pi-safe">devika-pi-safe</option>
+              <option value="devika-pi-research">devika-pi-research</option>
+            </select>
+          </label>
           <Textarea
             placeholder="Describe what you want built. Be specific about tech stack, features, and requirements..."
             className="min-h-[140px] resize-none"
