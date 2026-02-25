@@ -16,6 +16,7 @@ import Content from "./pages/Content";
 import CynthiaWatch from "./pages/CynthiaWatch";
 import AgentClaw from "./pages/AgentClaw";
 import DevikaAgent from "./pages/DevikaAgent";
+import ControlDashboard from "./pages/ControlDashboard";
 import PauliMeetingRoom from "./pages/PauliMeetingRoom";
 import DeployManager from "./pages/DeployManager";
 import AnimatedCommandCenter from "./pages/AnimatedCommandCenter";
@@ -73,6 +74,7 @@ const App = () => (
                   <Route path="/agents" element={<AgentsConsole />} />
                   <Route path="/agents/cynthia/watch" element={<CynthiaWatch />} />
                   <Route path="/agents/devika" element={<DevikaAgent />} />
+                  <Route path="/control" element={<ControlDashboard />} />
                   <Route path="/agents/meetings" element={<PauliMeetingRoom />} />
                   <Route path="/deploy" element={<DeployManager />} />
                   <Route path="/logs" element={<Logs />} />

@@ -21,13 +21,22 @@ import {
   Sparkles,
 } from "lucide-react";
 
-const DEVIKA_BASE = "/devika";
+const DEVIKA_BASE = "/api/devika";
 
 interface DevikaProject {
   name: string;
   status: "idle" | "planning" | "researching" | "coding" | "complete" | "error";
   currentStep?: string;
   messages: Array<{ role: "user" | "devika"; content: string; timestamp: string }>;
+  pauliwheel?: {
+    planStage?: string;
+    implementStage?: string;
+    testStage?: string;
+    evaluateStage?: string;
+    patchStage?: string;
+    passed?: boolean;
+    offlineMode?: boolean;
+  };
 }
 
 type DevikaExecutionProfile = "devika-pi-default" | "devika-pi-safe" | "devika-pi-research";
@@ -42,7 +51,7 @@ const DevikaAgent = () => {
 
   // Check Devika backend health on mount
   useEffect(() => {
-    fetch(`${DEVIKA_BASE}/api/health`)
+    fetch(`${DEVIKA_BASE}/status`)
       .then((r) => {
         if (r.ok) setConnectionStatus("connected");
         else setConnectionStatus("disconnected");
@@ -69,12 +78,12 @@ const DevikaAgent = () => {
     setProject(newProject);
 
     try {
-      const res = await fetch(`${DEVIKA_BASE}/api/execute`, {
+      const res = await fetch(`${DEVIKA_BASE}/execute`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt,
-          project_name: projectName,
+          projectName,
           executionProfile,
           beadId: `BEAD-DEVIKA-PI-${Date.now()}`,
         }),
@@ -97,6 +106,15 @@ const DevikaAgent = () => {
                   timestamp: new Date().toISOString(),
                 },
               ],
+              pauliwheel: {
+                planStage: data.plan_stage,
+                implementStage: data.implement_stage,
+                testStage: data.test_stage,
+                evaluateStage: data.evaluate_stage,
+                patchStage: data.patch_stage,
+                passed: data.passed,
+                offlineMode: data.offline_mode,
+              },
             }
           : null
       );
@@ -299,6 +317,57 @@ const DevikaAgent = () => {
                   <p className="whitespace-pre-wrap font-mono text-xs">{msg.content}</p>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* PAULIWHEEL Stage Breakdown */}
+      {project?.pauliwheel && (
+        <Card className="border-border">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Sparkles className="h-4 w-4 text-primary" />
+                PAULIWHEEL Stages
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                {project.pauliwheel.offlineMode && (
+                  <Badge className="border text-xs bg-amber-500/15 text-amber-400 border-amber-500/30">
+                    offline-mode
+                  </Badge>
+                )}
+                <Badge
+                  className={`border text-xs ${
+                    project.pauliwheel.passed
+                      ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                      : "bg-rose-500/15 text-rose-400 border-rose-500/30"
+                  }`}
+                >
+                  {project.pauliwheel.passed ? "PASS" : "FAIL"}
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {[
+                { label: "PLAN", value: project.pauliwheel.planStage },
+                { label: "IMPLEMENT", value: project.pauliwheel.implementStage },
+                { label: "TEST", value: project.pauliwheel.testStage },
+                { label: "EVALUATE", value: project.pauliwheel.evaluateStage },
+                { label: "PATCH", value: project.pauliwheel.patchStage },
+              ].map(({ label, value }) =>
+                value ? (
+                  <div
+                    key={label}
+                    className="rounded-md border border-border bg-secondary/40 p-2"
+                  >
+                    <span className="text-xs font-semibold text-primary mr-2">{label}</span>
+                    <span className="text-xs font-mono text-muted-foreground break-all">{value}</span>
+                  </div>
+                ) : null
+              )}
             </div>
           </CardContent>
         </Card>
