@@ -3,6 +3,8 @@
  * Phase 3: Dashboard Control Plane — PAULIWHEEL Bead Loop endpoints
  */
 import { Hono } from 'hono';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 
 const app = new Hono();
 
@@ -24,33 +26,57 @@ async function callArchonX(path: string, init?: RequestInit): Promise<Response> 
   });
 }
 
-// In-memory phase gate store (replace with DB in production)
+const DATA_DIR = join(process.cwd(), 'server', 'data');
+const PHASE_GATES_FILE = join(DATA_DIR, 'phase_gates.json');
+const AUDIT_LOG_FILE = join(DATA_DIR, 'audit_log.json');
+
+// Ensure data dir exists
+if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+
+// Phase gate interface
 interface PhaseGate {
   phase: number;
   status: 'pending' | 'approved' | 'rejected';
-  approvedBy?: string;
-  approvedAt?: string;
-  notes?: string;
+  approvedBy?: string | null;
+  approvedAt?: string | null;
+  notes?: string | null;
+  name?: string;
+  timestamp?: string | null;
 }
 
-const phaseGates: Record<number, PhaseGate> = {
-  1: { phase: 1, status: 'approved', approvedBy: 'system', approvedAt: '2026-02-24T00:00:00Z', notes: 'Phase 1 merged to main' },
-  2: { phase: 2, status: 'pending' },
-  3: { phase: 3, status: 'pending' },
-  4: { phase: 4, status: 'pending' },
-  5: { phase: 5, status: 'pending' },
+// Default phase gates
+const DEFAULT_PHASE_GATES = {
+  1: { phase: 1, name: 'Planning', status: 'pending', approvedBy: null, timestamp: null },
+  2: { phase: 2, name: 'Implementation', status: 'pending', approvedBy: null, timestamp: null },
+  3: { phase: 3, name: 'Testing', status: 'pending', approvedBy: null, timestamp: null },
+  4: { phase: 4, name: 'Evaluation', status: 'pending', approvedBy: null, timestamp: null },
+  5: { phase: 5, name: 'Deployment', status: 'pending', approvedBy: null, timestamp: null },
 };
 
-// Simulated audit log store
-const auditLog: Array<{
-  id: string;
-  timestamp: string;
-  agent: string;
-  action: string;
-  beadId: string;
-  stage: string;
-  result: string;
-}> = [];
+function loadPhaseGates() {
+  try {
+    if (existsSync(PHASE_GATES_FILE)) return JSON.parse(readFileSync(PHASE_GATES_FILE, 'utf-8'));
+  } catch {}
+  return { ...DEFAULT_PHASE_GATES };
+}
+
+function savePhaseGates(gates: typeof DEFAULT_PHASE_GATES) {
+  try { writeFileSync(PHASE_GATES_FILE, JSON.stringify(gates, null, 2)); } catch {}
+}
+
+function loadAuditLog(): Array<any> {
+  try {
+    if (existsSync(AUDIT_LOG_FILE)) return JSON.parse(readFileSync(AUDIT_LOG_FILE, 'utf-8'));
+  } catch {}
+  return [];
+}
+
+function saveAuditLog(log: Array<any>) {
+  try { writeFileSync(AUDIT_LOG_FILE, JSON.stringify(log.slice(-500), null, 2)); } catch {} // keep last 500
+}
+
+let phaseGates = loadPhaseGates();
+let auditLog = loadAuditLog();
 
 // GET /api/devika/status
 app.get('/status', (c) => {
@@ -124,6 +150,7 @@ app.post('/execute', async (c) => {
       stage: 'COMPLETE',
       result: (result.passed as boolean) ? 'PASS' : 'FAIL',
     });
+    saveAuditLog(auditLog);
 
     return c.json(result);
   } catch (err) {
@@ -149,6 +176,7 @@ app.post('/execute', async (c) => {
       stage: 'COMPLETE',
       result: 'PASS',
     });
+    saveAuditLog(auditLog);
     return c.json(offlineResult);
   }
 });
@@ -209,6 +237,7 @@ app.post('/phases/:phase/approve', async (c) => {
     approvedAt: new Date().toISOString(),
     notes,
   };
+  savePhaseGates(phaseGates);
 
   auditLog.push({
     id: crypto.randomUUID(),
@@ -219,6 +248,7 @@ app.post('/phases/:phase/approve', async (c) => {
     stage: 'EVALUATE',
     result: 'APPROVED',
   });
+  saveAuditLog(auditLog);
 
   return c.json({ success: true, gate: phaseGates[phase] });
 });
@@ -241,6 +271,7 @@ app.post('/phases/:phase/reject', async (c) => {
     approvedAt: new Date().toISOString(),
     notes,
   };
+  savePhaseGates(phaseGates);
 
   auditLog.push({
     id: crypto.randomUUID(),
@@ -251,6 +282,7 @@ app.post('/phases/:phase/reject', async (c) => {
     stage: 'EVALUATE',
     result: 'REJECTED',
   });
+  saveAuditLog(auditLog);
 
   return c.json({ success: true, gate: phaseGates[phase] });
 });

@@ -11,6 +11,8 @@ import { whatsappRoutes } from './routes/whatsapp';
 import { lemonStubRoutes } from './routes/lemonStub';
 import { devikaRoutes } from './routes/devika';
 import { repoRoutes } from './routes/repos';
+import { meetingRoutes } from './routes/meeting';
+import { fileRoutes } from './routes/files';
 
 // Database connection
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://dashboard:changeme@localhost:5432/dashboard';
@@ -38,6 +40,8 @@ app.route('/api/whatsapp', whatsappRoutes);
 app.route('/lemonai', lemonStubRoutes);
 app.route('/api/devika', devikaRoutes);
 app.route('/api/repos', repoRoutes);
+app.route('/api/meeting', meetingRoutes);
+app.route('/api/files', fileRoutes);
 
 // 404 handler
 app.notFound((c) => {
