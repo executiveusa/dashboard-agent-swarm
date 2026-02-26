@@ -319,6 +319,13 @@ app.get('/telemetry', (c) => {
   const recentActivity = [...auditLog].reverse().slice(0, 10);
 
   return c.json({
+    // flat fields for AgentStatus component
+    passed,
+    failed,
+    agentsOnline: 2,
+    model: 'claude-sonnet-4-6',
+    costToday: total > 0 ? `${total} runs` : '—',
+    // nested for ControlDashboard
     summary: {
       totalExecutions: total,
       passed,

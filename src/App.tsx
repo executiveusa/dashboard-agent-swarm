@@ -23,6 +23,7 @@ import AnimatedCommandCenter from "./pages/AnimatedCommandCenter";
 import KingMode from "./pages/KingMode";
 import PaulisWorld from "./pages/PaulisWorld";
 import NotFound from "./pages/NotFound";
+import RepoManager from "./pages/RepoManager";
 import { OrgProvider } from "./contexts/OrgContext";
 import { OrgSwitcher } from "./components/OrgSwitcher";
 
@@ -81,6 +82,7 @@ const App = () => (
                   <Route path="/files" element={<Files />} />
                   <Route path="/content" element={<Content />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/repos" element={<RepoManager />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>
