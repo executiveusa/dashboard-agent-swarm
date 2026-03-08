@@ -14,24 +14,24 @@ import {
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  { title: "Mission Control", url: "/", icon: Activity },
-  { title: "Command Center", url: "/command-center", icon: Zap },
-  { title: "King Mode", url: "/king-mode", icon: Crown },
-  { title: "Pauli's World", url: "/paulis-world", icon: Globe },
-  { title: "Agent Claw", url: "/agent-claw", icon: Mic },
-  { title: "Tasks", url: "/tasks", icon: Terminal },
-  { title: "Analytics", url: "/analytics", icon: LineChart },
-  { title: "Agents", url: "/agents", icon: Bot },
-  { title: "Devika", url: "/agents/devika", icon: Code2 },
-  { title: "Control", url: "/control", icon: LayoutDashboard },
-  { title: "Repos", url: "/repos", icon: GitFork },
-  { title: "Pauli's Place", url: "/agents/meetings", icon: MessageSquare },
-  { title: "Cynthia Watch", url: "/agents/cynthia/watch", icon: Eye },
-  { title: "Deploy", url: "/deploy", icon: Rocket },
-  { title: "Content", url: "/content", icon: Sparkles },
-  { title: "Logs", url: "/logs", icon: FileText },
-  { title: "Files", url: "/files", icon: FolderTree },
-  { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Mission Control", url: "/admin", icon: Activity },
+  { title: "Command Center", url: "/admin/command-center", icon: Zap },
+  { title: "King Mode", url: "/admin/king-mode", icon: Crown },
+  { title: "Pauli's World", url: "/admin/paulis-world", icon: Globe },
+  { title: "Agent Claw", url: "/admin/agent-claw", icon: Mic },
+  { title: "Tasks", url: "/admin/tasks", icon: Terminal },
+  { title: "Analytics", url: "/admin/analytics", icon: LineChart },
+  { title: "Agents", url: "/admin/agents", icon: Bot },
+  { title: "Devika", url: "/admin/agents/devika", icon: Code2 },
+  { title: "Control", url: "/admin/control", icon: LayoutDashboard },
+  { title: "Repos", url: "/admin/repos", icon: GitFork },
+  { title: "Pauli's Place", url: "/admin/agents/meetings", icon: MessageSquare },
+  { title: "Cynthia Watch", url: "/admin/agents/cynthia/watch", icon: Eye },
+  { title: "Deploy", url: "/admin/deploy", icon: Rocket },
+  { title: "Content", url: "/admin/content", icon: Sparkles },
+  { title: "Logs", url: "/admin/logs", icon: FileText },
+  { title: "Files", url: "/admin/files", icon: FolderTree },
+  { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
@@ -46,7 +46,7 @@ export function AppSidebar() {
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <span className="text-sm font-bold">PE</span>
           </div>
-          
+
           {/* Studio Name */}
           {!isCollapsed && (
             <div className="flex flex-col">
@@ -75,10 +75,9 @@ export function AppSidebar() {
                       to={item.url}
                       end
                       className={({ isActive }) =>
-                        `flex items-center gap-3 px-4 py-2.5 rounded-md transition-colors ${
-                          isActive
-                            ? "bg-primary/10 text-primary font-medium"
-                            : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                        `flex items-center gap-3 px-4 py-2.5 rounded-md transition-colors ${isActive
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
                         }`
                       }
                     >
