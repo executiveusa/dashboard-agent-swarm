@@ -19,7 +19,11 @@
 
 ## YAPP Dashboard UI (Agent Zero)
 
-This repository now includes a mobile-first YAPP Dashboard UI for Agent Zero. The UI is frontend-only and uses stubbed data for the task queue, agent registry, and `/health` status so it runs locally without backend changes.
+This repository now includes a mobile-first YAPP Dashboard UI for Agent Zero. The dashboard is wired to the backend runtime endpoints under `/api/agents/runtime/*`, which proxy live ArchonX state (`/api/agents`, `/api/flywheel`, `/api/theater/events`) and persisted run logs.
+It also supports transcript-driven onboarding execution via `POST /api/agents/runtime/onboarding` (proxied to ArchonX `POST /api/onboarding/run`).
+
+Set `ARCHONX_API_BASE_URL` in the backend environment when ArchonX is not running on `http://localhost:8000`.
+If ArchonX token protection is enabled, also set `ARCHONX_API_TOKEN` in the dashboard backend so runtime proxy calls include `Authorization: Bearer <token>`.
 
 ### Run locally
 
@@ -41,6 +45,34 @@ npm run dev                 # Vite app; dashboard at http://localhost:8080/agent
 
 Deploy: reverse proxy `/agents` and `/api/v1` to the Flowise service.
 
+## Ralphy Loop (Autonomous Build)
+
+This repo supports the Ralphy method for autonomous end-to-end feature delivery.
+
+```bash
+# Install once
+npm install -g ralphy-cli
+
+# Initialize/view project config
+npm run ralphy:init
+npm run ralphy:config
+
+# Run PRD-driven loop
+npm run ralphy:loop
+
+# Single-task mode
+ralphy --copilot "ship dashboard control panel polish"
+```
+
+PowerShell helper:
+
+```powershell
+./scripts/ralphy-loop.ps1 -Prd PRD.md -Engine --copilot
+```
+
+Slash command available in VS Code chat:
+
+- `/add-ralphy-loop` (defined in `.github/prompts/add-ralphy-loop.prompt.md`)
 ## Project info
 
 **URL**: https://lovable.dev/projects/93ccd06b-8bfa-45f2-b469-eceaf3d8ef32

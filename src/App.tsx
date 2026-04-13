@@ -16,18 +16,65 @@ import Content from "./pages/Content";
 import CynthiaWatch from "./pages/CynthiaWatch";
 import AgentClaw from "./pages/AgentClaw";
 import DevikaAgent from "./pages/DevikaAgent";
+import ControlDashboard from "./pages/ControlDashboard";
 import PauliMeetingRoom from "./pages/PauliMeetingRoom";
 import DeployManager from "./pages/DeployManager";
 import AnimatedCommandCenter from "./pages/AnimatedCommandCenter";
-import AccessSecrets from "./pages/AccessSecrets";
-import AccessGrants from "./pages/AccessGrants";
-import AccessAudit from "./pages/AccessAudit";
-import AccessVoice from "./pages/AccessVoice";
-import AccessHealth from "./pages/AccessHealth";
-import AccessSession from "./pages/AccessSession";
+import KingMode from "./pages/KingMode";
+import PaulisWorld from "./pages/PaulisWorld";
 import NotFound from "./pages/NotFound";
+import RepoManager from "./pages/RepoManager";
 import { OrgProvider } from "./contexts/OrgContext";
 import { OrgSwitcher } from "./components/OrgSwitcher";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import Login from "./pages/Login";
+import ArchonHero from "./pages/ArchonHero";
+import { Navigate } from "react-router-dom";
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" replace />;
+
+  return <>{children}</>;
+};
+
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
+  <SidebarProvider>
+    <div className="flex min-h-screen w-full">
+      <AppSidebar />
+      <main className="flex-1">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background p-4">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger />
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-foreground">
+                The Pauli Effect
+              </span>
+              <span className="text-xs text-muted-foreground">
+                Agent fleet operations
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <OrgSwitcher />
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1 text-[0.7rem] font-medium text-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+              Agent Zero live
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1 text-[0.7rem] font-medium text-muted-foreground">
+              env: prod
+            </span>
+          </div>
+        </div>
+        <div className="p-6">
+          {children}
+        </div>
+      </main>
+    </div>
+  </SidebarProvider>
+);
 
 const queryClient = new QueryClient();
 
@@ -37,63 +84,46 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <OrgProvider>
-          <SidebarProvider>
-          <div className="flex min-h-screen w-full">
-            <AppSidebar />
-            <main className="flex-1">
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background p-4">
-                <div className="flex items-center gap-4">
-                  <SidebarTrigger />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-foreground">
-                      The Pauli Effect
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      Agent fleet operations
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <OrgSwitcher />
-                  <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1 text-[0.7rem] font-medium text-foreground">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    Agent Zero live
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1 text-[0.7rem] font-medium text-muted-foreground">
-                    env: prod
-                  </span>
-                </div>
-              </div>
-              <div className="p-6">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/command-center" element={<AnimatedCommandCenter />} />
-                  <Route path="/agent-claw" element={<AgentClaw />} />
-                  <Route path="/tasks" element={<Tasks />} />
-                  <Route path="/analytics" element={<Analytics />} />
-                  <Route path="/agents" element={<AgentsConsole />} />
-                  <Route path="/agents/cynthia/watch" element={<CynthiaWatch />} />
-                  <Route path="/agents/devika" element={<DevikaAgent />} />
-                  <Route path="/agents/meetings" element={<PauliMeetingRoom />} />
-                  <Route path="/deploy" element={<DeployManager />} />
-                  <Route path="/access/secrets" element={<AccessSecrets />} />
-                  <Route path="/access/session" element={<AccessSession />} />
-                  <Route path="/access/grants" element={<AccessGrants />} />
-                  <Route path="/access/audit" element={<AccessAudit />} />
-                  <Route path="/access/voice" element={<AccessVoice />} />
-                  <Route path="/access/health" element={<AccessHealth />} />
-                  <Route path="/logs" element={<Logs />} />
-                  <Route path="/files" element={<Files />} />
-                  <Route path="/content" element={<Content />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </div>
-            </main>
-          </div>
-        </SidebarProvider>
-      </OrgProvider>
+        <AuthProvider>
+          <OrgProvider>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<ArchonHero />} />
+              <Route path="/login" element={<Login />} />
+
+              {/* Protected Dashboard Routes */}
+              <Route path="/admin/*" element={
+                <ProtectedRoute>
+                  <DashboardLayout>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/command-center" element={<AnimatedCommandCenter />} />
+                      <Route path="/king-mode" element={<KingMode />} />
+                      <Route path="/paulis-world" element={<PaulisWorld />} />
+                      <Route path="/agent-claw" element={<AgentClaw />} />
+                      <Route path="/tasks" element={<Tasks />} />
+                      <Route path="/analytics" element={<Analytics />} />
+                      <Route path="/agents" element={<AgentsConsole />} />
+                      <Route path="/agents/cynthia/watch" element={<CynthiaWatch />} />
+                      <Route path="/agents/devika" element={<DevikaAgent />} />
+                      <Route path="/control" element={<ControlDashboard />} />
+                      <Route path="/agents/meetings" element={<PauliMeetingRoom />} />
+                      <Route path="/deploy" element={<DeployManager />} />
+                      <Route path="/logs" element={<Logs />} />
+                      <Route path="/files" element={<Files />} />
+                      <Route path="/content" element={<Content />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/repos" element={<RepoManager />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </DashboardLayout>
+                </ProtectedRoute>
+              } />
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </OrgProvider>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

@@ -43,6 +43,15 @@ export interface DashboardSnapshot {
   };
 }
 
+export interface OnboardingRunResult {
+  status: string;
+  org_id: string;
+  project_id: string;
+  tasks_executed: number;
+  profile: Record<string, unknown>;
+  results: Array<Record<string, unknown>>;
+}
+
 const API_BASE = "/api";
 
 /**
@@ -72,49 +81,43 @@ async function probeHealth(url: string, label: string, id: string): Promise<Heal
  * Build real crew status from agent health probes
  */
 async function buildCrewStatus(): Promise<CrewMember[]> {
-  const agents = [
-    { id: "agent-zero", name: "Agent Zero", role: "Orchestrator", url: "http://localhost:8000/health" },
-    { id: "devika", name: "Devika", role: "AI Software Engineer", url: "/devika/api/health" },
-    { id: "pauli", name: "Pauli", role: "Meeting Room", url: "/pauli/api/health" },
-    { id: "backend", name: "Backend API", role: "Data Service", url: `${API_BASE}/health` },
-  ];
-
-  const results: CrewMember[] = [];
-  for (const agent of agents) {
-    try {
-      const res = await fetch(agent.url, { signal: AbortSignal.timeout(2000) });
-      results.push({
-        id: agent.id,
-        name: agent.name,
-        role: agent.role,
-        status: res.ok ? "online" : "idle",
-        focus: res.ok ? "Operational" : "Degraded",
-        lastSeen: res.ok ? "Just now" : "Unknown",
-      });
-    } catch {
-      results.push({
-        id: agent.id,
-        name: agent.name,
-        role: agent.role,
-        status: "offline",
-        focus: "Not reachable",
-        lastSeen: "—",
-      });
+  try {
+    const res = await fetch(`${API_BASE}/agents/runtime/agents`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
     }
+    const payload = await res.json();
+    const agents = Array.isArray(payload?.agents) ? payload.agents : [];
+    return agents.slice(0, 16).map((agent: any) => ({
+      id: String(agent.id),
+      name: String(agent.name || agent.id),
+      role: String(agent.role || 'agent'),
+      status:
+        agent.status === 'active'
+          ? 'online'
+          : agent.status === 'idle'
+            ? 'idle'
+            : 'offline',
+      focus: String(agent.specialty || 'General operations'),
+      lastSeen: 'Live runtime',
+    }));
+  } catch {
+    return [];
   }
-  return results;
 }
 
 /**
- * Fetch real tasks from backend API, fall back to mock
+ * Fetch real tasks from ArchonX-backed API
  */
 async function fetchTasks(): Promise<TaskItem[]> {
   try {
-    const res = await fetch(`${API_BASE}/tasks`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${API_BASE}/agents/runtime/tasks`, { signal: AbortSignal.timeout(3000) });
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        return data.slice(0, 6).map((t: any, i: number) => ({
+      if (Array.isArray(data)) {
+        return data.slice(0, 12).map((t: any, i: number) => ({
           id: t.id || `task-${i}`,
           title: t.title || t.description || "Untitled task",
           state: t.state || t.status || "queued",
@@ -125,48 +128,13 @@ async function fetchTasks(): Promise<TaskItem[]> {
       }
     }
   } catch {
-    // Fall through to mock
+    // Runtime unavailable.
   }
-  return MOCK_TASKS;
+  return [];
 }
 
-const MOCK_TASKS: TaskItem[] = [
-  {
-    id: "task-914",
-    title: "Summarize overnight incident logs",
-    state: "running",
-    owner: "Agent Zero",
-    eta: "3 min",
-    tags: ["ops", "summaries"],
-  },
-  {
-    id: "task-913",
-    title: "Draft YAPP onboarding flow",
-    state: "queued",
-    owner: "DARYA",
-    eta: "12 min",
-    tags: ["ui", "onboarding"],
-  },
-  {
-    id: "task-912",
-    title: "Validate agent registry heartbeat",
-    state: "done",
-    owner: "Cynthia",
-    eta: "Complete",
-    tags: ["health", "registry"],
-  },
-  {
-    id: "task-911",
-    title: "Deploy landing page update",
-    state: "queued",
-    owner: "Alex",
-    eta: "5 min",
-    tags: ["deploy", "frontend"],
-  },
-];
-
 /**
- * Get dashboard snapshot — tries real APIs first, falls back to mock data
+ * Get dashboard snapshot skeleton while async runtime probes execute.
  */
 export const getDashboardSnapshot = (): DashboardSnapshot => ({
   welcome: {
@@ -180,19 +148,29 @@ export const getDashboardSnapshot = (): DashboardSnapshot => ({
   },
   crew: [],
   health: [],
-  tasks: MOCK_TASKS,
+  tasks: [],
 });
 
 /**
  * Async version that probes real services
  */
 export async function getDashboardSnapshotAsync(): Promise<DashboardSnapshot> {
+  const [flywheelRes, theaterRes] = await Promise.all([
+    fetch(`${API_BASE}/agents/runtime/flywheel`, { signal: AbortSignal.timeout(3000) }).catch(() => null),
+    fetch(`${API_BASE}/agents/runtime/theater`, { signal: AbortSignal.timeout(3000) }).catch(() => null),
+  ]);
+
+  const [flywheel, theater] = await Promise.all([
+    flywheelRes?.ok ? flywheelRes.json() : Promise.resolve(null),
+    theaterRes?.ok ? theaterRes.json() : Promise.resolve(null),
+  ]);
+
   const [crew, health, tasks] = await Promise.all([
     buildCrewStatus(),
     Promise.all([
       probeHealth("/health", "Dashboard Backend", "health-backend"),
-      probeHealth("/devika/api/health", "Devika Agent", "health-devika"),
-      probeHealth("/pauli/api/health", "Pauli Meeting Room", "health-pauli"),
+      probeHealth(`${API_BASE}/agents/runtime/agents`, "ArchonX Runtime", "health-runtime"),
+      probeHealth(`${API_BASE}/agents/runtime/flywheel`, "Flywheel Loop", "health-flywheel"),
     ]),
     fetchTasks(),
   ]);
@@ -205,11 +183,28 @@ export async function getDashboardSnapshotAsync(): Promise<DashboardSnapshot> {
   return {
     welcome: {
       name: "Boss",
-      summary: `${onlineCount} agent${onlineCount !== 1 ? "s" : ""} online. ${tasks.length} tasks tracked.`,
+      summary: `${onlineCount} agent${onlineCount !== 1 ? "s" : ""} online. ${tasks.length} tasks tracked. Flywheel cycle ${flywheel?.cycle || 'n/a'}${Array.isArray(theater?.events) ? `, theater events ${theater.events.length}` : ''}.`,
     },
     stats: { queued, running, alerts },
     crew,
     health,
     tasks,
   };
+}
+
+export async function runOnboarding(params: {
+  orgId: string;
+  projectId: string;
+  transcript: string;
+}): Promise<OnboardingRunResult> {
+  const res = await fetch(`${API_BASE}/agents/runtime/onboarding`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) {
+    const details = await res.text();
+    throw new Error(`Onboarding failed (${res.status}): ${details}`);
+  }
+  return res.json() as Promise<OnboardingRunResult>;
 }

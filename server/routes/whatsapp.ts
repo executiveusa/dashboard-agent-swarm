@@ -1,48 +1,103 @@
 import { Hono } from 'hono';
-import { sql } from '../index';
 
 const app = new Hono();
 
-// POST /api/whatsapp/webhook - Handle incoming WhatsApp messages
+// Map known WhatsApp numbers to orgIds — add entries as clients are onboarded
+const PHONE_ORG_MAP: Record<string, string> = {
+  // e.g. '+15551234567': 'org-kupuri-media',
+};
+
+function resolveOrgId(from: string): string {
+  return PHONE_ORG_MAP[from] ?? 'org-kupuri-media';
+}
+
+const WHATSAPP_FROM = process.env.TWILIO_WHATSAPP_NUMBER ?? process.env.TWILIO_MX_NUMBER ?? '';
+
+async function getAIResponse(userMessage: string, orgId: string): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return "Hola! Gracias por tu mensaje. Un momento, por favor.";
+  }
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5",
+        max_tokens: 200,
+        system: "Eres SYNTHIA, asistente de Kupuri Media en Ciudad de México. Responde en español mexicano, profesional y cálido. Máximo 2 oraciones.",
+        messages: [{ role: "user", content: userMessage }],
+      }),
+    });
+    if (!res.ok) throw new Error(`Anthropic ${res.status}`);
+    const data = await res.json() as { content: [{ text: string }] };
+    return data.content[0].text;
+  } catch (err) {
+    console.error("[WhatsApp] AI response error:", err);
+    return "Gracias por contactar a Kupuri Media. Le responderemos a la brevedad.";
+  }
+}
+
+async function sendWhatsAppReply(to: string, from: string, body: string): Promise<void> {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_SECRET;
+  if (!accountSid || !authToken) {
+    console.log(`[WhatsApp] MOCK send to ${to}: "${body}"`);
+    return;
+  }
+  const params = new URLSearchParams({
+    From: from.startsWith('whatsapp:') ? from : `whatsapp:${from}`,
+    To: to.startsWith('whatsapp:') ? to : `whatsapp:${to}`,
+    Body: body,
+  });
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString('base64')}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: params.toString(),
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error(`[WhatsApp] Send failed: ${res.status} ${errText}`);
+  } else {
+    const result = await res.json() as { sid: string };
+    console.log(`[WhatsApp] Sent message SID: ${result.sid}`);
+  }
+}
+
+// POST /api/whatsapp/webhook - Handle incoming Twilio WhatsApp messages
 app.post('/webhook', async (c) => {
-  const body = await c.req.json();
-  
-  console.log('[WhatsApp Webhook] Received:', JSON.stringify(body, null, 2));
+  // Twilio sends form-encoded data
+  const formData = await c.req.formData();
+  const from = formData.get('From') as string | null;
+  const body = formData.get('Body') as string | null;
 
-  // Extract message from WhatsApp webhook payload
-  const entry = body.entry?.[0];
-  const change = entry?.changes?.[0];
-  const message = change?.value?.messages?.[0];
-
-  if (!message) {
-    return c.json({ status: 'no_message' });
+  if (!from || !body) {
+    return c.text('<?xml version="1.0" encoding="UTF-8"?><Response></Response>', 200, {
+      'Content-Type': 'text/xml',
+    });
   }
 
-  const from = message.from;
-  const text = message.text?.body || '';
-  const messageId = message.id;
+  console.log(`[WhatsApp] Message from ${from}: "${body}"`);
 
-  // TODO: Determine orgId from phone number or metadata
-  const orgId = 'org-nonprofit-mx'; // Mock for now
+  const orgId = resolveOrgId(from);
+  const aiResponse = await getAIResponse(body, orgId);
+  await sendWhatsAppReply(from, WHATSAPP_FROM, aiResponse);
 
-  console.log(`[WhatsApp] Message from ${from}: "${text}"`);
-
-  // TODO: Call safeLlmCall with es-MX persona
-  // For now, return mock response
-  const aiResponse = `Hola! Gracias por tu mensaje. Soy un asistente virtual. ¿En qué puedo ayudarte hoy?`;
-
-  // TODO: Send response via WhatsApp API
-  console.log(`[WhatsApp] Would send to ${from}: "${aiResponse}"`);
-
-  return c.json({
-    status: 'processed',
-    messageId,
-    from,
-    response: aiResponse,
+  // Return empty TwiML — Twilio requires a valid XML response
+  return c.text('<?xml version="1.0" encoding="UTF-8"?><Response></Response>', 200, {
+    'Content-Type': 'text/xml',
   });
 });
 
-// GET /api/whatsapp/webhook - Verification endpoint for WhatsApp
+// GET /api/whatsapp/webhook - Verification endpoint for WhatsApp / Twilio
 app.get('/webhook', async (c) => {
   const mode = c.req.query('hub.mode');
   const token = c.req.query('hub.verify_token');

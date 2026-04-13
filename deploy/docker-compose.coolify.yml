@@ -5,82 +5,49 @@ services:
     build:
       context: ..
       target: runner
-    image: lovable/dashboard:latest
+    image: dashboard-agent-swarm:latest
     ports:
       - "8080:80"
     environment:
-      - VITE_EDGE_BASE_URL=${EDGE_BASE_URL:-http://edge:8787}
-      - VITE_SUPABASE_URL=${SUPABASE_URL}
-      - VITE_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - VITE_ARCHONX_API_BASE_URL=${ARCHONX_API_BASE_URL:-http://archonx:8000}
     depends_on:
+      - backend
       - frontend
 
   frontend:
-    build:
-      context: ../ai-agent-platform/apps/frontend
-      target: runner
-    image: lovable/frontend:latest
+    image: flowiseai/flowise:latest
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_EDGE_URL=${EDGE_BASE_URL:-http://edge:8787}
-      - NEXT_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-    depends_on:
-      - edge
+      - PORT=3000
+    volumes:
+      - flowise-data:/root/.flowise
 
-  edge:
+  backend:
     build:
-      context: ../ai-agent-platform/apps/edge
-      target: runner
-    image: lovable/edge:latest
+      context: ..
+      dockerfile: server/Dockerfile
+    image: dashboard-agent-swarm-backend:latest
     environment:
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - OI_MODE=${OI_MODE:-local}
-      - LOCAL_OI_PROXY_URL=http://local-runner:3333
-      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
-      - LM_STUDIO_BASE_URL=${LM_STUDIO_BASE_URL:-http://lm-studio:1234/v1}
-      - FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY:-}
-      - FIRECRAWL_BASE_URL=${FIRECRAWL_BASE_URL:-https://api.firecrawl.dev}
-      - MCP_SOCKET=/var/run/mcp/edge.sock
+      - DATABASE_URL=${DATABASE_URL:-postgresql://dashboard:changeme@postgres:5432/dashboard}
+      - ARCHONX_API_BASE_URL=${ARCHONX_API_BASE_URL:-http://archonx:8000}
+      - ARCHONX_API_TOKEN=${ARCHONX_API_TOKEN:-}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8080}
     ports:
       - "8787:8787"
-    volumes:
-      - mcp-socket:/var/run/mcp
     depends_on:
-      - local-runner
-      - ollama
+      - postgres
 
-  local-runner:
-    build:
-      context: ../ai-agent-platform/apps/local-runner
-      target: runner
-    image: lovable/local-runner:latest
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
     environment:
-      - LOCAL_OI_BROWSER_HEADLESS=1
-      - LOCAL_OI_MAX_SESSIONS=4
-    ports:
-      - "3333:3333"
+      - POSTGRES_DB=dashboard
+      - POSTGRES_USER=dashboard
+      - POSTGRES_PASSWORD=changeme
     volumes:
-      - sandboxes:/sandboxes
-      - mcp-socket:/var/run/mcp
-
-  ollama:
-    image: ollama/ollama:latest
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama-data:/root/.ollama
-
-  lm-studio:
-    image: lmstudio/lmstudio:latest
-    command: ["--port", "1234"]
-    ports:
-      - "1234:1234"
+      - postgres-data:/var/lib/postgresql/data
 
 volumes:
-  sandboxes:
-  ollama-data:
-  mcp-socket:
+  flowise-data:
+  postgres-data:

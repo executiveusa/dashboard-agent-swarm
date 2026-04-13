@@ -13,6 +13,17 @@ interface AgentEndpoints {
   [id: string]: string | undefined;
 }
 
+type DevikaExecutionProfile =
+  | "devika-pi-default"
+  | "devika-pi-safe"
+  | "devika-pi-research";
+
+const DEVIKA_EXECUTION_PROFILES: ReadonlySet<DevikaExecutionProfile> = new Set([
+  "devika-pi-default",
+  "devika-pi-safe",
+  "devika-pi-research",
+]);
+
 // Known agent backend endpoints
 const AGENT_ENDPOINTS: AgentEndpoints = {
   "agent_zero": "http://agent-zero:8000",
@@ -29,7 +40,7 @@ export function createAgentRoutes(db: Database, config: RuntimeConfig) {
      */
     async runAgent(req: Request, res: Response) {
       const { id } = req.params;
-      const { prompt, projectName, model } = req.body;
+      const { prompt, projectName, model, executionProfile, beadId } = req.body;
 
       if (!prompt) {
         return res.status(400).json({ error: "prompt is required" });
@@ -40,6 +51,21 @@ export function createAgentRoutes(db: Database, config: RuntimeConfig) {
         return res.status(404).json({ error: `Unknown agent: ${id}` });
       }
 
+      if (
+        id === "devika" &&
+        executionProfile !== undefined &&
+        !DEVIKA_EXECUTION_PROFILES.has(executionProfile as DevikaExecutionProfile)
+      ) {
+        return res.status(400).json({
+          error: "invalid executionProfile",
+          allowed: Array.from(DEVIKA_EXECUTION_PROFILES),
+        });
+      }
+
+      if (id === "devika" && beadId !== undefined && typeof beadId !== "string") {
+        return res.status(400).json({ error: "beadId must be a string" });
+      }
+
       try {
         // Route to the appropriate agent backend
         let agentUrl: string;
@@ -48,7 +74,16 @@ export function createAgentRoutes(db: Database, config: RuntimeConfig) {
         switch (id) {
           case "devika":
             agentUrl = `${endpoint}/api/execute`;
-            body = { prompt, project_name: projectName || "default", model_id: model || "claude-sonnet-4-20250514" };
+            body = {
+              prompt,
+              project_name: projectName || "default",
+              executionProfile:
+                (executionProfile as DevikaExecutionProfile | undefined) ||
+                "devika-pi-default",
+              beadId: beadId || `BEAD-DEVIKA-PI-${Date.now()}`,
+              // Backward compatibility for legacy devika backends.
+              model_id: model || "claude-sonnet-4-20250514",
+            };
             break;
           case "agent_zero":
             agentUrl = `${endpoint}/api/task`;
