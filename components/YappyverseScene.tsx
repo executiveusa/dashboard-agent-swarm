@@ -2,7 +2,7 @@ import React, { useRef, useState, useMemo, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, Text, Billboard, ContactShadows, useTexture, Plane } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, ColorAverage, HueSaturation, BrightnessContrast, Sepia } from '@react-three/postprocessing';
-import { VRButton, XR, Controllers, Hands } from '@react-three/xr';
+// @react-three/xr v6 removed VRButton, XR, Controllers, Hands - XR feature disabled
 import * as THREE from 'three';
 
 // ── Types ──────────────────────────────────────────
@@ -348,10 +348,7 @@ export default function YappyverseScene() {
         </div>
       )}
 
-      {/* VR button */}
-      <div className="absolute bottom-4 right-4 z-10">
-        <VRButton className="px-4 py-2 bg-[#cc1122] hover:bg-[#ff2244] text-white rounded-lg font-bold transition-colors shadow-[0_0_15px_rgba(204,17,34,0.5)]" />
-      </div>
+      {/* VR button - disabled: @react-three/xr v6 removed VRButton */}
 
       {/* Footer */}
       <div className="absolute bottom-4 left-4 z-10 text-[0.65rem] text-[#665533]">
@@ -365,9 +362,7 @@ export default function YappyverseScene() {
         performance={{ min: 0.5 }}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
       >
-        <XR>
-          <Controllers />
-          <Hands />
+        <>
           <YappyverseSceneInner onSelectAgent={setSelectedAgent} selectedAgent={selectedAgent} />
           <OrbitControls
             enablePan
@@ -378,7 +373,7 @@ export default function YappyverseScene() {
             dampingFactor={0.06}
             target={[0, 1, 0]}
           />
-        </XR>
+        </>
       </Canvas>
     </div>
   );
