@@ -2,7 +2,7 @@ import React, { useRef, useState, useMemo, useCallback, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, Text, Billboard, useTexture, Instance, Instances } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette, ChromaticAberration } from '@react-three/postprocessing';
-import { VRButton, XR, Hands } from '@react-three/xr';
+import { VRButton, XR } from '@react-three/xr';
 import * as THREE from 'three';
 
 // Agent status types and colors
@@ -572,8 +572,6 @@ export default function KingModeChessboard() {
         gl={{ antialias: true, powerPreference: 'high-performance' }}
       >
         <XR>
-          <Controllers />
-          <Hands />
           <KingModeScene onSelectAgent={setSelectedAgent} selectedAgent={selectedAgent} />
           <OrbitControls
             enablePan={false}
