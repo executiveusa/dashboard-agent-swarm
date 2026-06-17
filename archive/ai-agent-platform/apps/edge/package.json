@@ -16,7 +16,7 @@
   "dependencies": {
     "@ai-agent-platform/shared": "workspace:^",
     "cron-parser": "4.9.0",
-    "js-yaml": "4.1.0",
+    "js-yaml": "4.2.0",
     "node-fetch": "3.3.2",
     "p-limit": "4.0.0",
     "playwright-core": "1.42.1",
