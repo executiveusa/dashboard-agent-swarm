@@ -1,0 +1,10 @@
+{
+  "name": "desktop-shell",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@ai-agent-platform/shared": "file:../ai-agent-platform/packages/shared",
+    "@supabase/supabase-js": "^2.74.0"
+  }
+}

@@ -1,0 +1,122 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dashboard}
+      POSTGRES_USER: ${POSTGRES_USER:-dashboard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dashboard}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  flowise:
+    image: flowiseai/flowise:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      PORT: ${FLOWISE_PORT:-3000}
+      VITE_PORT: ${VITE_PORT:-5174}
+    volumes:
+      - ./data/flowise:/root/.flowise
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dashboard}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-dashboard}
+      REDIS_URL: redis://redis:6379/0
+      PORT: 8787
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:4000}
+    ports:
+      - "8080:80"
+    depends_on:
+      - flowise
+
+  openhands:
+    build:
+      context: ./openhands
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      REPO_ROOT: /workspace
+      PROMPT_FILE: /agent_zero/prompts/lovable_gigaprompt.json
+      MAX_ITERATIONS: ${OPENHANDS_MAX_ITERATIONS:-500}
+      MAX_HOURS: ${OPENHANDS_MAX_HOURS:-72}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      GH_TOKEN: ${GITHUB_TOKEN}
+    volumes:
+      - ./workspace:/workspace
+      - ./agent_zero:/agent_zero:ro
+      - openhands_cache:/root/.cache
+    working_dir: /workspace
+    command: ["tail", "-f", "/dev/null"]  # Keep container running, start jobs via API
+    depends_on:
+      - backend
+      - redis
+
+  agent_zero:
+    image: frdel/agent-zero:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      SKILLS_DIR: /app/agent_zero/skills
+      PROMPTS_DIR: /app/agent_zero/prompts
+      REDIS_URL: redis://redis:6379/1
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dashboard}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-dashboard}
+      OPENHANDS_URL: http://openhands:8080
+    volumes:
+      - ./agent_zero:/app/agent_zero:ro
+      - ./workspace:/workspace
+      - agent_zero_memory:/app/memory
+    depends_on:
+      - postgres
+      - redis
+      - openhands
+
+volumes:
+  postgres_data:
+  openhands_cache:
+  agent_zero_memory:

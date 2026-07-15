@@ -1,0 +1,83 @@
+{
+    "system_name": "Yappyverse Unified AI Framework",
+    "version": "1.0",
+    "description": "A complete in-house SaaS system for building, narrating, rendering, and automating Project FOXIES and the Yappyverse.",
+    "architecture": "Pinokio-based execution + Abacus agent orchestration + Hostinger MCP integration + Make.com for workflow",
+    "core_characters": {
+        "locked": [
+            "Vuk",
+            "His Wife",
+            "Pauli"
+        ],
+        "style": "Sepia noir + red pop",
+        "lock_protocol": "LOCK CHARACTER: [Name]",
+        "visual_fidelity": "Based on Bellagio 2056/Foxies setting"
+    },
+    "agents": {
+        "NarrativeAgent": {
+            "engine": "GPT-4-Turbo",
+            "tasks": [
+                "Scene writing",
+                "Email generation",
+                "Educational tie-ins"
+            ]
+        },
+        "VisualAgent": {
+            "engine": "DALL\u00b7E",
+            "tasks": [
+                "Scene renders",
+                "Character locking",
+                "Brand validation"
+            ],
+            "style_lock": [
+                "CLANDESTINO",
+                "Foxies romance sepia set"
+            ]
+        },
+        "FlyerAgent": {
+            "tools": [
+                "Claude-3",
+                "Make.com"
+            ],
+            "output": "QR flyers, Affiliate posters",
+            "schedule": "Tuesdays 11:00 PT"
+        },
+        "CoordinatorAgent": {
+            "platform": "Abacus.AI",
+            "role": "Sync orchestration, trigger flows, feedback loops",
+            "workflow_platforms": [
+                "Google Drive",
+                "Make.com"
+            ]
+        }
+    },
+    "automation_schedule": {
+        "scene_gen": "Daily 06:00 PT",
+        "flyer_gen": "Tuesdays 11:00 PT",
+        "email_campaign": "Fridays 09:00 PT",
+        "voice_script": "Wednesdays 13:00 PT",
+        "education_drop": "Sundays 15:00 PT"
+    },
+    "mcp_hosting": {
+        "provider": "Hostinger",
+        "ftp": "ftp://media.charterpauli.net",
+        "paths": {
+            "scenes": "/scenes",
+            "flyers": "/marketing/flyers",
+            "scripts": "/audio/scripts",
+            "social": "/marketing/social"
+        }
+    },
+    "security_model": {
+        "execution_layer": "Pinokio CLI shell container",
+        "token_protected_sync": true,
+        "env_file_control": true,
+        "audit_logging": "Enabled via Make.com"
+    },
+    "persona": {
+        "name": "Lumi",
+        "type": "Lovable AI creator",
+        "behavior": "Warm, cinematic, poetic. Asks for clarification. Learns with feedback."
+    },
+    "starter_prompt": "Render him and her in front of Foxies, 2056, red carpet, sepia noir, only red hat pops. High detail. LOCK if approved."
+}

@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  dashboard:
+    build:
+      context: ..
+      target: runner
+    image: dashboard-agent-swarm:latest
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_ARCHONX_API_BASE_URL=${ARCHONX_API_BASE_URL:-http://archonx:8000}
+    depends_on:
+      - backend
+      - frontend
+
+  frontend:
+    image: flowiseai/flowise:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    volumes:
+      - flowise-data:/root/.flowise
+
+  backend:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    image: dashboard-agent-swarm-backend:latest
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://dashboard:changeme@postgres:5432/dashboard}
+      - ARCHONX_API_BASE_URL=${ARCHONX_API_BASE_URL:-http://archonx:8000}
+      - ARCHONX_API_TOKEN=${ARCHONX_API_TOKEN:-}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8080}
+    ports:
+      - "8787:8787"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=dashboard
+      - POSTGRES_USER=dashboard
+      - POSTGRES_PASSWORD=changeme
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  flowise-data:
+  postgres-data:

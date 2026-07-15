@@ -1,0 +1,65 @@
+{
+    "scenario_name": "Yappyverse_Storytelling_Email_Funnel",
+    "description": "Automated private scene-by-scene story delivery for subscribers, tied to brand development and educational goals using Pixie Axe and Khan Studios AI.",
+    "purpose": "Deliver episodic story scenes, prompts, visuals, and educational extras via email to subscribers using Pixie Axe, priced affordably for yearly nonprofit access.",
+    "platforms_used": [
+        "Make.com",
+        "Pixie Axe",
+        "Khan Academy AI (Khan Studios)",
+        "Email API (SendGrid or Mailchimp)",
+        "Google Sheets (for subscriber list and delivery tracking)"
+    ],
+    "triggers": {
+        "new_scene_created": {
+            "source": "Project FOXIES pipeline",
+            "action": "Trigger scene delivery flow"
+        },
+        "subscription_renewal": {
+            "source": "Pixie Axe",
+            "action": "Add user to email funnel if payment confirmed"
+        }
+    },
+    "actions": [
+        {
+            "name": "GenerateSceneEmail",
+            "type": "email",
+            "description": "Send new scene summary + visual + exclusive commentary using branded template",
+            "includes": [
+                "scene title",
+                "scene visual",
+                "character commentary",
+                "education theme",
+                "next teaser"
+            ],
+            "email_template": "FoxiesPrivateSceneDrop_Template"
+        },
+        {
+            "name": "SyncSubscriberData",
+            "type": "data_sync",
+            "description": "Sync Google Sheet subscriber list with Pixie Axe payment data and tag each user with unlock tier"
+        },
+        {
+            "name": "DeliverEducationalAddon",
+            "type": "email",
+            "description": "Send a Khan Academy-style AI-powered mini-lesson or video that expands on a theme from the scene (e.g., emotional growth, storytelling structure, science in sci-fi)",
+            "education_partner": "Khan Studios AI"
+        },
+        {
+            "name": "SceneDropSchedule",
+            "type": "scheduler",
+            "description": "Drop new content every Friday at 9am PT, auto-loop educational supplement Sunday"
+        }
+    ],
+    "pricing_model": {
+        "type": "yearly_subscription",
+        "tier": "Nonprofit rate",
+        "price_usd": 12.0,
+        "currency": "USD",
+        "billing_tool": "Pixie Axe"
+    },
+    "ethical_notes": {
+        "nonprofit_model": true,
+        "creator_compensation": "Royalties and featured jobs for AI-assisted voice and animation artists",
+        "educational_alignment": "AI content ethically co-developed with Khan AI teaching principles"
+    }
+}

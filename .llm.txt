@@ -1,0 +1,51 @@
+# dashboard-agent-swarm.llm.txt
+# Machine-readable context for AI agents and LLMs
+# Protocol: Agent Fleet Protocol v1.0
+
+## IDENTITY
+name: dashboard-agent-swarm
+codename: Command Center
+primary_agent: DARYA vΩ (Creative Director)
+secondary_agent: Aurora (KPI Dashboard Manager)
+org: executiveusa
+repo: https://github.com/executiveusa/dashboard-agent-swarm
+
+## ROLE
+This is the unified dashboard and Backend-for-Frontend (BFF) for the entire agent fleet.
+It serves as the control plane where all agents report status, metrics, and activity.
+The BFF on port 8787 proxies requests to all agent backends.
+
+## TECH STACK
+- Frontend: React 18, Vite, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion
+- Backend: Express/Node.js on port 8787 (BFF)
+- Database: PostgreSQL, Redis
+- AI: Flowise (LangChain orchestration)
+- Deploy: Docker (nginx + node + postgres + redis + flowise), Hostinger VPS, Coolify
+
+## HIERARCHY
+archon-os > Agent Zero > Devika (Lead Delegator) > DARYA vΩ > Cuties (Maya, Luna, Solana, Vega, Aurora)
+
+## KEY FILES
+- AGENTS.md — fleet hierarchy and repo map
+- AGENT_PROTOCOL.md — universal fleet protocol
+- ROLE_INSTRUCTIONS.md — this repo's specific role
+- agent-prompts.md — 21 shared prompts (Jeffrey's Prompts)
+- .agent-souls/ — heart & soul files for every agent
+- src/services/agentRegistry.ts — canonical agent registry
+- src/ — React dashboard source
+- server/ — Express BFF routes
+
+## COMMUNICATION
+- Agents communicate via: MCP, WebSocket (OpenClaw :18789), HTTP/REST, GitHub Issues
+- Message format: agent-fleet-v1 JSON envelope
+- Meeting place: Pauli's Place (GPT-Agent-im-ready)
+- Shadow leader: Pauli (Microsoft Lightning Agent) sees everything
+
+## INSTRUCTIONS FOR AI AGENTS
+1. Read AGENTS.md and AGENT_PROTOCOL.md first
+2. Read agent-prompts.md for the shared prompt library
+3. Read .agent-souls/ for your identity if you are a fleet agent
+4. Follow the SOP: understand > plan > implement > test > deploy > report
+5. All actions must be logged via CAUT
+6. All prompts must be ACIP-compliant
+7. Report to Devika (lead delegator) unless you are Agent Zero or Pauli

@@ -1,0 +1,14 @@
+{
+    "mcpServers":  {
+                       "jcodemunch":  {
+                                          "args":  [
+                                                       "-m",
+                                                       "jcodemunch_mcp.server",
+                                                       "--project",
+                                                       "C:\\Users\\execu\\Downloads\\dashboard-agent-swarm-main\\dashboard-agent-swarm-main"
+                                                   ],
+                                          "command":  "python",
+                                          "cwd":  "C:\\Users\\execu\\Downloads\\dashboard-agent-swarm-main\\dashboard-agent-swarm-main"
+                                      }
+                   }
+}

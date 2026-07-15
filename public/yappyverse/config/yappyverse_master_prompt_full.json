@@ -1,0 +1,103 @@
+{
+    "project": "PROJECT FOXIES: LAS VEGAS 2056",
+    "description": "Unified creative and automation ecosystem for character-locked, visually consistent storytelling across AI tools.",
+    "vision": {
+        "themes": [
+            "Romantic",
+            "Educational",
+            "Empowering"
+        ],
+        "style": "Cinematic cartoon meets luxury fashion meets anime noir",
+        "mission": "Unify storytelling, AI automation, and creator empowerment into a persistent anime-style visual universe"
+    },
+    "character_locking": {
+        "locked_characters": [
+            "Vuk",
+            "His Wife"
+        ],
+        "lock_command": "LOCK CHARACTER: [CharacterName]",
+        "rules": "Once locked, a character\u2019s appearance, costume, facial style, silhouette, and animation style are fixed. Only pose, lighting, or environment may change post-lock."
+    },
+    "visual_rules": {
+        "style": "High-resolution cinematic cartoon",
+        "color_palette": "Sepia tones with color pop in red",
+        "consistency": "Linework, lighting, proportions must match across all generations",
+        "location": "Foxies = Bellagio Las Vegas, rebranded 2056"
+    },
+    "environment": {
+        "features": [
+            "Fountains (Bellagio style)",
+            "Holographic signs: 'VIP', 'TIME MACHINE PARKING ONLY', 'CHRONO-LANE ACCESS'",
+            "Futuristic red carpet with smart floor and drone lights"
+        ],
+        "time_machine": "Hybrid Rolls-Royce + DeLorean limo"
+    },
+    "scene_generation": {
+        "scene_types": [
+            "Red carpet wide shots",
+            "Close-up panels",
+            "Character development sheets",
+            "Storyboard triptychs"
+        ],
+        "requirements": [
+            "Include locked characters (Vuk + Wife)",
+            "Time machine limo arrival",
+            "Cameos & anime-style Easter eggs",
+            "Environmental consistency"
+        ]
+    },
+    "integration": {
+        "ai_voice_pipeline": {
+            "tools": [
+                "ElevenLabs",
+                "Play.ht",
+                "Coqui"
+            ],
+            "policy": "Pay real voice actors or use opt-in licensed clones"
+        },
+        "automation_stack": {
+            "web_scraping": "Apify for manga/news",
+            "manga_channel": "Automated with AI voice + visual branding",
+            "data_sources": [
+                "MyAnimeList",
+                "MangaDex",
+                "Pixiv",
+                "Reddit"
+            ]
+        }
+    },
+    "prompt_engineering": {
+        "format": "Image-ready, zero meta-commentary",
+        "prompt_style": "Stylized, cinematic, includes camera emulation and lighting cues",
+        "example_prompt": "Create a stylized night scene in sepia tones showing Vuk and his wife outside the futuristic venue 'Foxies.' Only the red hat glows, matching the La Siluta bottle. Shot in portrait style with fashion lens emulation."
+    },
+    "governance": {
+        "response_protocol": "Ask for clarification if ambiguity is detected. Maintain scene fidelity. Use placeholder IDs until lock.",
+        "version_control": "Scene reviews every 10 iterations, final locks archived",
+        "collaboration": "Feedback loop with 3-step process: Test \u2192 Lock \u2192 Archive"
+    },
+    "api_integration": {
+        "endpoint_url": "https://api.yappyverse.ai/v1/prompts",
+        "authentication": "Bearer <your_token_here>",
+        "payload_structure": {
+            "character": "Vuk",
+            "scene_type": "red_carpet",
+            "style": "cinematic_cartoon",
+            "locked": true
+        }
+    },
+    "make_com_integration": {
+        "scenario_name": "Yappyverse_Manga_Automation",
+        "actions": [
+            "Trigger on new manga release via Apify",
+            "Send chapter data to AI narrator",
+            "Auto-publish video with branding overlay to YouTube"
+        ]
+    },
+    "llm_toggle": {
+        "GPT-4-Turbo": true,
+        "Claude-3": true,
+        "Mistral": false,
+        "Gemini": false
+    }
+}

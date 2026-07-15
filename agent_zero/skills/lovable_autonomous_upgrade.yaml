@@ -1,0 +1,100 @@
+# =====================================================
+# FILE: agent_zero/skills/lovable_autonomous_upgrade.yaml
+# PROJECT: dashboard-agent-swarm (Agent Zero control plane)
+# PURPOSE:
+#   Register a long-running autonomous coding + QA skill for Lovable projects.
+#   This skill orchestrates OpenHands to run an infinite Ralph-style loop,
+#   producing exactly ONE final PR per repo when all gates pass.
+# =====================================================
+
+skill:
+  id: lovable_autonomous_upgrade_v1
+  owner: agent_zero
+  status: active
+  description: >
+    Fully autonomous backend-first upgrade and QA sweep for Lovable stack
+    repositories. Runs an infinite iteration loop until all acceptance
+    gates pass, then opens exactly one final PR.
+
+  scope:
+    execution_unit: single_repo
+    concurrency: configurable
+
+  entrypoint:
+    type: container
+    image: openhands-runner:latest
+    command: ./run_lovable_job.sh
+
+  inputs:
+    required:
+      - repo_url
+      - repo_branch
+    optional:
+      - target_architecture: TanStack
+      - frontend_pass: true
+
+  outputs:
+    artifacts:
+      - test_reports
+      - visual_diffs
+      - logs
+    pr:
+      single: true
+      branch_name: lovable-autonomous-upgrade
+
+  models:
+    backend:
+      provider: local
+      options:
+        - deepseek
+        - qwen
+    frontend:
+      provider: zai
+      model: glm-4.7
+    final_reviewer:
+      provider: openai
+      model: gpt-4o
+      mode: read_only_validation
+
+  constraints:
+    forbidden_paths:
+      - infra/prod/**
+      - secrets/**
+      - "**/*.env"
+    max_files_changed: 300
+    max_diff_lines: 15000
+    pr_only: true
+
+  commands:
+    install: pnpm i --frozen-lockfile
+    lint: pnpm lint
+    typecheck: pnpm typecheck
+    test: pnpm test
+    build: pnpm build
+    e2e: pnpm e2e
+    visual: pnpm visual
+
+  gates:
+    - install
+    - lint
+    - typecheck
+    - test
+    - build
+    - e2e
+    - visual
+
+  loop_policy:
+    style: ralph
+    max_iterations: 500
+    max_runtime_hours: 72
+    stop_condition: all_gates_pass
+    on_stall: write_BLOCKER_md
+
+  invariants:
+    internal_dashboard_required: true
+    external_frontend_required: true
+    auth_required: true
+    secrets_unified: true
+    backend_authoritative: true
+    tanstack_router_required: true
+    tanstack_query_required: true
