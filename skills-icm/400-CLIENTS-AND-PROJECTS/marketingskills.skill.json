@@ -1,0 +1,16 @@
+{
+  "id": "marketingskills",
+  "name": "marketingskills",
+  "shelf": "400-CLIENTS-AND-PROJECTS",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\marketingskills",
+  "entry": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\marketingskills\\README.md",
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "ralphy",
+  "name": "ralphy",
+  "shelf": "300-AGENTS-AND-PEOPLE",
+  "source_path": "C:\\Users\\execu\\Downloads\\dashboard-agent-swarm-main\\dashboard-agent-swarm-main\\skills-icm\\ralphy",
+  "entry": "C:\\Users\\execu\\Downloads\\dashboard-agent-swarm-main\\dashboard-agent-swarm-main\\skills-icm\\ralphy\\README.md",
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "tars",
+    "cosmos-pi",
+    "dashboard"
+  ],
+  "tags": [
+    "autonomous-loop",
+    "prd"
+  ]
+}

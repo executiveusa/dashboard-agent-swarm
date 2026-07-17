@@ -1,0 +1,16 @@
+{
+  "id": "synthia-superdesign-main",
+  "name": "synthia-superdesign-main",
+  "shelf": "300-AGENTS-AND-PEOPLE",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\synthia-superdesign-main",
+  "entry": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\synthia-superdesign-main\\README.md",
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "font-kit-master",
+  "name": "font-kit-master",
+  "shelf": "500-SKILLS-AND-PATTERNS",
+  "source_path": "E:\\ACTIVE PROJECTS-PIPELINE\\ACTIVE PROJECTS-PIPELINE\\AGENT ZERO\\font-kit-master",
+  "entry": "E:\\ACTIVE PROJECTS-PIPELINE\\ACTIVE PROJECTS-PIPELINE\\AGENT ZERO\\font-kit-master\\font-kit-master\\README.md",
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "tars",
+    "cosmos-pi",
+    "dashboard",
+    "design-studio"
+  ],
+  "tags": [
+    "agent-zero",
+    "design"
+  ]
+}

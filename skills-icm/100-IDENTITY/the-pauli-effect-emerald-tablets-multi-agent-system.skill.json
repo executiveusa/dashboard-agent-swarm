@@ -1,0 +1,16 @@
+{
+  "id": "the-pauli-effect-emerald-tablets-multi-agent-system",
+  "name": "THE_PAULI_EFFECT_EMERALD_TABLETS_MULTI_AGENT_SYSTEM",
+  "shelf": "100-IDENTITY",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\THE_PAULI_EFFECT_EMERALD_TABLETS_MULTI_AGENT_SYSTEM",
+  "entry": null,
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

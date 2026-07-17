@@ -26,6 +26,7 @@ import NotFound from "./pages/NotFound";
 import RepoManager from "./pages/RepoManager";
 import { OrgProvider } from "./contexts/OrgContext";
 import { OrgSwitcher } from "./components/OrgSwitcher";
+import { PersonaPicker } from "./components/PersonaPicker";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Login from "./pages/Login";
 import ArchonHero from "./pages/ArchonHero";
@@ -58,6 +59,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <PersonaPicker />
             <OrgSwitcher />
             <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-1 text-[0.7rem] font-medium text-foreground">
               <span className="h-1.5 w-1.5 rounded-full bg-green-500" />

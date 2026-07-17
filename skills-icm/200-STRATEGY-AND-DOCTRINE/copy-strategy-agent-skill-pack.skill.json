@@ -1,0 +1,16 @@
+{
+  "id": "copy-strategy-agent-skill-pack",
+  "name": "copy_strategy_agent_skill_pack",
+  "shelf": "200-STRATEGY-AND-DOCTRINE",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\copy_strategy_agent_skill_pack",
+  "entry": null,
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "personaplex-main",
+  "name": "personaplex-main",
+  "shelf": "300-AGENTS-AND-PEOPLE",
+  "source_path": "E:\\ACTIVE PROJECTS-PIPELINE\\ACTIVE PROJECTS-PIPELINE\\AGENT ZERO\\personaplex-main\\personaplex-main",
+  "entry": "E:\\ACTIVE PROJECTS-PIPELINE\\ACTIVE PROJECTS-PIPELINE\\AGENT ZERO\\personaplex-main\\personaplex-main\\README.md",
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "tars",
+    "cosmos-pi",
+    "dashboard",
+    "design-studio"
+  ],
+  "tags": [
+    "agent-zero",
+    "design"
+  ]
+}

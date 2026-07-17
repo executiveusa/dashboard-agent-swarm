@@ -1,0 +1,16 @@
+{
+  "id": "skills-files",
+  "name": "skills files",
+  "shelf": "500-SKILLS-AND-PATTERNS",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\skills files",
+  "entry": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\skills files\\README.md",
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

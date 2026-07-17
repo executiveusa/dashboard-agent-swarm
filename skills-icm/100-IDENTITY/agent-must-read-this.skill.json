@@ -1,0 +1,16 @@
+{
+  "id": "agent-must-read-this",
+  "name": "agent-must-read-this",
+  "shelf": "100-IDENTITY",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\agent-must-read-this",
+  "entry": null,
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

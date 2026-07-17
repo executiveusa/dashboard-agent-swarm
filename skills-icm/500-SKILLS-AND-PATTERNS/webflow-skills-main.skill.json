@@ -1,0 +1,16 @@
+{
+  "id": "webflow-skills-main",
+  "name": "webflow-skills-main",
+  "shelf": "500-SKILLS-AND-PATTERNS",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\webflow-skills-main",
+  "entry": null,
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

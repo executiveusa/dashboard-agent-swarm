@@ -1,0 +1,16 @@
+{
+  "id": "brain-jarvis-skill-v4-1",
+  "name": "brain-jarvis-skill-v4(1)",
+  "shelf": "300-AGENTS-AND-PEOPLE",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\brain-jarvis-skill-v4(1)",
+  "entry": null,
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

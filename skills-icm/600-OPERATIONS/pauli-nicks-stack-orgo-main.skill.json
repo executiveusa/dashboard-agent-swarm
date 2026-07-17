@@ -1,0 +1,16 @@
+{
+  "id": "pauli-nicks-stack-orgo-main",
+  "name": "pauli-nicks-stack-orgo-main",
+  "shelf": "600-OPERATIONS",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\pauli-nicks-stack-orgo-main",
+  "entry": null,
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

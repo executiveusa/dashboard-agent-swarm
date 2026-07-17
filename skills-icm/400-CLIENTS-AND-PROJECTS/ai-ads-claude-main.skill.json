@@ -1,0 +1,16 @@
+{
+  "id": "ai-ads-claude-main",
+  "name": "ai-ads-claude-main",
+  "shelf": "400-CLIENTS-AND-PROJECTS",
+  "source_path": "C:\\Users\\execu\\Downloads\\AI WORKSHOP\\MASTER SKILLS BUNDLE\\ai-ads-claude-main",
+  "entry": null,
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "hermes",
+    "cosmos-pi",
+    "tars",
+    "cosmos-brain",
+    "dashboard"
+  ]
+}

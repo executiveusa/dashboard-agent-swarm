@@ -1,0 +1,12 @@
+{
+  "id": "hermes-design-studio",
+  "name": "Hermes Design Studio Workflow",
+  "shelf": "300-AGENTS-AND-PEOPLE",
+  "source_path": "C:\\Users\\execu\\Downloads\\hermes workflow.md",
+  "entry": "C:\\Users\\execu\\Downloads\\hermes workflow.md",
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "all"
+  ]
+}

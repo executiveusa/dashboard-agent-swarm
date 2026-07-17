@@ -1,0 +1,12 @@
+{
+  "id": "free-llm-proxy-zte",
+  "name": "Free LLM Proxy ZTE Installer",
+  "shelf": "500-SKILLS-AND-PATTERNS",
+  "source_path": "C:\\Users\\execu\\Downloads\\I converted your v1 into a safer, p.txt",
+  "entry": "C:\\Users\\execu\\Downloads\\I converted your v1 into a safer, p.txt",
+  "lazy": true,
+  "load": "on-demand",
+  "access": [
+    "all"
+  ]
+}
