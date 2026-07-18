@@ -1,0 +1,15 @@
+server/
+backend/
+packages/
+a2a/
+agent_zero/
+openhands/
+desktop/
+scripts/
+*.md
+!README.md
+docker-compose.yml
+Dockerfile
+nginx.conf
+test-results.json
+test-report.md
