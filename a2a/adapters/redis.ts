@@ -54,23 +54,11 @@ export class RedisA2AAdapter {
         '$',
       );
 
-      if (!data) {
-        continue;
-      }
+      if (!data) continue;
 
       for (const [, entries] of data) {
-        for (const [, [, payload]]] of entries) {
-          try {
-            const json = JSON.parse(payload);
-            const envelope = A2AEnvelopeSchema.parse(json);
-            const dedupeKey = this.hashId(envelope.id);
-            if (this.options.dedupe && !(await this.options.dedupe(dedupeKey))) {
-              continue;
-            }
-            await this.options.onMessage(envelope);
-          } catch (error) {
-            console.error('Redis A2A adapter failed to parse payload', error);
-          }
+        for (const entry of entries) {
+          await this.handleEntry(entry);
         }
       }
     }
@@ -82,5 +70,28 @@ export class RedisA2AAdapter {
 
   private hashId(id: string) {
     return createHash('sha256').update(id).digest('hex');
+  }
+
+  /**
+   * Process one Redis stream entry.
+   *
+   * Entry shape: `[id, [fieldName, fieldValue, ...]]`. We published with
+   * field name `'payload'`, so the JSON envelope lives at fields index 1.
+   */
+  private async handleEntry(entry: [string, string[]]) {
+    const [, fields] = entry;
+    const payload = fields[1];
+    if (!payload) return;
+
+    try {
+      const envelope = A2AEnvelopeSchema.parse(JSON.parse(payload));
+      if (this.options.dedupe) {
+        const dedupeKey = this.hashId(envelope.id);
+        if (!(await this.options.dedupe(dedupeKey))) return;
+      }
+      await this.options.onMessage(envelope);
+    } catch (error) {
+      console.error('Redis A2A adapter failed to parse payload', error);
+    }
   }
 }

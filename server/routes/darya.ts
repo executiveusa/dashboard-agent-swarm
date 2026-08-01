@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { sql } from '../index';
+import { sql } from '../db';
 import * as daryaLogic from '../services/daryaLogic';
 import type { OrgSettings } from '../types/api';
 

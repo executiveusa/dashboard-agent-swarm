@@ -2,7 +2,11 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { serve } from '@hono/node-server';
-import postgres from 'postgres';
+
+// Shared DB client lives in ./db so route handlers don't have to import this
+// entrypoint (avoids index.ts <-> routes/*.ts circular imports).
+import { sql } from './db';
+export { sql };
 
 // Import route handlers
 import { daryaRoutes } from './routes/darya';
@@ -13,10 +17,6 @@ import { devikaRoutes } from './routes/devika';
 import { repoRoutes } from './routes/repos';
 import { meetingRoutes } from './routes/meeting';
 import { fileRoutes } from './routes/files';
-
-// Database connection
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://dashboard:changeme@localhost:5432/dashboard';
-export const sql = postgres(DATABASE_URL);
 
 // Create Hono app
 const app = new Hono();

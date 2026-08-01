@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { sql } from '../index.js';
+import { sql } from '../db.js';
 
 const MIGRATIONS_DIR = path.join(process.cwd(), '../db/migrations');
 

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { sql } from '../index';
+import { sql } from '../db';
 
 const app = new Hono();
 const ARCHONX_API_BASE = process.env.ARCHONX_API_BASE_URL || 'http://localhost:8000';
