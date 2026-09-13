@@ -132,7 +132,7 @@ torch-gpu-legacy = [
   {include-group = "torch-legacy"},
   {include-group = "torch-cu128"},
   "flash-attn==2.8.1",
-  "verl==0.5.0",
+  "verl==0.7.1",
 ]
 
 # For the TRL/Unsloth example.
