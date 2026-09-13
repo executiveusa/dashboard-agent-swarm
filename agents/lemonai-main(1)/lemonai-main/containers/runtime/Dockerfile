@@ -1,5 +1,5 @@
 # FROM nikolaik/python-nodejs:python3.12-nodejs22
-FROM node:22-slim
+FROM node:26-slim
 
 # Shared environment variables
 ENV MAMBA_ROOT_PREFIX=/chataa/micromamba \
