@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.6
-FROM node:20-bookworm-slim
+FROM node:26-bookworm-slim
 WORKDIR /srv
 COPY backend/package.json ./package.json
 COPY backend/server.mjs ./server.mjs
