@@ -1,0 +1,263 @@
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/agents/lemonai-main(1)/lemonai-main/containers/app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/agents/lemonai-main(1)/lemonai-main/containers/runtime"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/archive/ai-agent-platform/apps/edge"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/archive/ai-agent-platform/apps/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/archive/ai-agent-platform/apps/local-runner"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/openhands"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/server"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/agents/agent-lightning-main(1)/agent-lightning-main/dashboard"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/agents/lemonai-main(1)/lemonai-main"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/agents/lemonai-main(1)/lemonai-main/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/archive/ai-agent-platform"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/archive/ai-agent-platform/apps/desktop"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/archive/ai-agent-platform/apps/edge"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/archive/ai-agent-platform/apps/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/archive/ai-agent-platform/apps/local-runner"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/archive/ai-agent-platform/packages/shared"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/archive/desktop-shell"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/backend/server"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/packages/mcp"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/packages/sdk"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/packages/ui"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "npm"
+    directory: "/server"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "pip"
+    directory: "/agents/agent-lightning-main(1)/agent-lightning-main"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: "pip"
+    directory: "/agents/lemonai-main(1)/lemonai-main/browser_server"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
