@@ -15,11 +15,11 @@ dependencies = [
   "uvicorn",
   "fastapi",
   "aiohttp",
-  "opentelemetry-api>=1.35",
-  "opentelemetry-sdk>=1.35",
-  "opentelemetry-exporter-otlp>=1.35",
-  "litellm[proxy]>=1.74",
-  "pydantic>=2.11",
+  "opentelemetry-api>=1.44.0",
+  "opentelemetry-sdk>=1.44.0",
+  "opentelemetry-exporter-otlp>=1.44.0",
+  "litellm[proxy]>=1.100.1",
+  "pydantic>=2.13.5",
   "openai",
   "rich",
   "portpicker",
@@ -34,8 +34,8 @@ apo = [
 # It's not recommended to use agentlightning[verl] to install VERL and its dependencies.
 # though it's listed here for completeness.
 verl = [
-  "verl>=0.5.0",
-  "vllm>=0.8.4", # Due to interface change of ExternalZeroMQDistributedExecutor
+  "verl>=0.9.0",
+  "vllm>=0.29.0", # Due to interface change of ExternalZeroMQDistributedExecutor
 ]
 
 # Store-related dependencies.
@@ -74,11 +74,11 @@ experiment = [
 
 core-legacy = [
   "agentops<=0.4.18",
-  "openai<2.0.0",
+  "openai<4.0.0",
 ]
 core-stable = [
   "agentops>=0.4.21",
-  "openai>=2.0.0",
+  "openai>=3.11.0",
 ]
 
 # For PyTorch.
@@ -96,26 +96,26 @@ torch-cu128 = [
 torch-stable = [
   {include-group = "core-stable"},
   # This can work for both CPU and GPU.
-  "torch>=2.8.0",
-  "torchvision>=0.23.0",
-  "transformers>=4.55.0",
+  "torch>=2.14.0",
+  "torchvision>=0.29.0",
+  "transformers>=5.17.0",
   # vLLM 0.11.1 requires PyTorch 2.9.0, which is incompatible with flash-attn
   # https://github.com/Dao-AILab/flash-attention/issues/1967
   # Similar issues with vLLM 0.11.2
-  "vllm>=0.10.2,!=0.11.1,!=0.11.2",
+  "vllm!=0.11.1,!=0.11.2,>=0.29.0",
   # LiteLLM can then be upgraded with new vLLM
-  "litellm[proxy]>=1.78",
+  "litellm[proxy]>=1.100.1",
 ]
 torch-legacy = [
   {include-group = "core-legacy"},
   # This can work for both CPU and GPU.
-  "torch==2.7.0",
-  "torchvision==0.22.0",
-  "transformers==4.53.3",
-  "tokenizers>=0.21,<0.22",
-  "flash-attn==2.8.1",
-  "vllm==0.9.2",
-  "litellm[proxy]==1.74.15",
+  "torch==2.14.0",
+  "torchvision==0.29.0",
+  "transformers==5.17.0",
+  "tokenizers>=0.23.2,<0.24",
+  "flash-attn==2.8.3.post1",
+  "vllm==0.29.0",
+  "litellm[proxy]==1.100.1",
 ]
 
 # Flash-attention must build with CUDA toolkit.
@@ -123,16 +123,16 @@ torch-legacy = [
 torch-gpu-stable = [
   {include-group = "torch-stable"},
   {include-group = "torch-cu128"},
-  "flash-attn>=2.8.3",
-  "tensordict>=0.9.1",
-  "verl>=0.6.0",
+  "flash-attn>=2.8.3.post1",
+  "tensordict>=0.14.2",
+  "verl>=0.9.0",
 ]
 # Use this instead of --group torch-legacy --group torch-gpu
 torch-gpu-legacy = [
   {include-group = "torch-legacy"},
   {include-group = "torch-cu128"},
-  "flash-attn==2.8.1",
-  "verl==0.5.0",
+  "flash-attn==2.8.3.post1",
+  "verl==0.9.0",
 ]
 
 # For the TRL/Unsloth example.
@@ -140,8 +140,8 @@ trl = [
   # Only work with PyTorch 2.8.0+.
   {include-group = "torch-stable"},
   # https://github.com/unslothai/unsloth/issues/3451
-  "unsloth>=2025.10.1,!=2025.10.2,!=2025.10.3,!=2025.10.4,!=2025.10.5,!=2025.10.6,!=2025.10.7,!=2025.10.8",
-  "unsloth_zoo>=2025.10.1,!=2025.10.2,!=2025.10.3,!=2025.10.4,!=2025.10.5,!=2025.10.6,!=2025.10.7,!=2025.10.8",
+  "unsloth!=2025.10.2,!=2025.10.3,!=2025.10.4,!=2025.10.5,!=2025.10.6,!=2025.10.7,!=2025.10.8,>=2026.9.4",
+  "unsloth_zoo!=2025.10.2,!=2025.10.3,!=2025.10.4,!=2025.10.5,!=2025.10.6,!=2025.10.7,!=2025.10.8,>=2026.9.3",
   "bitsandbytes",
   "peft",
   "datasets",
@@ -163,7 +163,7 @@ tinker = [
 autogen = [
   "autogen-agentchat",
   "autogen-ext[openai]",
-  "mcp>=1.10.0",
+  "mcp>=2.2.0",
   # UV is required now by default.
   # No need to include UV here.
   # "uv",
@@ -181,10 +181,10 @@ anthropic = [
   "anthropic",
 ]
 langchain = [
-  "langgraph<1.0",
-  "langchain[openai]<1.0",
+  "langgraph<2.0",
+  "langchain[openai]<2.0",
   "langchain-community",
-  "langchain-text-splitters<1.0",
+  "langchain-text-splitters<2.0",
 ]
 sql = [
   "sqlparse",
@@ -192,7 +192,7 @@ sql = [
 ]
 crewai = [
   # https://github.com/crewAIInc/crewAI/issues/3959
-  "crewai[tools]==1.2.0",
+  "crewai[tools]==1.15.21",
 ]
 
 # Summarize into large installable groups.
