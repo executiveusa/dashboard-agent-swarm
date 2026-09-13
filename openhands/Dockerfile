@@ -4,7 +4,7 @@
 #   Build the OpenHands runner container for autonomous code execution
 # =====================================================
 
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
