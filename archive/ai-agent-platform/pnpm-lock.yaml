@@ -46,8 +46,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/shared
       adm-zip:
-        specifier: 0.5.10
-        version: 0.5.10
+        specifier: 0.6.1
+        version: 0.6.1
       cron-parser:
         specifier: 4.9.0
         version: 4.9.0
@@ -1027,9 +1027,9 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  adm-zip@0.5.10:
-    resolution: {integrity: sha512-x0HvcHqVJNTPk/Bw8JbLWlWoo6Wwnsug0fnYYro1HBrjxZ3G7/AZk7Ahv8JwDe1uIcz8eBqvu86FuF1POiG7vQ==}
-    engines: {node: '>=6.0'}
+  adm-zip@0.6.1:
+    resolution: {integrity: sha512-Xwrja8nx9e5o2N1my4DsKCeKpdrnACyr1wtbPxBDgGzKzKyE9kRtBFA8mWldI+RVlD7CBZNWY/wQ2+ydwOR6kQ==}
+    engines: {node: '>=14.0'}
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
@@ -3109,7 +3109,7 @@ snapshots:
 
   acorn@8.15.0: {}
 
-  adm-zip@0.5.10: {}
+  adm-zip@0.6.1: {}
 
   ajv@6.12.6:
     dependencies:
