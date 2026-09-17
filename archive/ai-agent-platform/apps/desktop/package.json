@@ -14,6 +14,6 @@
     "@ai-agent-platform/shared": "workspace:^"
   },
   "devDependencies": {
-    "electron": "^31.3.0"
+    "electron": "^44.3.0"
   }
 }
