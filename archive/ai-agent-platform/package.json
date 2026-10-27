@@ -13,12 +13,12 @@
     "deploy": "pnpm --filter apps/edge run deploy"
   },
   "devDependencies": {
-    "@types/node": "26.6.2",
-    "eslint": "10.11.0",
+    "@types/node": "26.6.5",
+    "eslint": "10.13.0",
     "eslint-config-prettier": "10.1.8",
-    "prettier": "3.9.8",
+    "prettier": "3.9.10",
     "typescript": "7.0.2",
-    "vitest": "5.0.1",
-    "typescript-eslint": "8.70.0"
+    "vitest": "5.0.5",
+    "typescript-eslint": "8.72.0"
   }
 }
