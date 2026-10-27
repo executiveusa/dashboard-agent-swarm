@@ -12,18 +12,18 @@
   },
   "dependencies": {
     "@ai-agent-platform/shared": "workspace:^",
-    "@radix-ui/react-dialog": "1.1.23",
-    "@radix-ui/react-scroll-area": "1.2.18",
+    "@radix-ui/react-dialog": "1.3.1",
+    "@radix-ui/react-scroll-area": "1.4.0",
     "class-variance-authority": "0.7.1",
-    "lucide-react": "1.45.0",
-    "next": "16.3.5",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "lucide-react": "1.61.0",
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "swr": "2.5.1"
   },
   "devDependencies": {
-    "autoprefixer": "10.6.0",
-    "postcss": "8.5.28",
+    "autoprefixer": "10.6.1",
+    "postcss": "8.5.31",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2"
   }
